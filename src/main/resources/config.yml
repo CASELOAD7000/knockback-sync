@@ -1,0 +1,3 @@
+ping_retrieval:
+  method: "hit"  # Options: "hit" (retrieve victim's ping after an attack), "runnable" (retrieve everyone's ping every x ticks)
+  runnable_ticks: 20  # Number of ticks for "runnable" method (e.g., retrieve everyone's ping every 20 ticks)
