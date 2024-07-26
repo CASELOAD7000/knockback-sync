@@ -14,30 +14,36 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 public class PlayerHitListener implements Listener {
 
     private final ProtocolManager protocolManager;
+    private final LagCompensator lagCompensator;
 
-    public PlayerHitListener(ProtocolManager protocolManager) {
+    public PlayerHitListener(ProtocolManager protocolManager, LagCompensator lagCompensator) {
         this.protocolManager = protocolManager;
+        this.lagCompensator = lagCompensator;
     }
 
     @EventHandler
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
-        if (event.isCancelled()
-                || !(event.getEntity() instanceof Player)
-                || !(event.getDamager() instanceof Player)) {
+        if (event.isCancelled() || !(event.getEntity() instanceof Player) || !(event.getDamager() instanceof Player)) {
             return;
         }
 
         Player victim = (Player) event.getEntity();
         Player damager = (Player) event.getDamager();
 
+        // Calcular el valor de knockback
         double calculatedValue = calculateYAxis(damager, victim);
         KbSync.kb.put(victim.getUniqueId(), calculatedValue);
+
+        // Compensar el lag usando LagCompensator
+        lagCompensator.registerMovement(victim, victim.getLocation());
 
         String pingRetrievalMethod = KbSync.getInstance().getConfig().getString("ping_retrieval.method").toLowerCase();
 
         if (pingRetrievalMethod.equals("hit")) {
+            // Enviar el paquete de ping asíncronamente
             Bukkit.getScheduler().runTaskAsynchronously(KbSync.getInstance(), () -> {
-                KbSync.sendPingPacket(victim, protocolManager.createPacket(PacketType.Play.Server.PING));
+                PacketContainer packet = protocolManager.createPacket(PacketType.Play.Server.PING);
+                KbSync.sendPingPacket(victim, packet);
             });
         }
     }
