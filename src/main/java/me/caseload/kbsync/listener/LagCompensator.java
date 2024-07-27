@@ -63,9 +63,9 @@ public class LagCompensator implements Listener {
                     Player player = (Player) event.getPlayer();
                     Location newLocation = new Location(
                         player.getWorld(),
-                        packet.getPosition().getX(),
-                        packet.getPosition().getY(),
-                        packet.getPosition().getZ()
+                        packet.getLocation().getX(),
+                        packet.getLocation().getY(),
+                        packet.getLocation().getZ()
                     );
 
                     // Enviar la tarea al ExecutorService
@@ -75,9 +75,9 @@ public class LagCompensator implements Listener {
                     Player player = (Player) event.getPlayer();
                     Location newLocation = new Location(
                         player.getWorld(),
-                        packet.getPosition().getX(),
-                        packet.getPosition().getY(),
-                        packet.getPosition().getZ(),
+                        packet.getLocation().getX(),
+                        packet.getLocation().getY(),
+                        packet.getLocation().getZ(),
                         packet.getYaw(),
                         packet.getPitch()
                     );
