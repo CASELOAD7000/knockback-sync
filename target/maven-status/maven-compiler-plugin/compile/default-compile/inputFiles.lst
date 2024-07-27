@@ -1,3 +1,4 @@
+/workspace/knockback-sync/src/main/java/me/caseload/kbsync/listener/Async.java
 /workspace/knockback-sync/src/main/java/me/caseload/kbsync/KbSync.java
 /workspace/knockback-sync/src/main/java/me/caseload/kbsync/listener/PlayerHitListener.java
 /workspace/knockback-sync/src/main/java/me/caseload/kbsync/command/Subcommands.java
