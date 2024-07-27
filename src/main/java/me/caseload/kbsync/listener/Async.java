@@ -19,14 +19,17 @@ import org.bukkit.Location;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class Async implements Listener {
 
     private final LagCompensator lagCompensator;
     private final Map<Integer, Player> entityIdCache = new HashMap<>();
     private static final double MAX_HIT_REACH = 3.1;
+    private final ExecutorService executorService = Executors.newFixedThreadPool(2); // Usar un grupo de hilos dedicado
+    private final ReentrantReadWriteLock cacheLock = new ReentrantReadWriteLock(); // Para acceso concurrente seguro
 
     public Async(LagCompensator lagCompensator) {
         this.lagCompensator = lagCompensator;
@@ -47,20 +50,27 @@ public class Async implements Listener {
                     Player attacker = (Player) event.getPlayer();
                     int entityId = interactEntityPacket.getEntityId();
 
-                    Player target = getPlayerFromEntityId(entityId);
-                    if (target != null && isHitValid(attacker, target)) {
-                        CompletableFuture.runAsync(() -> handleHit(attacker, target), ForkJoinPool.commonPool());
-                    }
+                    executorService.submit(() -> {
+                        Player target = getPlayerFromEntityId(entityId);
+                        if (target != null && isHitValid(attacker, target)) {
+                            handleHit(attacker, target);
+                        }
+                    });
                 }
             }
         }
     }
 
     private Player getPlayerFromEntityId(int entityId) {
-        return entityIdCache.getOrDefault(entityId, Bukkit.getOnlinePlayers().stream()
-                .filter(player -> player.getEntityId() == entityId)
-                .findFirst()
-                .orElse(null));
+        cacheLock.readLock().lock();
+        try {
+            return entityIdCache.getOrDefault(entityId, Bukkit.getOnlinePlayers().stream()
+                    .filter(player -> player.getEntityId() == entityId)
+                    .findFirst()
+                    .orElse(null));
+        } finally {
+            cacheLock.readLock().unlock();
+        }
     }
 
     private boolean isHitValid(Player attacker, Player target) {
