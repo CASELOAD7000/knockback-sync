@@ -22,7 +22,7 @@ public final class KbSync extends JavaPlugin {
 
     private static final Map<UUID, List<Long>> keepAliveTime = Collections.synchronizedMap(new HashMap<>());
     private final Map<UUID, Integer> accuratePing = new HashMap<>();
-    private LagCompensator lagCompensator = new LagCompensator(); // Esta línea es redundante
+    private LagCompensator lagCompensator;
 
     public static final Map<UUID, Double> kb = new HashMap<>();
 
@@ -30,11 +30,9 @@ public final class KbSync extends JavaPlugin {
     public void onEnable() {
         instance = this;
         protocolManager = ProtocolLibrary.getProtocolManager();
-        lagCompensator = new LagCompensator();
+        lagCompensator = new LagCompensator(); // Inicializar LagCompensator
 
-        // Registrar el listener
         Async asyncListener = new Async(lagCompensator);
-        getServer().getPluginManager().registerEvents(asyncListener, this);
 
         saveDefaultConfig();
         setupProtocolLib();

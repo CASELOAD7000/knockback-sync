@@ -4,4 +4,5 @@ me/caseload/kbsync/KbSync$1.class
 me/caseload/kbsync/command/Subcommands.class
 me/caseload/kbsync/listener/LagCompensator.class
 me/caseload/kbsync/listener/Async.class
+me/caseload/kbsync/listener/Async$HitPacketListener.class
 me/caseload/kbsync/KbSync.class
