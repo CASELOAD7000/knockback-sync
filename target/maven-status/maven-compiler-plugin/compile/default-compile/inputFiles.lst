@@ -1,5 +1,5 @@
 /workspace/knockback-sync/src/main/java/me/caseload/kbsync/KbSync.java
 /workspace/knockback-sync/src/main/java/me/caseload/kbsync/listener/PlayerHitListener.java
 /workspace/knockback-sync/src/main/java/me/caseload/kbsync/command/Subcommands.java
-/workspace/knockback-sync/src/main/java/me/caseload/kbsync/listener/PlayerVelocityListener.java
 /workspace/knockback-sync/src/main/java/me/caseload/kbsync/listener/LagCompensator.java
+/workspace/knockback-sync/src/main/java/me/caseload/kbsync/listener/PlayerVelocityListener.java

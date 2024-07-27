@@ -8,6 +8,7 @@ import me.caseload.kbsync.command.Subcommands;
 import me.caseload.kbsync.listener.PlayerHitListener;
 import me.caseload.kbsync.listener.PlayerVelocityListener;
 import me.caseload.kbsync.listener.LagCompensator;
+import me.caseload.kbsync.listener.Async;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -22,6 +23,7 @@ public final class KbSync extends JavaPlugin {
     private static final Map<UUID, List<Long>> keepAliveTime = Collections.synchronizedMap(new HashMap<>());
     private final Map<UUID, Integer> accuratePing = new HashMap<>();
     private final LagCompensator lagCompensator = new LagCompensator();  // Instancia de LagCompensator
+    private final Async async = new Async(); // Instancia de Async
 
     public static final Map<UUID, Double> kb = new HashMap<>();
 
