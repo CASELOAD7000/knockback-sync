@@ -1,5 +1,5 @@
 name: KbSync
-version: '1.0'
+version: '1.2'
 author: caseload
 description: Synchronizes player knockback for smoother gameplay. Requires ProtocolLib.
 main: me.caseload.kbsync.KbSync

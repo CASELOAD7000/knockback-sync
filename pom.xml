@@ -6,7 +6,7 @@
 
     <groupId>me.caseload</groupId>
     <artifactId>KbSync</artifactId>
-    <version>1.0</version>
+    <version>1.2</version>
     <packaging>jar</packaging>
 
     <name>KbSync</name>

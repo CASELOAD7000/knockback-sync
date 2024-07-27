@@ -1,74 +1,76 @@
 package me.caseload.kbsync.listener;
 
-import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.EnumWrappers;
+import me.caseload.kbsync.KbSync;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerVelocityEvent;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.Vector;
 import net.jafama.FastMath;
+import org.bukkit.Location;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ForkJoinPool;
-import org.bukkit.Location; // Asegúrate de importar la clase Location correcta
 
-public class Async extends JavaPlugin implements Listener {
+public class Async implements Listener {
 
-    private Map<String, Long> delay = new HashMap<>();
-    private ProtocolManager protocolManager;
-    private LagCompensator lagCompensator;
+    private final Map<String, Long> delay = new HashMap<>();
+    private final ProtocolManager protocolManager;
+    private final LagCompensator lagCompensator;
 
-    @Override
-    public void onEnable() {
-        Bukkit.getPluginManager().registerEvents(this, this);
-        protocolManager = ProtocolLibrary.getProtocolManager();
-        lagCompensator = new LagCompensator();
+    public Async(ProtocolManager protocolManager, LagCompensator lagCompensator) {
+        this.protocolManager = protocolManager;
+        this.lagCompensator = lagCompensator;
 
-        protocolManager.addPacketListener(new PacketAdapter(this, ListenerPriority.NORMAL, com.comphenix.protocol.PacketType.Play.Client.USE_ENTITY) {
+        // Agregar el listener de paquetes en el constructor
+        this.protocolManager.addPacketListener(new PacketAdapter(KbSync.getInstance(), ListenerPriority.NORMAL, com.comphenix.protocol.PacketType.Play.Client.USE_ENTITY) {
             @Override
             public void onPacketReceiving(PacketEvent event) {
-                if (event.getPacketType() == com.comphenix.protocol.PacketType.Play.Client.USE_ENTITY) {
-                    Player attacker = event.getPlayer();
-                    if (delay.containsKey(attacker.getName())) {
-                        long timeElapsed = (System.currentTimeMillis() - delay.get(attacker.getName())) / 1000 * 20;
-                        if (timeElapsed < 5) {
-                            event.setCancelled(true);
-                            return;
-                        }
-                    }
-                    delay.put(attacker.getName(), System.currentTimeMillis());
-
-                    int entityId = event.getPacket().getIntegers().read(0);
-                    EnumWrappers.EntityUseAction action = event.getPacket().getEntityUseActions().read(0);
-
-                    if (action == EnumWrappers.EntityUseAction.ATTACK) {
-                        Player damaged = null;
-                        for (Player player : Bukkit.getOnlinePlayers()) {
-                            if (player.getEntityId() == entityId) {
-                                damaged = player;
-                                break;
-                            }
-                        }
-
-                        if (damaged != null) {
-                            // Registra la nueva ubicación del jugador atacado para la compensación de lag
-                            lagCompensator.registerMovement(damaged, damaged.getLocation());
-                            runAsync(attacker, damaged);
-                        }
-                    }
-                }
+                handlePacket(event);
             }
         });
+    }
+
+    private void handlePacket(PacketEvent event) {
+        if (event.getPacketType() == com.comphenix.protocol.PacketType.Play.Client.USE_ENTITY) {
+            Player attacker = event.getPlayer();
+            if (delay.containsKey(attacker.getName())) {
+                long timeElapsed = (System.currentTimeMillis() - delay.get(attacker.getName())) / 1000 * 20;
+                if (timeElapsed < 5) {
+                    event.setCancelled(true);
+                    return;
+                }
+            }
+            delay.put(attacker.getName(), System.currentTimeMillis());
+
+            int entityId = event.getPacket().getIntegers().read(0);
+            EnumWrappers.EntityUseAction action = event.getPacket().getEntityUseActions().read(0);
+
+            if (action == EnumWrappers.EntityUseAction.ATTACK) {
+                Player damaged = null;
+                for (Player player : Bukkit.getOnlinePlayers()) {
+                    if (player.getEntityId() == entityId) {
+                        damaged = player;
+                        break;
+                    }
+                }
+
+                if (damaged != null) {
+                    // Registra la nueva ubicación del jugador atacado para la compensación de lag
+                    lagCompensator.registerMovement(damaged, damaged.getLocation());
+                    runAsync(attacker, damaged);
+                }
+            }
+        }
     }
 
     public void runAsync(Player attacker, Player damaged) {
