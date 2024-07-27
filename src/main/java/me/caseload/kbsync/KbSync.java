@@ -14,15 +14,19 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public final class KbSync extends JavaPlugin {
 
     private static KbSync instance;
     private static ProtocolManager protocolManager;
+    private LagCompensator lagCompensator;
+    private Async asyncListener;
+    private ExecutorService executorService;
 
     private static final Map<UUID, List<Long>> keepAliveTime = Collections.synchronizedMap(new HashMap<>());
     private final Map<UUID, Integer> accuratePing = new HashMap<>();
-    private LagCompensator lagCompensator;
 
     public static final Map<UUID, Double> kb = new HashMap<>();
 
@@ -30,9 +34,17 @@ public final class KbSync extends JavaPlugin {
     public void onEnable() {
         instance = this;
         protocolManager = ProtocolLibrary.getProtocolManager();
-        lagCompensator = new LagCompensator(); // Inicializar LagCompensator
+        // Crear e inicializar ExecutorService
+        executorService = Executors.newFixedThreadPool(2);
 
-        Async asyncListener = new Async(lagCompensator);
+        // Crear e inicializar LagCompensator con ExecutorService
+        lagCompensator = new LagCompensator(executorService);
+
+        // Crear e inicializar Async con la instancia de LagCompensator y ExecutorService
+        asyncListener = new Async(lagCompensator, executorService);
+
+        // Registrar el listener de eventos de Bukkit
+        getServer().getPluginManager().registerEvents(asyncListener, this);
 
         saveDefaultConfig();
         setupProtocolLib();

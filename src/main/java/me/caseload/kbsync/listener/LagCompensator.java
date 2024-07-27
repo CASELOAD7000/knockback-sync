@@ -9,14 +9,14 @@ import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPl
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPlayerPositionAndRotation;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
+import net.jafama.FastMath;
 import org.apache.commons.lang3.tuple.Pair;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.util.Vector;
-import net.jafama.FastMath;
 
 import java.util.List;
 import java.util.UUID;
@@ -27,13 +27,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class LagCompensator implements Listener {
 
-    private final ListMultimap<UUID, Pair<Location, Long>> locationTimes = ArrayListMultimap.create();
-    private final AtomicBoolean enableLagCompensation = new AtomicBoolean(true); // Default to true for simplicity
-    private final int historySize = 40; // Default value
-    private final int pingOffset = 120; // Default value
-    private final int timeResolution = 30; // Default value
-    private final double compensationFactor = 1.0; // Default value
-    private final ExecutorService executorService;
+    public final ListMultimap<UUID, Pair<Location, Long>> locationTimes = ArrayListMultimap.create();
+    public final AtomicBoolean enableLagCompensation = new AtomicBoolean(true); // Default to true for simplicity
+    private final int historySize = 20; // Default value
+    private final int pingOffset = 150; // Default value
+    private final int timeResolution = 40; // Default value
+    private final double compensationFactor = 0.5; // Default value
+    public final ExecutorService executorService;
 
     public LagCompensator() {
         // Create a ThreadFactory that sets thread priority to HIGH
@@ -50,26 +50,34 @@ public class LagCompensator implements Listener {
         PacketEvents.getAPI().getEventManager().registerListener(new PositionPacketListener(), PacketListenerPriority.HIGH);
     }
 
+    public LagCompensator(ExecutorService executorService) {
+        this.executorService = executorService;
+
+        // Register the PacketListener
+        PacketEvents.getAPI().getEventManager().registerListener(new PositionPacketListener(), PacketListenerPriority.HIGH);
+    }
+
     private class PositionPacketListener implements PacketListener {
         @Override
         public void onPacketReceive(PacketReceiveEvent event) {
             try {
+                Player player = (Player) event.getPlayer();
+                if (player == null) {
+                    return;
+                }
+
+                Location newLocation = null;
                 if (event.getPacketType() == PacketType.Play.Client.PLAYER_POSITION) {
                     WrapperPlayClientPlayerPosition packet = new WrapperPlayClientPlayerPosition(event);
-                    Player player = (Player) event.getPlayer();
-                    Location newLocation = new Location(
+                    newLocation = new Location(
                         player.getWorld(),
                         packet.getLocation().getX(),
                         packet.getLocation().getY(),
                         packet.getLocation().getZ()
                     );
-
-                    // Enviar la tarea al ExecutorService
-                    executorService.submit(() -> registerMovement(player, newLocation));
                 } else if (event.getPacketType() == PacketType.Play.Client.PLAYER_POSITION_AND_ROTATION) {
                     WrapperPlayClientPlayerPositionAndRotation packet = new WrapperPlayClientPlayerPositionAndRotation(event);
-                    Player player = (Player) event.getPlayer();
-                    Location newLocation = new Location(
+                    newLocation = new Location(
                         player.getWorld(),
                         packet.getLocation().getX(),
                         packet.getLocation().getY(),
@@ -77,9 +85,12 @@ public class LagCompensator implements Listener {
                         packet.getYaw(),
                         packet.getPitch()
                     );
+                }
 
+                if (newLocation != null) {
                     // Enviar la tarea al ExecutorService
-                    executorService.submit(() -> registerMovement(player, newLocation));
+                    final Location finalNewLocation = newLocation;
+                    executorService.submit(() -> registerMovement(player, finalNewLocation));
                 }
             } catch (Exception e) {
                 e.printStackTrace(); // Print stack trace for errors
@@ -87,7 +98,7 @@ public class LagCompensator implements Listener {
         }
     }
 
-    public Location getHistoryLocation(Player player, int rewindMillisecs) {
+    public Location getHistoryLocation(int rewindMillisecs, Player player) {
         if (!enableLagCompensation.get() || !locationTimes.containsKey(player.getUniqueId())) {
             return player.getLocation();
         }
@@ -109,24 +120,56 @@ public class LagCompensator implements Listener {
                 }
 
                 Pair<Location, Long> nextPair = previousLocations.get(i + 1);
-                Location before = locationPair.getKey().clone();
+                Location before = (i > 0) ? previousLocations.get(i - 1).getKey() : locationPair.getKey();
+                Location current = locationPair.getKey();
                 Location after = nextPair.getKey();
-                Vector interpolate = after.toVector().subtract(before.toVector());
 
-                double millisSinceLastLoc = currentTime - nextPair.getValue();
+                double millisSinceNextLoc = currentTime - nextPair.getValue();
                 double millisSinceLoc = currentTime - locationTime;
                 double movementRelAge = millisSinceLoc - (rewindMillisecs + pingOffset);
-                double nextMoveWeight = movementRelAge / FastMath.max(1.0, millisSinceLastLoc) * compensationFactor;
-                nextMoveWeight = FastMath.min(1.0, nextMoveWeight);
 
-                interpolate.multiply(nextMoveWeight);
-                before.add(interpolate);
+                if (millisSinceNextLoc <= 0) {
+                    millisSinceNextLoc = 1; // Evita división por cero
+                }
 
-                return before;
+                double t = movementRelAge / millisSinceNextLoc;
+                t = FastMath.min(1.0, FastMath.max(0.0, t)); // Asegura que t esté en el rango [0, 1]
+
+                Location interpolatedLocation = interpolateCubic(before, current, after, t * compensationFactor);
+
+                if (isLocationValid(interpolatedLocation)) {
+                    return interpolatedLocation;
+                } else {
+                    // Log de advertencia si se encuentra un valor no finito
+                    Bukkit.getLogger().warning("Compensated location contains non-finite values: " + interpolatedLocation.toVector());
+                    return player.getLocation(); // Fallback en caso de valores no finitos
+                }
             }
         }
 
         return player.getLocation();
+    }
+
+    public Location interpolateCubic(Location before, Location current, Location after, double t) {
+        double t2 = t * t;
+        double t3 = t2 * t;
+        double a = -0.5 * t3 + t2 - 0.5 * t;
+        double b = 1.5 * t3 - 2.5 * t2 + 1.0;
+        double c = -1.5 * t3 + 2.0 * t2 + 0.5 * t;
+        double d = 0.5 * t3 - 0.5 * t2;
+
+        double x = a * before.getX() + b * current.getX() + c * after.getX() + d * after.getX();
+        double y = a * before.getY() + b * current.getY() + c * after.getY() + d * after.getY();
+        double z = a * before.getZ() + b * current.getZ() + c * after.getZ() + d * after.getZ();
+
+        return new Location(current.getWorld(), x, y, z);
+    }
+
+    private boolean isLocationValid(Location location) {
+        return location != null &&
+               Double.isFinite(location.getX()) &&
+               Double.isFinite(location.getY()) &&
+               Double.isFinite(location.getZ());
     }
 
     private void processPosition(Location loc, Player p) {
