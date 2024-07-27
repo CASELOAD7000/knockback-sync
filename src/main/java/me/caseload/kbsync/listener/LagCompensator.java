@@ -1,26 +1,86 @@
 package me.caseload.kbsync.listener;
 
+import com.github.retrooper.packetevents.PacketEvents;
+import com.github.retrooper.packetevents.event.PacketListener;
+import com.github.retrooper.packetevents.event.PacketListenerPriority;
+import com.github.retrooper.packetevents.event.PacketReceiveEvent;
+import com.github.retrooper.packetevents.protocol.packettype.PacketType;
+import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPlayerPosition;
+import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPlayerPositionAndRotation;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.util.Vector;
 import net.jafama.FastMath;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicBoolean;
 
-public class LagCompensator {
+public class LagCompensator implements Listener {
 
     private final ListMultimap<UUID, Pair<Location, Long>> locationTimes = ArrayListMultimap.create();
-    private final int historySize = 40;
-    private final int pingOffset = 120; // Ajusta según el ping promedio
-    private final int timeResolution = 30; // Tiempo en milisegundos para registrar la posición
+    private final AtomicBoolean enableLagCompensation = new AtomicBoolean(true); // Default to true for simplicity
+    private final int historySize = 40; // Default value
+    private final int pingOffset = 120; // Default value
+    private final int timeResolution = 30; // Default value
+    private final double compensationFactor = 1.0; // Default value
+    private final ExecutorService executorService;
 
-    // Obtiene una estimación de la ubicación del jugador en "rewindMillisecs" atrás
+    public LagCompensator() {
+        // Create a ThreadFactory that sets thread priority to HIGH
+        ThreadFactory highPriorityThreadFactory = r -> {
+            Thread thread = new Thread(r);
+            thread.setPriority(Thread.MAX_PRIORITY); // Set to highest priority
+            return thread;
+        };
+
+        // Initialize the ExecutorService with the high priority ThreadFactory
+        this.executorService = Executors.newFixedThreadPool(2, highPriorityThreadFactory);
+
+        // Register the PacketListener
+        PacketEvents.getAPI().getEventManager().registerListener(new PositionPacketListener(), PacketListenerPriority.HIGH);
+    }
+
+    private class PositionPacketListener implements PacketListener {
+        @Override
+        public void onPacketReceive(PacketReceiveEvent event) {
+            executorService.submit(() -> {
+                if (event.getPacketType() == PacketType.Play.Client.PLAYER_POSITION) {
+                    WrapperPlayClientPlayerPosition positionPacket = new WrapperPlayClientPlayerPosition(event);
+                    Player player = (Player) event.getPlayer();
+
+                    Location loc = new Location(player.getWorld(), 
+                        positionPacket.getPosition().getX(), 
+                        positionPacket.getPosition().getY(), 
+                        positionPacket.getPosition().getZ());
+                    registerMovement(player, loc);
+                } else if (event.getPacketType() == PacketType.Play.Client.PLAYER_POSITION_AND_ROTATION) {
+                    WrapperPlayClientPlayerPositionAndRotation positionPacket = new WrapperPlayClientPlayerPositionAndRotation(event);
+                    Player player = (Player) event.getPlayer();
+
+                    Location loc = new Location(player.getWorld(), 
+                        positionPacket.getPosition().getX(), 
+                        positionPacket.getPosition().getY(), 
+                        positionPacket.getPosition().getZ(), 
+                        positionPacket.getYaw(), 
+                        positionPacket.getPitch());
+                    registerMovement(player, loc);
+                }
+            });
+        }
+    }
+
     public Location getHistoryLocation(Player player, int rewindMillisecs) {
-        if (!locationTimes.containsKey(player.getUniqueId())) {
+        if (!enableLagCompensation.get() || !locationTimes.containsKey(player.getUniqueId())) {
             return player.getLocation();
         }
 
@@ -32,24 +92,23 @@ public class LagCompensator {
 
         for (int i = timesSize; i >= 0; i--) {
             Pair<Location, Long> locationPair = previousLocations.get(i);
-            int elapsedTime = (int) (currentTime - locationPair.getValue());
+            long locationTime = locationPair.getValue();
+            int elapsedTime = (int) (currentTime - locationTime);
 
             if (elapsedTime >= rewindTime) {
                 if (i == timesSize) {
                     return locationPair.getKey();
                 }
 
-                int maxRewindMillis = rewindMillisecs + pingOffset;
-                int millisSinceLoc = (int) (currentTime - locationPair.getValue());
-
-                double movementRelAge = millisSinceLoc - maxRewindMillis;
-                double millisSinceLastLoc = currentTime - previousLocations.get(i + 1).getValue();
-
-                // Usa FastMath para cálculos más eficientes
-                double nextMoveWeight = FastMath.max(0, movementRelAge / FastMath.max(1, millisSinceLoc - millisSinceLastLoc));
+                Pair<Location, Long> nextPair = previousLocations.get(i + 1);
                 Location before = locationPair.getKey().clone();
-                Location after = previousLocations.get(i + 1).getKey();
+                Location after = nextPair.getKey();
                 Vector interpolate = after.toVector().subtract(before.toVector());
+
+                double millisSinceLastLoc = currentTime - nextPair.getValue();
+                double millisSinceLoc = currentTime - locationTime;
+                double movementRelAge = millisSinceLoc - (rewindMillisecs + pingOffset);
+                double nextMoveWeight = FastMath.min(1.0, movementRelAge / FastMath.max(1, millisSinceLastLoc) * compensationFactor);
 
                 interpolate.multiply(nextMoveWeight);
                 before.add(interpolate);
@@ -62,21 +121,20 @@ public class LagCompensator {
     }
 
     private void processPosition(Location loc, Player p) {
-        // La característica siempre está habilitada
-        int timesSize = locationTimes.get(p.getUniqueId()).size();
-        long currTime = System.currentTimeMillis();
+        if (!enableLagCompensation.get()) return;
 
-        // Evita el registro de posiciones si el tiempo entre registros es menor que el intervalo especificado
-        if (timesSize > 0 && currTime - locationTimes.get(p.getUniqueId()).get(timesSize - 1).getValue() < timeResolution) {
+        UUID playerId = p.getUniqueId();
+        long currTime = System.currentTimeMillis();
+        List<Pair<Location, Long>> locations = locationTimes.get(playerId);
+
+        if (!locations.isEmpty() && currTime - locations.get(locations.size() - 1).getValue() < timeResolution) {
             return;
         }
 
-        // Registra la nueva ubicación y marca de tiempo
-        locationTimes.put(p.getUniqueId(), Pair.of(loc, currTime));
+        locationTimes.put(playerId, Pair.of(loc, currTime));
 
-        // Mantiene el tamaño del historial dentro de los límites especificados
-        if (timesSize > historySize) {
-            locationTimes.get(p.getUniqueId()).remove(0);
+        if (locations.size() > historySize) {
+            locationTimes.remove(playerId, locations.get(0));
         }
     }
 
@@ -86,5 +144,16 @@ public class LagCompensator {
 
     public void clearCache(Player player) {
         locationTimes.removeAll(player.getUniqueId());
+    }
+
+    @EventHandler
+    public void onPlayerMove(PlayerMoveEvent event) {
+        Player player = event.getPlayer();
+        Location to = event.getTo();
+        registerMovement(player, to);
+    }
+
+    public void shutdown() {
+        executorService.shutdown();
     }
 }

@@ -53,7 +53,8 @@ public class Async implements Listener {
                     executorService.submit(() -> {
                         Player target = getPlayerFromEntityId(entityId);
                         if (target != null && isHitValid(attacker, target)) {
-                            handleHit(attacker, target);
+                            // Añadir un pequeño retraso para permitir que otros plugins modifiquen el knockback primero
+                            Bukkit.getScheduler().runTaskLater(KbSync.getInstance(), () -> handleHit(attacker, target), 1L);
                         }
                     });
                 }
@@ -80,20 +81,25 @@ public class Async implements Listener {
     private void handleHit(Player attacker, Player target) {
         Location compensatedLocation = lagCompensator.getHistoryLocation(target, 100);
 
+        // Reducir la salud del objetivo
         target.setHealth(Math.max(0, target.getHealth() - 1));
 
+        // Ajuste de los valores de knockback
         double yawRadians = FastMath.toRadians(attacker.getLocation().getYaw());
-        double knockbackX = -FastMath.sin(yawRadians) * 0.5;
-        double knockbackZ = FastMath.cos(yawRadians) * 0.5;
-        double knockbackY = 0.1;
+        double knockbackX = -FastMath.sin(yawRadians) * 0.2; // Reducir el valor para menos movimiento horizontal
+        double knockbackZ = FastMath.cos(yawRadians) * 0.2; // Reducir el valor para menos movimiento horizontal
+        double knockbackY = 0.1; // Mantener el mismo valor vertical si es necesario
         Vector knockback = new Vector(knockbackX, knockbackY, knockbackZ);
 
+        // Calcular la dirección de la compensación
         Vector direction = compensatedLocation.toVector().subtract(target.getLocation().toVector()).normalize();
-        knockback.add(direction.multiply(0.5));
+        knockback.add(direction.multiply(0.3)); // Ajustar el multiplicador para una menor influencia de la compensación
 
+        // Aplicar el knockback
         Vector velocity = target.getVelocity();
         target.setVelocity(velocity.add(knockback));
 
+        // Llamar al evento de velocidad del jugador
         PlayerVelocityEvent event = new PlayerVelocityEvent(target, target.getVelocity());
         Bukkit.getPluginManager().callEvent(event);
 
