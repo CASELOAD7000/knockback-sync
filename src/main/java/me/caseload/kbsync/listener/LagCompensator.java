@@ -24,9 +24,12 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class LagCompensator implements Listener {
 
+    private static final Logger LOGGER = Logger.getLogger(LagCompensator.class.getName());
     private final ListMultimap<UUID, Pair<Location, Long>> locationTimes = ArrayListMultimap.create();
     private final AtomicBoolean enableLagCompensation = new AtomicBoolean(true); // Default to true for simplicity
     private final int historySize = 40; // Default value
@@ -53,29 +56,40 @@ public class LagCompensator implements Listener {
     private class PositionPacketListener implements PacketListener {
         @Override
         public void onPacketReceive(PacketReceiveEvent event) {
-            executorService.submit(() -> {
+            try {
+                // Leer los datos necesarios del paquete en el hilo de recepción del paquete
                 if (event.getPacketType() == PacketType.Play.Client.PLAYER_POSITION) {
-                    WrapperPlayClientPlayerPosition positionPacket = new WrapperPlayClientPlayerPosition(event);
+                    WrapperPlayClientPlayerPosition packet = new WrapperPlayClientPlayerPosition(event);
                     Player player = (Player) event.getPlayer();
+                    Location newLocation = new Location(
+                        player.getWorld(),
+                        packet.getPosition().getX(),
+                        packet.getPosition().getY(),
+                        packet.getPosition().getZ()
+                    );
 
-                    Location loc = new Location(player.getWorld(), 
-                        positionPacket.getPosition().getX(), 
-                        positionPacket.getPosition().getY(), 
-                        positionPacket.getPosition().getZ());
-                    registerMovement(player, loc);
+                    // Enviar la tarea al ExecutorService
+                    executorService.submit(() -> registerMovement(player, newLocation));
                 } else if (event.getPacketType() == PacketType.Play.Client.PLAYER_POSITION_AND_ROTATION) {
-                    WrapperPlayClientPlayerPositionAndRotation positionPacket = new WrapperPlayClientPlayerPositionAndRotation(event);
+                    WrapperPlayClientPlayerPositionAndRotation packet = new WrapperPlayClientPlayerPositionAndRotation(event);
                     Player player = (Player) event.getPlayer();
+                    Location newLocation = new Location(
+                        player.getWorld(),
+                        packet.getPosition().getX(),
+                        packet.getPosition().getY(),
+                        packet.getPosition().getZ(),
+                        packet.getYaw(),
+                        packet.getPitch()
+                    );
 
-                    Location loc = new Location(player.getWorld(), 
-                        positionPacket.getPosition().getX(), 
-                        positionPacket.getPosition().getY(), 
-                        positionPacket.getPosition().getZ(), 
-                        positionPacket.getYaw(), 
-                        positionPacket.getPitch());
-                    registerMovement(player, loc);
+                    // Enviar la tarea al ExecutorService
+                    executorService.submit(() -> registerMovement(player, newLocation));
+                } else {
+                    LOGGER.warning("[LagCompensator] Received unknown packet type: " + event.getPacketType().getName());
                 }
-            });
+            } catch (Exception e) {
+                LOGGER.log(Level.SEVERE, "Error processing packet: " + event.getPacketType().getName(), e);
+            }
         }
     }
 

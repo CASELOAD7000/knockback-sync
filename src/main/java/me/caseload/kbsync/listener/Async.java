@@ -14,17 +14,20 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerVelocityEvent;
 import org.bukkit.util.Vector;
-import net.jafama.FastMath;
+import org.apache.commons.lang3.tuple.Pair;
 import org.bukkit.Location;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import net.jafama.FastMath;
 
 public class Async implements Listener {
 
+    private static final Logger LOGGER = Logger.getLogger(Async.class.getName());
     private final LagCompensator lagCompensator;
     private final Map<Integer, Player> entityIdCache = new HashMap<>();
     private static final double MAX_HIT_REACH = 3.1;
@@ -51,13 +54,19 @@ public class Async implements Listener {
                     int entityId = interactEntityPacket.getEntityId();
 
                     executorService.submit(() -> {
-                        Player target = getPlayerFromEntityId(entityId);
-                        if (target != null && isHitValid(attacker, target)) {
-                            // Añadir un pequeño retraso para permitir que otros plugins modifiquen el knockback primero
-                            Bukkit.getScheduler().runTaskLater(KbSync.getInstance(), () -> handleHit(attacker, target), 1L);
+                        try {
+                            Player target = getPlayerFromEntityId(entityId);
+                            if (target != null && isHitValid(attacker, target)) {
+                                // Añadir un pequeño retraso para permitir que otros plugins modifiquen el knockback primero
+                                Bukkit.getScheduler().runTaskLater(KbSync.getInstance(), () -> handleHit(attacker, target), 1L);
+                            }
+                        } catch (Exception e) {
+                            LOGGER.log(Level.SEVERE, "Error processing hit: " + e.getMessage(), e);
                         }
                     });
                 }
+            } else {
+                LOGGER.warning("Received unknown packet type: " + event.getPacketType().getName());
             }
         }
     }
@@ -93,7 +102,7 @@ public class Async implements Listener {
 
         // Calcular la dirección de la compensación
         Vector direction = compensatedLocation.toVector().subtract(target.getLocation().toVector()).normalize();
-        knockback.add(direction.multiply(0.3)); // Ajustar el multiplicador para una menor influencia de la compensación
+        knockback.add(direction.multiply(0.2)); // Ajustar el multiplicador para una menor influencia de la compensación
 
         // Aplicar el knockback
         Vector velocity = target.getVelocity();
