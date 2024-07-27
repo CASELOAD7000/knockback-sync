@@ -1,11 +1,5 @@
 package me.caseload.kbsync.listener;
 
-import com.comphenix.protocol.ProtocolManager;
-import com.comphenix.protocol.events.ListenerPriority;
-import com.comphenix.protocol.events.PacketAdapter;
-import com.comphenix.protocol.events.PacketEvent;
-import com.comphenix.protocol.wrappers.EnumWrappers;
-import me.caseload.kbsync.KbSync;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -21,46 +15,18 @@ import java.util.concurrent.ForkJoinPool;
 
 public class Async implements Listener {
 
-    private final ProtocolManager protocolManager;
     private final LagCompensator lagCompensator;
 
-    public Async(ProtocolManager protocolManager, LagCompensator lagCompensator) {
-        this.protocolManager = protocolManager;
+    public Async(LagCompensator lagCompensator) {
         this.lagCompensator = lagCompensator;
 
-        // Agregar el listener de paquetes en el constructor
-        this.protocolManager.addPacketListener(new PacketAdapter(KbSync.getInstance(), ListenerPriority.NORMAL, com.comphenix.protocol.PacketType.Play.Client.USE_ENTITY) {
-            @Override
-            public void onPacketReceiving(PacketEvent event) {
-                handlePacket(event);
-            }
-        });
-    }
-
-    private void handlePacket(PacketEvent event) {
-        if (event.getPacketType() == com.comphenix.protocol.PacketType.Play.Client.USE_ENTITY) {
-            Player attacker = event.getPlayer();
-
-            try {
-                int entityId = event.getPacket().getIntegers().read(0);
-                EnumWrappers.EntityUseAction action = event.getPacket().getEntityUseActions().read(0);
-
-                if (action == EnumWrappers.EntityUseAction.ATTACK) {
-                    Player damaged = Bukkit.getOnlinePlayers().stream()
-                            .filter(player -> player.getEntityId() == entityId)
-                            .findFirst()
-                            .orElse(null);
-
-                    if (damaged != null) {
-                        // Registra la nueva ubicación del jugador atacado para la compensación de lag
-                        lagCompensator.registerMovement(damaged, damaged.getLocation());
-                        runAsync(attacker, damaged);
-                    }
-                }
-            } catch (Exception e) {
-                e.printStackTrace(); // Manejo de errores si ocurre algún problema con el paquete
-            }
-        }
+        // Aquí agregamos el manejo de paquetes si decides usar ProtocolLib en otra parte
+        // this.protocolManager.addPacketListener(new PacketAdapter(KbSync.getInstance(), ListenerPriority.NORMAL, com.comphenix.protocol.PacketType.Play.Client.USE_ENTITY) {
+        //    @Override
+        //    public void onPacketReceiving(PacketEvent event) {
+        //        handlePacket(event);
+        //    }
+        // });
     }
 
     public void runAsync(Player attacker, Player damaged) {

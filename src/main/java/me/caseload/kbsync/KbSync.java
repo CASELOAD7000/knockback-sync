@@ -33,7 +33,7 @@ public final class KbSync extends JavaPlugin {
         lagCompensator = new LagCompensator();
 
         // Registrar el listener
-        Async asyncListener = new Async(protocolManager, lagCompensator);
+        Async asyncListener = new Async(lagCompensator);
         getServer().getPluginManager().registerEvents(asyncListener, this);
 
         saveDefaultConfig();
