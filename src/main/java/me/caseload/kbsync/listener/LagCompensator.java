@@ -15,7 +15,7 @@ public class LagCompensator {
 
     private final ListMultimap<UUID, Pair<Location, Long>> locationTimes = ArrayListMultimap.create();
     private final int historySize = 40;
-    private final int pingOffset = 92; // Ajusta según el ping promedio
+    private final int pingOffset = 120; // Ajusta según el ping promedio
     private final int timeResolution = 30; // Tiempo en milisegundos para registrar la posición
 
     // Obtiene una estimación de la ubicación del jugador en "rewindMillisecs" atrás

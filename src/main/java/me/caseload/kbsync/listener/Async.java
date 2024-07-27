@@ -16,14 +16,11 @@ import org.bukkit.util.Vector;
 import net.jafama.FastMath;
 import org.bukkit.Location;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ForkJoinPool;
 
 public class Async implements Listener {
 
-    private final Map<String, Long> delay = new HashMap<>();
     private final ProtocolManager protocolManager;
     private final LagCompensator lagCompensator;
 
@@ -43,32 +40,25 @@ public class Async implements Listener {
     private void handlePacket(PacketEvent event) {
         if (event.getPacketType() == com.comphenix.protocol.PacketType.Play.Client.USE_ENTITY) {
             Player attacker = event.getPlayer();
-            if (delay.containsKey(attacker.getName())) {
-                long timeElapsed = (System.currentTimeMillis() - delay.get(attacker.getName())) / 1000 * 20;
-                if (timeElapsed < 5) {
-                    event.setCancelled(true);
-                    return;
-                }
-            }
-            delay.put(attacker.getName(), System.currentTimeMillis());
 
-            int entityId = event.getPacket().getIntegers().read(0);
-            EnumWrappers.EntityUseAction action = event.getPacket().getEntityUseActions().read(0);
+            try {
+                int entityId = event.getPacket().getIntegers().read(0);
+                EnumWrappers.EntityUseAction action = event.getPacket().getEntityUseActions().read(0);
 
-            if (action == EnumWrappers.EntityUseAction.ATTACK) {
-                Player damaged = null;
-                for (Player player : Bukkit.getOnlinePlayers()) {
-                    if (player.getEntityId() == entityId) {
-                        damaged = player;
-                        break;
+                if (action == EnumWrappers.EntityUseAction.ATTACK) {
+                    Player damaged = Bukkit.getOnlinePlayers().stream()
+                            .filter(player -> player.getEntityId() == entityId)
+                            .findFirst()
+                            .orElse(null);
+
+                    if (damaged != null) {
+                        // Registra la nueva ubicación del jugador atacado para la compensación de lag
+                        lagCompensator.registerMovement(damaged, damaged.getLocation());
+                        runAsync(attacker, damaged);
                     }
                 }
-
-                if (damaged != null) {
-                    // Registra la nueva ubicación del jugador atacado para la compensación de lag
-                    lagCompensator.registerMovement(damaged, damaged.getLocation());
-                    runAsync(attacker, damaged);
-                }
+            } catch (Exception e) {
+                e.printStackTrace(); // Manejo de errores si ocurre algún problema con el paquete
             }
         }
     }
