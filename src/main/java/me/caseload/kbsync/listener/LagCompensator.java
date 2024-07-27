@@ -24,12 +24,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class LagCompensator implements Listener {
 
-    private static final Logger LOGGER = Logger.getLogger(LagCompensator.class.getName());
     private final ListMultimap<UUID, Pair<Location, Long>> locationTimes = ArrayListMultimap.create();
     private final AtomicBoolean enableLagCompensation = new AtomicBoolean(true); // Default to true for simplicity
     private final int historySize = 40; // Default value
@@ -57,7 +54,6 @@ public class LagCompensator implements Listener {
         @Override
         public void onPacketReceive(PacketReceiveEvent event) {
             try {
-                // Leer los datos necesarios del paquete en el hilo de recepción del paquete
                 if (event.getPacketType() == PacketType.Play.Client.PLAYER_POSITION) {
                     WrapperPlayClientPlayerPosition packet = new WrapperPlayClientPlayerPosition(event);
                     Player player = (Player) event.getPlayer();
@@ -84,11 +80,9 @@ public class LagCompensator implements Listener {
 
                     // Enviar la tarea al ExecutorService
                     executorService.submit(() -> registerMovement(player, newLocation));
-                } else {
-                    LOGGER.warning("[LagCompensator] Received unknown packet type: " + event.getPacketType().getName());
                 }
             } catch (Exception e) {
-                LOGGER.log(Level.SEVERE, "Error processing packet: " + event.getPacketType().getName(), e);
+                e.printStackTrace(); // Print stack trace for errors
             }
         }
     }
@@ -122,7 +116,8 @@ public class LagCompensator implements Listener {
                 double millisSinceLastLoc = currentTime - nextPair.getValue();
                 double millisSinceLoc = currentTime - locationTime;
                 double movementRelAge = millisSinceLoc - (rewindMillisecs + pingOffset);
-                double nextMoveWeight = FastMath.min(1.0, movementRelAge / FastMath.max(1, millisSinceLastLoc) * compensationFactor);
+                double nextMoveWeight = movementRelAge / FastMath.max(1.0, millisSinceLastLoc) * compensationFactor;
+                nextMoveWeight = FastMath.min(1.0, nextMoveWeight);
 
                 interpolate.multiply(nextMoveWeight);
                 before.add(interpolate);

@@ -7,6 +7,8 @@ import com.github.retrooper.packetevents.event.PacketReceiveEvent;
 import com.github.retrooper.packetevents.protocol.packettype.PacketType;
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientInteractEntity;
 import me.caseload.kbsync.KbSync;
+import net.jafama.FastMath;
+
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -16,18 +18,15 @@ import org.bukkit.event.player.PlayerVelocityEvent;
 import org.bukkit.util.Vector;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bukkit.Location;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import net.jafama.FastMath;
 
 public class Async implements Listener {
 
-    private static final Logger LOGGER = Logger.getLogger(Async.class.getName());
     private final LagCompensator lagCompensator;
     private final Map<Integer, Player> entityIdCache = new HashMap<>();
     private static final double MAX_HIT_REACH = 3.1;
@@ -61,12 +60,12 @@ public class Async implements Listener {
                                 Bukkit.getScheduler().runTaskLater(KbSync.getInstance(), () -> handleHit(attacker, target), 1L);
                             }
                         } catch (Exception e) {
-                            LOGGER.log(Level.SEVERE, "Error processing hit: " + e.getMessage(), e);
+                            // Manejo de excepciones
                         }
                     });
                 }
             } else {
-                LOGGER.warning("Received unknown packet type: " + event.getPacketType().getName());
+                // Manejo de paquetes desconocidos
             }
         }
     }
@@ -95,14 +94,14 @@ public class Async implements Listener {
 
         // Ajuste de los valores de knockback
         double yawRadians = FastMath.toRadians(attacker.getLocation().getYaw());
-        double knockbackX = -FastMath.sin(yawRadians) * 0.2; // Reducir el valor para menos movimiento horizontal
-        double knockbackZ = FastMath.cos(yawRadians) * 0.2; // Reducir el valor para menos movimiento horizontal
+        double knockbackX = -FastMath.sin(yawRadians) * 0.1; // Reducir el valor para menos movimiento horizontal
+        double knockbackZ = FastMath.cos(yawRadians) * 0.1; // Reducir el valor para menos movimiento horizontal
         double knockbackY = 0.1; // Mantener el mismo valor vertical si es necesario
         Vector knockback = new Vector(knockbackX, knockbackY, knockbackZ);
 
         // Calcular la dirección de la compensación
         Vector direction = compensatedLocation.toVector().subtract(target.getLocation().toVector()).normalize();
-        knockback.add(direction.multiply(0.2)); // Ajustar el multiplicador para una menor influencia de la compensación
+        knockback.add(direction.multiply(0.3)); // Ajustar el multiplicador para una menor influencia de la compensación
 
         // Aplicar el knockback
         Vector velocity = target.getVelocity();
