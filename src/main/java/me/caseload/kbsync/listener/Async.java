@@ -1,6 +1,7 @@
 package me.caseload.kbsync.listener;
 
 import com.github.retrooper.packetevents.PacketEvents;
+import com.github.retrooper.packetevents.PacketEventsAPI;
 import com.github.retrooper.packetevents.event.PacketListener;
 import com.github.retrooper.packetevents.event.PacketListenerPriority;
 import com.github.retrooper.packetevents.event.PacketReceiveEvent;
@@ -13,23 +14,23 @@ import me.caseload.kbsync.utils.AABB;
 import me.caseload.kbsync.utils.Ray;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerAnimationEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.util.BlockIterator;
 import org.bukkit.util.Vector;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class Async implements Listener {
 
     private final LagCompensator lagCompensator;
-    private final Map<Integer, Player> entityIdCache = new HashMap<>();
-    private static final double MAX_HIT_REACH = 3.1;
     private final ExecutorService executorService;
     private final ReentrantReadWriteLock cacheLock = new ReentrantReadWriteLock();
     private final AABB playerBoundingBox;
@@ -58,13 +59,13 @@ public class Async implements Listener {
             if (event.getPacketType() == PacketType.Play.Client.INTERACT_ENTITY) {
                 WrapperPlayClientInteractEntity interactEntityPacket = new WrapperPlayClientInteractEntity(event);
                 if (interactEntityPacket.getAction() == WrapperPlayClientInteractEntity.InteractAction.ATTACK) {
-                    Player attacker = (Player) event.getPlayer();
-                    int entityId = interactEntityPacket.getEntityId();
+                    final Player attacker = (Player) event.getPlayer();
+                    final int entityId = interactEntityPacket.getEntityId();
 
                     executorService.submit(() -> {
-                        Player target = getPlayerFromEntityId(entityId);
+                        final Player target = getPlayerFromEntityId(entityId);
                         if (target != null && isHitValid(attacker, target)) {
-                            Bukkit.getScheduler().runTaskLater(KbSync.getInstance(), () -> handleHit(attacker, target), 1L);
+                            Bukkit.getScheduler().runTask(KbSync.getInstance(), () -> handleHit(attacker, target));
                         }
                     });
                 }
@@ -75,10 +76,10 @@ public class Async implements Listener {
     private Player getPlayerFromEntityId(int entityId) {
         cacheLock.readLock().lock();
         try {
-            return entityIdCache.getOrDefault(entityId, Bukkit.getOnlinePlayers().stream()
+            return Bukkit.getOnlinePlayers().stream()
                     .filter(player -> player.getEntityId() == entityId)
                     .findFirst()
-                    .orElse(null));
+                    .orElse(null);
         } finally {
             cacheLock.readLock().unlock();
         }
@@ -88,15 +89,14 @@ public class Async implements Listener {
         return attacker.getWorld().equals(target.getWorld()) &&
                FastMath.sqrt(FastMath.pow2(attacker.getLocation().getX() - target.getLocation().getX()) +
                              FastMath.pow2(attacker.getLocation().getY() - target.getLocation().getY()) +
-                             FastMath.pow2(attacker.getLocation().getZ() - target.getLocation().getZ())) <= MAX_HIT_REACH;
+                             FastMath.pow2(attacker.getLocation().getZ() - target.getLocation().getZ())) <= reach;
     }
 
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
-        Player player = event.getPlayer();
         cacheLock.writeLock().lock();
         try {
-            entityIdCache.put(player.getEntityId(), player);
+            // No se usa entityIdCache en este caso
         } finally {
             cacheLock.writeLock().unlock();
         }
@@ -104,45 +104,63 @@ public class Async implements Listener {
 
     @EventHandler
     public void onLeave(PlayerQuitEvent event) {
-        Player player = event.getPlayer();
         cacheLock.writeLock().lock();
         try {
-            entityIdCache.remove(player.getEntityId());
+            // No se usa entityIdCache en este caso
         } finally {
             cacheLock.writeLock().unlock();
         }
     }
 
-    private void handleHit(Player attacker, Player target) {
-        if (target == null || attacker == null) {
-            return;
-        }
-
-        Location attackerLoc = attacker.getLocation();
-        Vector attackerPos = attackerLoc.toVector().add(new Vector(0, attacker.isSneaking() ? 1.52625 : 1.62, 0));
-        AABB victimBox = playerBoundingBox.clone();
-        Vector boxOffset = playerBoundingBox.getMin();
-        Ray ray = new Ray(attackerPos, attackerLoc.getDirection());
+    @EventHandler
+    public void detectHit(PlayerAnimationEvent e) {
+        final Player attacker = e.getPlayer();
+        final Location attackerLoc = attacker.getLocation();
+        final Vector attackerPos = attackerLoc.toVector().add(new Vector(0, attacker.isSneaking() ? 1.52625 : 1.62, 0));
+        final List<Entity> nearbyEntities = attacker.getNearbyEntities(reach + 2, reach + 2, reach + 2);
+        final AABB victimBox = playerBoundingBox.clone();
+        final Vector boxOffset = playerBoundingBox.getMin();
+        Ray ray = null;
         double hitDistance = Double.MAX_VALUE;
+        Player victim = null;
+        final int ping = PacketEvents.getAPI().getPlayerUtils().getPing(attacker);
 
-        // Obtener la ubicación compensada por el lag
-        Location compensatedLocation = lagCompensator.getHistoryLocation(100, target);
-        if (compensatedLocation == null) {
-            return;
-        }
+        for (Entity entity : nearbyEntities) {
+            if (!(entity instanceof Player)) continue;
 
-        // Traducir la caja de colisión del objetivo a la ubicación compensada
-        victimBox.translateTo(compensatedLocation.toVector());
-        victimBox.translate(boxOffset);
-        Vector intersection = victimBox.intersectsRay(ray, 0, reach);
+            Player potentialVictim = (Player) entity;
+            ray = new Ray(attackerPos, attackerLoc.getDirection());
+            final Location compensatedLocation = lagCompensator.getHistoryLocation(ping, potentialVictim);
+            if (compensatedLocation == null) continue;
 
-        if (intersection != null) {
+            victimBox.translateTo(compensatedLocation.toVector());
+            victimBox.translate(boxOffset);
+            Vector intersection = victimBox.intersectsRay(ray, 0, reach);
+
+            if (intersection == null) continue;
             double chkHitDistance = intersection.distance(attackerPos);
+
             if (chkHitDistance < hitDistance) {
                 hitDistance = chkHitDistance;
+                victim = potentialVictim;
             }
-
-            Bukkit.getPluginManager().callEvent(new ServerSidePlayerHitEvent(attacker, target));
         }
+
+        if (victim == null || ray == null) return;
+
+        final int blockIterIterations = (int) hitDistance;
+        if (blockIterIterations != 0) {
+            BlockIterator iter = new BlockIterator(attacker.getWorld(), attackerPos, ray.getDirection(), 0, blockIterIterations);
+            while (iter.hasNext()) {
+                if (iter.next().getType().isSolid()) return;
+            }
+        }
+
+        final Player finalVictim = victim;
+        Bukkit.getScheduler().runTask(KbSync.getInstance(), () -> Bukkit.getPluginManager().callEvent(new ServerSidePlayerHitEvent(attacker, finalVictim)));
+    }
+
+    private void handleHit(Player attacker, Player target) {
+        // Lógica del golpe ya está manejada en detectHit, este método puede estar vacío
     }
 }
