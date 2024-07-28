@@ -4,7 +4,15 @@ author: caseload
 description: Synchronizes player knockback for smoother gameplay. Requires ProtocolLib.
 main: me.caseload.kbsync.KbSync
 api-version: 1.21
-depend: [ProtocolLib]
+depend:
+- ProtocolLib
+softdepend:
+  - ProtocolLib
+  - ProtocolSupport
+  - ViaVersion
+  - ViaBackwards
+  - ViaRewind
+  - Geyser-Spigot
 
 commands:
   knockbacksync:

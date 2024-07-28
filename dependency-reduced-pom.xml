@@ -31,14 +31,6 @@
               <goal>shade</goal>
             </goals>
             <configuration>
-              <shadedArtifactAttached>true</shadedArtifactAttached>
-              <shadedClassifierName>shaded</shadedClassifierName>
-              <relocations>
-                <relocation>
-                  <pattern>net.jafama</pattern>
-                  <shadedPattern>lib.net.jafama</shadedPattern>
-                </relocation>
-              </relocations>
               <filters>
                 <filter>
                   <artifact>*:*</artifact>
@@ -46,9 +38,21 @@
                     <exclude>META-INF/*.SF</exclude>
                     <exclude>META-INF/*.DSA</exclude>
                     <exclude>META-INF/*.RSA</exclude>
+                    <exclude>META-INF/versions/9/module-info</exclude>
                   </excludes>
                 </filter>
               </filters>
+              <relocations>
+                <relocation>
+                  <pattern>com.github.retrooper.packetevents</pattern>
+                  <shadedPattern>me.caseload.kbsync.packetevents.api</shadedPattern>
+                </relocation>
+                <relocation>
+                  <pattern>io.github.retrooper.packetevents</pattern>
+                  <shadedPattern>me.caseload.kbsync.packetevents.impl</shadedPattern>
+                </relocation>
+              </relocations>
+              <minimizeJar>true</minimizeJar>
             </configuration>
           </execution>
         </executions>
@@ -78,12 +82,6 @@
       <groupId>org.spigotmc</groupId>
       <artifactId>spigot-api</artifactId>
       <version>1.21-R0.1-SNAPSHOT</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.github.retrooper</groupId>
-      <artifactId>packetevents-spigot</artifactId>
-      <version>2.4.0</version>
       <scope>provided</scope>
     </dependency>
   </dependencies>

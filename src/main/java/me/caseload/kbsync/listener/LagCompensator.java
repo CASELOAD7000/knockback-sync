@@ -30,8 +30,8 @@ public class LagCompensator implements Listener {
     public final ListMultimap<UUID, Pair<Location, Long>> locationTimes = ArrayListMultimap.create();
     public final AtomicBoolean enableLagCompensation = new AtomicBoolean(true); // Default to true for simplicity
     private final int historySize = 20; // Default value
-    private final int pingOffset = 150; // Default value
-    private final int timeResolution = 40; // Default value
+    private final int pingOffset = 120; // Default value
+    private final int timeResolution = 35; // Default value
     private final double compensationFactor = 0.5; // Default value
     public final ExecutorService executorService;
 
@@ -158,9 +158,9 @@ public class LagCompensator implements Listener {
         double c = -1.5 * t3 + 2.0 * t2 + 0.5 * t;
         double d = 0.5 * t3 - 0.5 * t2;
 
-        double x = a * before.getX() + b * current.getX() + c * after.getX() + d * after.getX();
-        double y = a * before.getY() + b * current.getY() + c * after.getY() + d * after.getY();
-        double z = a * before.getZ() + b * current.getZ() + c * after.getZ() + d * after.getZ();
+        double x = a * before.getX() + b * current.getX() + c * after.getX() + d * (after.getX() - before.getX());
+        double y = a * before.getY() + b * current.getY() + c * after.getY() + d * (after.getY() - before.getY());
+        double z = a * before.getZ() + b * current.getZ() + c * after.getZ() + d * (after.getZ() - before.getZ());
 
         return new Location(current.getWorld(), x, y, z);
     }

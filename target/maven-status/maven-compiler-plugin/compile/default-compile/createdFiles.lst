@@ -6,6 +6,7 @@ me/caseload/kbsync/KbSync$1.class
 me/caseload/kbsync/listener/Async.class
 me/caseload/kbsync/listener/Async$HitPacketListener.class
 net/jafama/DoubleWrapper.class
+me/caseload/kbsync/listener/PacketEventsPacketListener.class
 me/caseload/kbsync/KbSync.class
 me/caseload/kbsync/ServerSidePlayerHitEvent.class
 net/jafama/StrictFastMath.class

@@ -4,11 +4,10 @@ import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.*;
+import com.github.retrooper.packetevents.PacketEvents;
+import io.github.retrooper.packetevents.factory.spigot.SpigotPacketEventsBuilder;
 import me.caseload.kbsync.command.Subcommands;
-import me.caseload.kbsync.listener.PlayerHitListener;
-import me.caseload.kbsync.listener.PlayerVelocityListener;
-import me.caseload.kbsync.listener.LagCompensator;
-import me.caseload.kbsync.listener.Async;
+import me.caseload.kbsync.listener.*;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -31,26 +30,29 @@ public final class KbSync extends JavaPlugin {
     public static final Map<UUID, Double> kb = new HashMap<>();
 
     @Override
+    public void onLoad() {
+        // Inicializar PacketEvents en la fase de carga
+        PacketEvents.setAPI(SpigotPacketEventsBuilder.build(this));
+        PacketEvents.getAPI().load();
+    }
+
+    @Override
     public void onEnable() {
         instance = this;
         protocolManager = ProtocolLibrary.getProtocolManager();
-        // Crear e inicializar ExecutorService
         executorService = Executors.newFixedThreadPool(2);
 
-        // Crear e inicializar LagCompensator con ExecutorService
+        // Inicializar PacketEvents en la fase de habilitación
+        PacketEvents.getAPI().init();
+
         lagCompensator = new LagCompensator(executorService);
-
-        // Crear e inicializar Async con la instancia de LagCompensator y ExecutorService
         asyncListener = new Async(lagCompensator, executorService);
-
-        // Registrar el listener de eventos de Bukkit
         getServer().getPluginManager().registerEvents(asyncListener, this);
 
         saveDefaultConfig();
         setupProtocolLib();
 
         String pingRetrievalMethod = getConfig().getString("ping_retrieval.method").toLowerCase();
-
         if (pingRetrievalMethod.equals("runnable")) {
             Bukkit.getScheduler().runTaskTimerAsynchronously(this, () -> {
                 PacketContainer packet = protocolManager.createPacket(PacketType.Play.Server.PING);
@@ -63,19 +65,21 @@ public final class KbSync extends JavaPlugin {
             return;
         }
 
-        // Registro del PlayerHitListener
         getServer().getPluginManager().registerEvents(new PlayerHitListener(protocolManager, lagCompensator), this);
         Bukkit.getLogger().info("[KbSync] Registered PlayerHitListener");
-
-        // Registro del PlayerVelocityListener
         getServer().getPluginManager().registerEvents(new PlayerVelocityListener(accuratePing), this);
         Bukkit.getLogger().info("[KbSync] Registered PlayerVelocityListener");
 
-        // Configuración de comandos
         getCommand("knockbacksync").setExecutor(new Subcommands(accuratePing));
         getCommand("knockbacksync").setTabCompleter(new Subcommands(accuratePing));
 
         Bukkit.getLogger().info("[KbSync] Using the \"" + pingRetrievalMethod + "\" ping retrieval method.");
+    }
+
+    @Override
+    public void onDisable() {
+        executorService.shutdownNow();
+        PacketEvents.getAPI().terminate();
     }
 
     public static KbSync getInstance() {
@@ -104,8 +108,7 @@ public final class KbSync extends JavaPlugin {
         protocolManager.addPacketListener(new PacketAdapter(
                 this,
                 ListenerPriority.NORMAL,
-                PacketType.Play.Client.PONG)
-        {
+                PacketType.Play.Client.PONG) {
             @Override
             public void onPacketReceiving(PacketEvent event) {
                 Long currentTime = System.currentTimeMillis();

@@ -13,3 +13,4 @@
 /workspaces/knockback-sync/src/main/java/net/jafama/DoubleWrapper.java
 /workspaces/knockback-sync/src/main/java/me/caseload/kbsync/listener/Async.java
 /workspaces/knockback-sync/src/main/java/me/caseload/kbsync/KbSync.java
+/workspaces/knockback-sync/src/main/java/me/caseload/kbsync/listener/PacketEventsPacketListener.java
