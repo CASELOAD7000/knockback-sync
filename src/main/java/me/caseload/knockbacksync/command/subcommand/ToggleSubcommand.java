@@ -17,8 +17,8 @@ public class ToggleSubcommand {
 
                     String message = ChatColor.translateAlternateColorCodes('&',
                             toggledState ?
-                                    KnockbackSync.getInstance().getConfig().getString("enable_message", "&aSuccessfully enabled old potion physics.") :
-                                    KnockbackSync.getInstance().getConfig().getString("disable_message", "&cSuccessfully disabled old potion physics.")
+                                    KnockbackSync.getInstance().getConfig().getString("enable_message", "&aSuccessfully enabled KnockbackSync.") :
+                                    KnockbackSync.getInstance().getConfig().getString("disable_message", "&cSuccessfully disabled KnockbackSync.")
                     );
 
                     sender.sendMessage(message);

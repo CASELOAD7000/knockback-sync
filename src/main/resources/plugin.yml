@@ -1,7 +1,6 @@
 name: KnockbackSync
-version: '1.1'
+version: '1.2'
 main: me.caseload.knockbacksync.KnockbackSync
 api-version: '1.18'
 authors: [ Caseload ]
 description: Synchronizes player knockback for smoother gameplay.
-depend: [ packetevents ]

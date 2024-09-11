@@ -1,5 +1,6 @@
 package me.caseload.knockbacksync.util;
 
+import me.caseload.knockbacksync.KnockbackSync;
 import me.caseload.knockbacksync.manager.PingManager;
 import org.bukkit.FluidCollisionMode;
 import org.bukkit.Location;
@@ -26,11 +27,15 @@ public class PlayerUtil {
         double ticksUntilMaxHeight = verticalVelocity > 0 ? MathUtil.getTimeToMaxUpwardSpeed(verticalVelocity) : 0;
 
         int ticksToGround = MathUtil.getFallTime(verticalVelocity, maxHeight + distanceToGround);
+
         double totalDelayTicks = ticksUntilMaxHeight + ticksToGround;
 
         long estimatedPing = PingManager.getPingMap().getOrDefault(player.getUniqueId(), (long) player.getPing());
+        int pingOffset = KnockbackSync.getInstance().getConfig().getInt("ping_offset");
+        if (estimatedPing > pingOffset)
+            estimatedPing -= pingOffset;
 
-        return totalDelayTicks / 20.0 * 1000 <= estimatedPing && distanceToGround <= 1.3;
+        return estimatedPing >= totalDelayTicks / 20.0 * 1000 && distanceToGround <= 1.3;
     }
 
     public static double getModifiedYAxis(Player victim, Player attacker) {
