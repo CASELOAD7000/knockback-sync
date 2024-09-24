@@ -1,7 +1,7 @@
 ## Frequently Asked Questions (FAQ)
 
-### Q: Test
-A: Test
+### Test
+Test
 
 ## License
 GNU General Public License v3.0 or later
