@@ -1,0 +1,13 @@
+name: KnockbackSync
+version: '1.3'
+main: me.caseload.knockbacksync.KnockbackSync
+api-version: '1.18'
+authors: [ Caseload ]
+description: Synchronizes player knockback for smoother gameplay.
+permissions:
+  knockbacksync.update:
+    default: op
+  knockbacksync.toggle:
+    default: op
+  knockbacksync.ping:
+    default: op
