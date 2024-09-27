@@ -17,7 +17,7 @@ regardless of their own or their opponent’s connection.
 **It promotes consistency across all servers.** Extensive testing with top players has shown that an offset of 20 provides a balanced experience for everyone.
 
 ### How do I change the ping offset?
-**You must run a modified build of KnockbackSync.** The variable can be changed inside of the [PlayerData](PlayerData.java) class.
+**You must run a modified build of KnockbackSync.** The variable can be changed inside of the [PlayerData](src/main/java/me/caseload/knockbacksync/manager/PlayerData.java) class.
 
 ## License
 GNU General Public License v3.0 or later
