@@ -7,8 +7,8 @@ regardless of their own or their opponent’s connection.
 
 ## Frequently Asked Questions (FAQ)
 
-### Test
-Test
+### Does this change put high ping players at a disadvantage?
+**It depends on the player.** Some may notice a difference if they're used to relying on high ping to reduce knockback. For others, it could actually be an advantage.
 
 ## License
 GNU General Public License v3.0 or later
