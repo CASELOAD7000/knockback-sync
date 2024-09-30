@@ -2,17 +2,16 @@ package me.caseload.knockbacksync.manager;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class CombatManager {
 
-    private static final Set<UUID> combatPlayers = new HashSet<>();
+    private static final Set<UUID> combatPlayers = ConcurrentHashMap.newKeySet();
 
     public static @NotNull Set<UUID> getPlayers() {
-        return Collections.unmodifiableSet(combatPlayers);
+        return combatPlayers;
     }
 
     public static void addPlayer(UUID uuid) {
