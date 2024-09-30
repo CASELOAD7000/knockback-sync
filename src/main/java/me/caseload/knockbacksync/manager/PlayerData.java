@@ -8,6 +8,7 @@ import me.caseload.knockbacksync.KnockbackSync;
 import me.caseload.knockbacksync.util.MathUtil;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -40,7 +41,7 @@ public class PlayerData {
     private BukkitTask combatTask;
 
     @Nullable @Setter
-    private Long ping, previousPing;
+    private Long ping, previousPing, lastAdjustment;
 
     @Nullable @Setter
     private Double verticalVelocity;
@@ -74,14 +75,10 @@ public class PlayerData {
     }
 
     /**
-     * Determines if the Player is on the ground, either serverside or clientside.
+     * Determines if the Player is on the ground clientside, but not serverside
      * <p>
-     * Returns <code>true</code> if:
-     * <ul>
-     *   <li>Clientside: <code>ping ≥ (tMax + tFall)</code> and <code>gDist ≤ 1.3</code></li>
-     *   <li>Serverside: <code>gDist ≤ 0</code></li>
-     * </ul>
-     *
+     * Returns <code>ping ≥ (tMax + tFall)</code> and <code>gDist ≤ 1.3</code>
+     * <p>
      * Where:
      * <ul>
      *   <li><code>ping</code>: Estimated latency</li>
@@ -104,7 +101,7 @@ public class PlayerData {
 
         double gDist = getDistanceToGround();
         if (gDist <= 0)
-            return true;
+            return false; // prevent player from taking adjusted knockback when on ground serverside
 
         int tMax = verticalVelocity > 0 ? MathUtil.calculateTimeToMaxVelocity(verticalVelocity) : 0;
         double mH = verticalVelocity > 0 ? MathUtil.calculateDistanceTraveled(verticalVelocity, tMax) : 0;
@@ -171,6 +168,10 @@ public class PlayerData {
             double resistanceFactor = 0.04000000119 * knockbackResistance * 10;
             yAxis -= resistanceFactor;
         }
+
+        // vertical velocity is always 0.4 when you have knockback level higher than 0
+        if (attacker.getInventory().getItemInMainHand().getEnchantmentLevel(Enchantment.KNOCKBACK) > 0)
+            yAxis = 0.4;
 
         return yAxis;
     }

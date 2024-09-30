@@ -37,8 +37,11 @@ public class PlayerKnockbackListener implements Listener {
 
         Vector velocity = victim.getVelocity();
         Double verticalVelocity = playerData.getVerticalVelocity();
-
         if (verticalVelocity == null || !playerData.isOnGround(velocity.getY()))
+            return;
+
+        Long lastAdjustment = playerData.getLastAdjustment();
+        if (lastAdjustment != null && System.currentTimeMillis() - lastAdjustment < 250)
             return;
 
         Vector adjustedVelocity = velocity.clone().setY(
@@ -46,5 +49,6 @@ public class PlayerKnockbackListener implements Listener {
         );
 
         victim.setVelocity(adjustedVelocity);
+        playerData.setLastAdjustment(System.currentTimeMillis());
     }
 }
