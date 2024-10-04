@@ -14,7 +14,7 @@ regardless of their own or their opponent’s connection.
 **Knockback control.** For example, it will be easier to escape crit chains and punish crit.
 
 ### Why was the configurability of ping offset removed?
-**It promotes consistency across all servers.** Extensive testing with top players has shown that an offset of 20 provides a balanced experience for everyone.
+**It promotes consistency across all servers.** Extensive testing with top players has shown that an offset of 25 provides a balanced experience for everyone.
 
 ### How do I change the ping offset?
 **You must run a modified build of KnockbackSync.** The variable can be changed inside of the [PlayerData](src/main/java/me/caseload/knockbacksync/manager/PlayerData.java) class.
