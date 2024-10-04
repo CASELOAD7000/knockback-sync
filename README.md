@@ -5,7 +5,8 @@ As a result, players take negative velocity when they're on the ground clientsid
 This plugin handles knockback as if it were calculated clientside, ensuring that no player is at a disadvantage,
 regardless of their own or their opponent’s connection.
 
-https://www.youtube.com/watch?v=SVokpr3v-TA
+Showcase: https://www.youtube.com/watch?v=SVokpr3v-TA
+Official Discord Server: https://discord.gg/nnpqpAtyVW
 
 ## Frequently Asked Questions (FAQ)
 
