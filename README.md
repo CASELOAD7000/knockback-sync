@@ -7,7 +7,7 @@ regardless of their own or their opponent’s connection.
 
 Showcase: https://www.youtube.com/watch?v=SVokpr3v-TA
 
-Official Discord Server: https://discord.gg/nnpqpAtyVW
+Official Discord: https://discord.gg/nnpqpAtyVW
 
 ## Frequently Asked Questions (FAQ)
 
