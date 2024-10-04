@@ -22,6 +22,7 @@ public final class KnockbackSync extends JavaPlugin {
     private boolean toggled;
     private boolean runnable;
     private boolean updateAvailable;
+    private boolean notifyUpdate;
 
     private long runnableInterval;
     private long combatTimer;
@@ -58,7 +59,8 @@ public final class KnockbackSync extends JavaPlugin {
         runnable = getConfig().getBoolean("runnable.enabled", true);
         runnableInterval = getConfig().getLong("runnable.interval", 5L);
         combatTimer = getConfig().getLong("runnable.timer", 30L);
-        spikeThreshold = getConfig().getLong("spike_threshold", 25L);
+        spikeThreshold = getConfig().getLong("spike_threshold", 20L);
+        notifyUpdate = getConfig().getBoolean("notify_updates", true);
 
         if (runnable)
             new PingRunnable().runTaskTimerAsynchronously(this, 0L, runnableInterval);

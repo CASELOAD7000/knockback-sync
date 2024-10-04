@@ -21,7 +21,7 @@ runnable:
 # The minimum change in ping required for it to be considered a lag spike.
 # If the difference between the latest and previous ping is greater than or equal to
 # the threshold, the previous ping value is used to avoid calculation inaccuracies.
-spike_threshold: 25
+spike_threshold: 20
 
 enable_message: "&aSuccessfully enabled KnockbackSync."
 disable_message: "&cSuccessfully disabled KnockbackSync."

@@ -29,7 +29,7 @@ public class PlayerData {
     private final Player player;
 
     // Please read the GitHub FAQ before adjusting.
-    private static final long PING_OFFSET = 20;
+    private static final long PING_OFFSET = 25;
 
     @NotNull
     private final Map<Integer, Long> timeline = new HashMap<>();
