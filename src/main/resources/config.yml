@@ -25,3 +25,6 @@ spike_threshold: 20
 
 enable_message: "&aSuccessfully enabled KnockbackSync."
 disable_message: "&cSuccessfully disabled KnockbackSync."
+
+# Read FAQ!
+ping_offset: 25
