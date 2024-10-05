@@ -7,11 +7,14 @@ import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerPi
 import lombok.Getter;
 import lombok.Setter;
 import me.caseload.knockbacksync.KnockbackSync;
+import me.caseload.knockbacksync.config.KnockbackSyncConfigReloadEvent;
 import me.caseload.knockbacksync.util.MathUtil;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitTask;
@@ -26,14 +29,14 @@ import java.util.Map;
 import java.util.Random;
 
 @Getter
-public class PlayerData {
+public class PlayerData implements Listener {
 
     private final Player player;
 
     public final User user;
 
     // Please read the GitHub FAQ before adjusting.
-    private static final long PING_OFFSET = KnockbackSync.getInstance().getConfig().getInt("ping_offset", 25);
+    private static long PING_OFFSET;
 
     @NotNull
     private final Map<Integer, Long> timeline = new HashMap<>();
@@ -55,6 +58,7 @@ public class PlayerData {
     public PlayerData(Player player) {
         this.player = player;
         this.user = PacketEvents.getAPI().getPlayerManager().getUser(player);
+        PING_OFFSET = KnockbackSync.getInstance().getConfig().getInt("ping_offset", 25);
     }
 
     /**
@@ -230,5 +234,10 @@ public class PlayerData {
             return ClientVersion.getById(PacketEvents.getAPI().getServerManager().getVersion().getProtocolVersion());
         }
         return ver;
+    }
+
+    @EventHandler
+    public void onConfigReload(KnockbackSyncConfigReloadEvent event) {
+        PING_OFFSET = KnockbackSync.getInstance().getConfig().getInt("ping_offset", 25);
     }
 }
