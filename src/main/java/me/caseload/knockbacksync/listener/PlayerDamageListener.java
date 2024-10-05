@@ -22,7 +22,7 @@ public class PlayerDamageListener implements Listener {
         playerData.setVerticalVelocity(playerData.calculateVerticalVelocity(attacker)); // do not move this calculation
         playerData.updateCombat();
 
-        if (!KnockbackSync.getInstance().isRunnable())
+        if (!KnockbackSync.getInstance().isRunnableEnabled())
             playerData.sendPing();
     }
 }
