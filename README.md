@@ -1,3 +1,5 @@
+[![Get it on Modrinth](https://img.shields.io/badge/Get%20it%20on-Modrinth-green?style=for-the-badge&logo=modrinth)](https://modrinth.com/plugin/knockbacksync)
+
 Tired of inconsistent knockback ruining your PvP experience? Our plugin recalculates knockback as if it were done clientside, leveling the playing field and ensuring every player enjoys a fair fight, no matter their connection quality.
 
 Minecraft doesn’t factor in network latency when determining a player's actions on the server. This causes the server to receive outdated information that doesn’t reflect the player's clientside position, leading to varying knockback effects based on connection quality. 
