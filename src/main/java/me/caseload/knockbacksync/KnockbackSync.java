@@ -42,7 +42,7 @@ public final class KnockbackSync extends JavaPlugin implements Listener {
 
     @Override
     public void onEnable() {
-        checkForUpdates();
+//        checkForUpdates();
         saveDefaultConfig();
 
         CommandAPI.onEnable();
