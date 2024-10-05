@@ -33,7 +33,7 @@ public class PlayerData {
     public final User user;
 
     // Please read the GitHub FAQ before adjusting.
-    private static final long PING_OFFSET = 25;
+    private static final long PING_OFFSET = KnockbackSync.getInstance().getConfig().getInt("ping_offset", 25);
 
     @NotNull
     private final Map<Integer, Long> timeline = new HashMap<>();
