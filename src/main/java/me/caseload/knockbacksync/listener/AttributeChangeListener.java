@@ -73,10 +73,8 @@ public class AttributeChangeListener extends PacketListenerAbstract {
             }
         }
 
-        double result = (baseValue + additionSum) * (1 + multiplyBaseSum) * multiplyTotalProduct;
-
-        // Note that gravity is effectively 0.07999999821186066 on 1.20.5+ instead of 0.08 by default
-        double newValue = MathUtil.clampFloat((float) result, (float) minGravity, (float) maxGravity);
+        double newValue = (baseValue + additionSum) * (1 + multiplyBaseSum) * multiplyTotalProduct;
+        newValue = MathUtil.clamp(newValue, minGravity, maxGravity);
 
         if (newValue < minGravity || newValue > maxGravity) {
             throw new IllegalArgumentException("New value must be between min and max!");
