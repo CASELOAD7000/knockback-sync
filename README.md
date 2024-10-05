@@ -2,10 +2,9 @@
 
 Tired of inconsistent knockback ruining your PvP experience? Our plugin recalculates knockback as if it were done clientside, leveling the playing field and ensuring every player enjoys a fair fight, no matter their connection quality.
 
-Minecraft doesn’t factor in network latency when determining a player's actions on the server. This causes the server to receive outdated information that doesn’t reflect the player's clientside position, leading to varying knockback effects based on connection quality. 
+Minecraft doesn’t factor in network latency when determining a player's actions on the server. This causes the server to receive outdated information that doesn’t reflect the player's clientside position, leading to varying knockback effects based on connection quality.
 
 This plugin intercepts and adjusts knockback calculations to match what would occur clientside, effectively mitigating the disadvantages caused by high latency. By synchronizing knockback handling, we ensure that players experience consistent and fair knockback, providing a balanced and competitive environment for all."
-
 ## Frequently Asked Questions (FAQ)
 
 ### Does this change put high ping players at a disadvantage?
@@ -24,6 +23,17 @@ Then just type
 /knockbacksync reload
 ```
 or restart your server.
+
+## What servers are using this plugin?
+| IP               | Location                                 | Region | Ping Offset | spike_threshold |
+|------------------|------------------------------------------|--------|-------------|-----------------|
+| `pvparcade.club` | Ashburn, Virginia, United States         | NA     | 20          | 30              |
+| `stray.gg`       | San Francisco, California, United States | NA     | 25          | 20              |
+| `eu.stray.gg`    | Limburg an der Lahn, Hesse, Germany      | EU     | 25          | 20              |
+| `valed.gg`       | Frankfurt, Hesse, Germany                | EU     | 25          | 20              |
+| `eu.catpvp.xyz`  |                                          | EU     | 25          | 20              |
+| `as.catpvp.xyz`  |                                          | AS     | 25          | 20              |
+| `na.catpvp.xyz`  |                                          | NA     | 25          | 20              |
 
 ## Documentation
 ### Commands
@@ -49,6 +59,11 @@ Outputs: `Successfully reloaded KnockbackSync config.` (or custom message from `
 Outputs:
 - Enabled: `Successfully enabled KnockbackSync.` (or custom message from `enable_message` config)
 - Disabled: `Successfully disabled KnockbackSync.` (or custom message from `disable_message` config)
+
+### Other Permissions
+**Permission:** `knockbacksync.exempt`  
+**Description:** Exempts a player from knockbacksync's kb adjustment. Requires that the player relog when this permission is changed.
+
 
 ### Event Listeners
 - **`KnockbackSyncConfigReloadEvent`**: Updates messages in `reload` and `toggle` commands based on the latest configuration settings.
