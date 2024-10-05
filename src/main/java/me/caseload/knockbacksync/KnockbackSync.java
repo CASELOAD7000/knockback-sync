@@ -49,7 +49,8 @@ public final class KnockbackSync extends JavaPlugin {
                 new PlayerJoinQuitListener()
         );
 
-        PacketEvents.getAPI().getEventManager().registerListener(
+        PacketEvents.getAPI().getEventManager().registerListeners(
+                new AttributeChangeListener(),
                 new PingReceiveListener()
         );
 

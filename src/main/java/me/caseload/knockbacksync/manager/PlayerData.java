@@ -1,6 +1,8 @@
 package me.caseload.knockbacksync.manager;
 
 import com.github.retrooper.packetevents.PacketEvents;
+import com.github.retrooper.packetevents.protocol.player.ClientVersion;
+import com.github.retrooper.packetevents.protocol.player.User;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerPing;
 import lombok.Getter;
 import lombok.Setter;
@@ -28,6 +30,8 @@ public class PlayerData {
 
     private final Player player;
 
+    public final User user;
+
     // Please read the GitHub FAQ before adjusting.
     private static final long PING_OFFSET = 25;
 
@@ -45,9 +49,12 @@ public class PlayerData {
 
     @Nullable @Setter
     private Double verticalVelocity;
+    @Setter
+    private double gravity = 0.08;
 
     public PlayerData(Player player) {
         this.player = player;
+        this.user = PacketEvents.getAPI().getPlayerManager().getUser(player);
     }
 
     /**
@@ -103,9 +110,9 @@ public class PlayerData {
         if (gDist <= 0)
             return false; // prevent player from taking adjusted knockback when on ground serverside
 
-        int tMax = verticalVelocity > 0 ? MathUtil.calculateTimeToMaxVelocity(verticalVelocity) : 0;
-        double mH = verticalVelocity > 0 ? MathUtil.calculateDistanceTraveled(verticalVelocity, tMax) : 0;
-        int tFall = MathUtil.calculateFallTime(verticalVelocity, mH + gDist);
+        int tMax = verticalVelocity > 0 ? MathUtil.calculateTimeToMaxVelocity(verticalVelocity, gravity) : 0;
+        double mH = verticalVelocity > 0 ? MathUtil.calculateDistanceTraveled(verticalVelocity, tMax, gravity) : 0;
+        int tFall = MathUtil.calculateFallTime(verticalVelocity, mH + gDist, gravity);
 
         return getEstimatedPing() >= tMax + tFall / 20.0 * 1000 && gDist <= 1.3;
     }
@@ -214,5 +221,14 @@ public class PlayerData {
     private BukkitTask newCombatTask() {
         return Bukkit.getScheduler().runTaskLaterAsynchronously(KnockbackSync.getInstance(),
                 () -> quitCombat(false), KnockbackSync.getInstance().getCombatTimer());
+    }
+
+    public ClientVersion getClientVersion() {
+        ClientVersion ver = user.getClientVersion();
+        if (ver == null) {
+            // If temporarily null, assume server version...
+            return ClientVersion.getById(PacketEvents.getAPI().getServerManager().getVersion().getProtocolVersion());
+        }
+        return ver;
     }
 }
