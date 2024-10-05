@@ -55,7 +55,8 @@ public final class KnockbackSync extends JavaPlugin implements Listener {
                 this
         );
 
-        PacketEvents.getAPI().getEventManager().registerListener(
+        PacketEvents.getAPI().getEventManager().registerListeners(
+                new AttributeChangeListener(),
                 new PingReceiveListener()
         );
 
