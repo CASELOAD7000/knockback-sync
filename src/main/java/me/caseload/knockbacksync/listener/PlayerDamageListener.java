@@ -20,6 +20,7 @@ public class PlayerDamageListener implements Listener {
 
         PlayerData playerData = PlayerDataManager.getPlayerData(victim.getUniqueId());
         playerData.setVerticalVelocity(playerData.calculateVerticalVelocity(attacker)); // do not move this calculation
+        playerData.setLastDamageTicks(victim.getNoDamageTicks());
         playerData.updateCombat();
 
         if (!KnockbackSync.getInstance().getConfigManager().isRunnableEnabled())

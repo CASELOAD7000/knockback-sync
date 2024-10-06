@@ -40,11 +40,11 @@ public class PlayerDataManager {
             }
 
             // Has exempt permission
-            Player player = Bukkit.getPlayer(uuid);
+/*            Player player = Bukkit.getPlayer(uuid);
             if (player != null && player.hasPermission("knockbacksync.exempt")) {
                 exemptPlayers.add(uuid);
                 return false;
-            }
+            }*/
         }
         return true;
     }

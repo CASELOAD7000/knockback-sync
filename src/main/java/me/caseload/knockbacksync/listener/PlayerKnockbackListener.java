@@ -35,6 +35,11 @@ public class PlayerKnockbackListener implements Listener {
         if (!(attacker instanceof Player))
             return;
 
+        Integer damageTicks = playerData.getLastDamageTicks();
+        victim.sendMessage(String.valueOf(damageTicks));
+        if (damageTicks != null && damageTicks > 8)
+            return;
+
         Vector velocity = victim.getVelocity();
         Double verticalVelocity = playerData.getVerticalVelocity();
         if (verticalVelocity == null || !playerData.isOnGround(velocity.getY()))

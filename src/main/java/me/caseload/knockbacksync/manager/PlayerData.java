@@ -49,6 +49,10 @@ public class PlayerData {
 
     @Nullable @Setter
     private Double verticalVelocity;
+
+    @Nullable @Setter
+    private Integer lastDamageTicks;
+
     @Setter
     private double gravity = 0.08;
 
