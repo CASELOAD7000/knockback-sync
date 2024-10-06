@@ -34,6 +34,7 @@ or restart your server.
 | `eu.catpvp.xyz`  |                                          | EU     | 25          | 20              |
 | `as.catpvp.xyz`  |                                          | AS     | 25          | 20              |
 | `na.catpvp.xyz`  |                                          | NA     | 25          | 20              |
+| `hyperium.pl`    | Wrocław, Dolnośląskie, Poland            | EU     | 25          | 20              |
 
 ## Documentation
 ### Commands
