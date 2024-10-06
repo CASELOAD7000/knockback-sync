@@ -36,7 +36,6 @@ public class PlayerKnockbackListener implements Listener {
             return;
 
         Integer damageTicks = playerData.getLastDamageTicks();
-        victim.sendMessage(String.valueOf(damageTicks));
         if (damageTicks != null && damageTicks > 8)
             return;
 
