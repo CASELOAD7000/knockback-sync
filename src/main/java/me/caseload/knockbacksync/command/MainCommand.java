@@ -15,7 +15,6 @@ public class MainCommand {
                 .withSubcommand(new PingSubcommand().getCommand())
                 .withSubcommand(new ToggleSubcommand().getCommand())
                 .withSubcommand(new ReloadSubcommand().getCommand())
-                .withSubcommand(new TestSubcommand().getCommand())
                 .executes((sender, args) -> {
                     sender.sendMessage(ChatColor.translateAlternateColorCodes(
                             '&',
