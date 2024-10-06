@@ -20,7 +20,6 @@ public class ReloadSubcommand implements Listener {
                     );
 
                     sender.sendMessage(reloadMessage);
-                    sender.sendMessage(String.valueOf(configManager.isToggled()));
                 });
     }
 }
