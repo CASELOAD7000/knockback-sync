@@ -7,7 +7,6 @@ import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerPi
 import lombok.Getter;
 import lombok.Setter;
 import me.caseload.knockbacksync.KnockbackSync;
-import me.caseload.knockbacksync.config.KnockbackSyncConfigReloadEvent;
 import me.caseload.knockbacksync.util.MathUtil;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
@@ -29,14 +28,14 @@ import java.util.Map;
 import java.util.Random;
 
 @Getter
-public class PlayerData implements Listener {
+public class PlayerData {
 
     private final Player player;
 
     public final User user;
 
     // Please read the GitHub FAQ before adjusting.
-    private static long PING_OFFSET;
+    public static long PING_OFFSET;
 
     @NotNull
     private final Map<Integer, Long> timeline = new HashMap<>();
@@ -238,10 +237,5 @@ public class PlayerData implements Listener {
             return ClientVersion.getById(PacketEvents.getAPI().getServerManager().getVersion().getProtocolVersion());
         }
         return ver;
-    }
-
-    @EventHandler
-    public void onConfigReload(KnockbackSyncConfigReloadEvent event) {
-        PING_OFFSET = KnockbackSync.getInstance().getConfig().getInt("ping_offset", 25);
     }
 }
