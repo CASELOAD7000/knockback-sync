@@ -12,7 +12,7 @@ public class PingRunnable extends BukkitRunnable {
 
     @Override
     public void run() {
-        if (!KnockbackSync.getInstance().isToggled())
+        if (!KnockbackSync.getInstance().getConfigManager().isToggled())
             return;
 
         for (UUID uuid : CombatManager.getPlayers()) {

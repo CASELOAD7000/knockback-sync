@@ -17,7 +17,7 @@ public class PlayerKnockbackListener implements Listener {
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onPlayerVelocity(PlayerVelocityEvent event) {
-        if (!KnockbackSync.getInstance().isToggled())
+        if (!KnockbackSync.getInstance().getConfigManager().isToggled())
             return;
 
         Player victim = event.getPlayer();

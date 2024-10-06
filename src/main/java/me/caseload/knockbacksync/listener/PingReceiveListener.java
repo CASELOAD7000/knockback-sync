@@ -13,7 +13,7 @@ public class PingReceiveListener extends PacketListenerAbstract {
 
     @Override
     public void onPacketReceive(PacketReceiveEvent event) {
-        if (!KnockbackSync.getInstance().isToggled())
+        if (!KnockbackSync.getInstance().getConfigManager().isToggled())
             return;
 
         if (event.getPacketType() != PacketType.Play.Client.PONG)

@@ -19,7 +19,7 @@ public class PlayerJoinQuitListener implements Listener {
         Player player = event.getPlayer();
         PlayerDataManager.addPlayerData(player.getUniqueId(), new PlayerData(player));
 
-        if (KnockbackSync.getInstance().isUpdateAvailable() && KnockbackSync.getInstance().isNotifyUpdate() && player.hasPermission("knockbacksync.update"))
+        if (KnockbackSync.getInstance().getConfigManager().isUpdateAvailable() && KnockbackSync.getInstance().getConfigManager().isNotifyUpdate() && player.hasPermission("knockbacksync.update"))
             player.sendMessage(ChatColor.translateAlternateColorCodes(
                     '&',
                     "&6An updated version of &eKnockbackSync &6is now available for download at: &bhttps://github.com/CASELOAD7000/knockback-sync/releases/latest"

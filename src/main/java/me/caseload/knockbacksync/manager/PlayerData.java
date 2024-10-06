@@ -67,7 +67,7 @@ public class PlayerData {
     public long getEstimatedPing() {
         long currentPing = (ping != null) ? ping : player.getPing();
         long lastPing = (previousPing != null) ? previousPing : player.getPing();
-        long ping = (currentPing - lastPing > KnockbackSync.getInstance().getSpikeThreshold()) ? lastPing : currentPing;
+        long ping = (currentPing - lastPing > KnockbackSync.getInstance().getConfigManager().getSpikeThreshold()) ? lastPing : currentPing;
 
         return Math.max(1, ping - PING_OFFSET);
     }
@@ -220,7 +220,7 @@ public class PlayerData {
     @NotNull
     private BukkitTask newCombatTask() {
         return Bukkit.getScheduler().runTaskLaterAsynchronously(KnockbackSync.getInstance(),
-                () -> quitCombat(false), KnockbackSync.getInstance().getCombatTimer());
+                () -> quitCombat(false), KnockbackSync.getInstance().getConfigManager().getCombatTimer());
     }
 
     public ClientVersion getClientVersion() {
