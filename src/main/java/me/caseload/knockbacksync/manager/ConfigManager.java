@@ -52,8 +52,4 @@ public class ConfigManager {
         disableMessage = instance.getConfig().getString("disable_message", "&cSuccessfully disabled KnockbackSync.");
         reloadMessage = instance.getConfig().getString("reload_message", "&aSuccessfully reloaded KnockbackSync.");
     }
-
-    public void reloadConfig() {
-
-    }
 }
