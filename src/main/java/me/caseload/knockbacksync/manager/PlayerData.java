@@ -48,10 +48,14 @@ public class PlayerData implements Listener {
     private BukkitTask combatTask;
 
     @Nullable @Setter
-    private Long ping, previousPing, lastAdjustment;
+    private Long ping, previousPing;
 
     @Nullable @Setter
     private Double verticalVelocity;
+
+    @Nullable @Setter
+    private Integer lastDamageTicks;
+
     @Setter
     private double gravity = 0.08;
 
@@ -71,7 +75,7 @@ public class PlayerData implements Listener {
     public long getEstimatedPing() {
         long currentPing = (ping != null) ? ping : player.getPing();
         long lastPing = (previousPing != null) ? previousPing : player.getPing();
-        long ping = (currentPing - lastPing > KnockbackSync.getInstance().getSpikeThreshold()) ? lastPing : currentPing;
+        long ping = (currentPing - lastPing > KnockbackSync.getInstance().getConfigManager().getSpikeThreshold()) ? lastPing : currentPing;
 
         return Math.max(1, ping - PING_OFFSET);
     }
@@ -224,7 +228,7 @@ public class PlayerData implements Listener {
     @NotNull
     private BukkitTask newCombatTask() {
         return Bukkit.getScheduler().runTaskLaterAsynchronously(KnockbackSync.getInstance(),
-                () -> quitCombat(false), KnockbackSync.getInstance().getCombatTimer());
+                () -> quitCombat(false), KnockbackSync.getInstance().getConfigManager().getCombatTimer());
     }
 
     public ClientVersion getClientVersion() {

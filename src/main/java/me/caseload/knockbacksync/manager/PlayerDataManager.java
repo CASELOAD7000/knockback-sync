@@ -19,13 +19,13 @@ public class PlayerDataManager {
     }
 
     public static void addPlayerData(UUID uuid, PlayerData playerData) {
-        if (shouldCheck(uuid)) {
+        if (shouldCheck(uuid))
             playerDataMap.put(uuid, playerData);
-        }
     }
 
     public static boolean shouldCheck(UUID uuid) {
-        if (exemptPlayers.contains(uuid)) return false;
+        if (exemptPlayers.contains(uuid))
+            return false;
 
         if (uuid != null) {
             // Geyser players don't have Java movement
@@ -40,11 +40,11 @@ public class PlayerDataManager {
             }
 
             // Has exempt permission
-            Player player = Bukkit.getPlayer(uuid);
+/*            Player player = Bukkit.getPlayer(uuid);
             if (player != null && player.hasPermission("knockbacksync.exempt")) {
                 exemptPlayers.add(uuid);
                 return false;
-            }
+            }*/
         }
         return true;
     }

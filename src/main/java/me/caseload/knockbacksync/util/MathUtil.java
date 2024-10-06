@@ -47,10 +47,10 @@ public class MathUtil {
         return (int) Math.ceil(positiveRoot * 20);
     }
 
-    public static float clampFloat(float num, float min, float max) {
-        if (num < min) {
+    public static double clamp(double num, double min, double max) {
+        if (num < min)
             return min;
-        }
+
         return Math.min(num, max);
     }
 }

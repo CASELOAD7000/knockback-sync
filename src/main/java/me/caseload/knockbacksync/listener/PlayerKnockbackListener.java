@@ -17,7 +17,7 @@ public class PlayerKnockbackListener implements Listener {
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onPlayerVelocity(PlayerVelocityEvent event) {
-        if (!KnockbackSync.getInstance().isToggled())
+        if (!KnockbackSync.getInstance().getConfigManager().isToggled())
             return;
 
         Player victim = event.getPlayer();
@@ -35,13 +35,13 @@ public class PlayerKnockbackListener implements Listener {
         if (!(attacker instanceof Player))
             return;
 
+        Integer damageTicks = playerData.getLastDamageTicks();
+        if (damageTicks != null && damageTicks > 8)
+            return;
+
         Vector velocity = victim.getVelocity();
         Double verticalVelocity = playerData.getVerticalVelocity();
         if (verticalVelocity == null || !playerData.isOnGround(velocity.getY()))
-            return;
-
-        Long lastAdjustment = playerData.getLastAdjustment();
-        if (lastAdjustment != null && System.currentTimeMillis() - lastAdjustment < 250)
             return;
 
         Vector adjustedVelocity = velocity.clone().setY(
@@ -49,6 +49,5 @@ public class PlayerKnockbackListener implements Listener {
         );
 
         victim.setVelocity(adjustedVelocity);
-        playerData.setLastAdjustment(System.currentTimeMillis());
     }
 }

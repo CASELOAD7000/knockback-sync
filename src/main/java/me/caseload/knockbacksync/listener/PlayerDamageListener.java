@@ -12,7 +12,7 @@ public class PlayerDamageListener implements Listener {
 
     @EventHandler(ignoreCancelled = true)
     public void onPlayerDamage(EntityDamageByEntityEvent event) {
-        if (!KnockbackSync.getInstance().isToggled())
+        if (!KnockbackSync.getInstance().getConfigManager().isToggled())
             return;
 
         if (!(event.getEntity() instanceof Player victim) || !(event.getDamager() instanceof Player attacker))
@@ -20,9 +20,10 @@ public class PlayerDamageListener implements Listener {
 
         PlayerData playerData = PlayerDataManager.getPlayerData(victim.getUniqueId());
         playerData.setVerticalVelocity(playerData.calculateVerticalVelocity(attacker)); // do not move this calculation
+        playerData.setLastDamageTicks(victim.getNoDamageTicks());
         playerData.updateCombat();
 
-        if (!KnockbackSync.getInstance().isRunnableEnabled())
+        if (!KnockbackSync.getInstance().getConfigManager().isRunnableEnabled())
             playerData.sendPing();
     }
 }
