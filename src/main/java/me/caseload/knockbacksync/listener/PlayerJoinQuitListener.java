@@ -17,7 +17,10 @@ public class PlayerJoinQuitListener implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
-        PlayerDataManager.addPlayerData(player.getUniqueId(), new PlayerData(player));
+        UUID uuid = player.getUniqueId();
+
+        if (!PlayerDataManager.isExempt(uuid))
+            PlayerDataManager.addPlayerData(player.getUniqueId(), new PlayerData(player));
 
         if (KnockbackSync.getInstance().getConfigManager().isUpdateAvailable() && KnockbackSync.getInstance().getConfigManager().isNotifyUpdate() && player.hasPermission("knockbacksync.update"))
             player.sendMessage(ChatColor.translateAlternateColorCodes(
@@ -29,6 +32,9 @@ public class PlayerJoinQuitListener implements Listener {
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
         UUID uuid = event.getPlayer().getUniqueId();
+        if (PlayerDataManager.isExempt(uuid))
+            return;
+
         PlayerData playerData = PlayerDataManager.getPlayerData(uuid);
 
         if (playerData.isInCombat())

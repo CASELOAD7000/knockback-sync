@@ -38,7 +38,7 @@ public class AttributeChangeListener extends PacketListenerAbstract {
 
         // Check if the entity is a player
         Player player = event.getPlayer();
-        if (player == null)
+        if (player == null || PlayerDataManager.isExempt(player.getUniqueId()))
             return;
 
         // Get the attributes from the packet

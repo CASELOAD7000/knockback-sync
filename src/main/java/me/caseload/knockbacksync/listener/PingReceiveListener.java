@@ -20,6 +20,9 @@ public class PingReceiveListener extends PacketListenerAbstract {
             return;
 
         Player player = event.getPlayer();
+        if (PlayerDataManager.isExempt(player.getUniqueId()))
+            return;
+
         PlayerData playerData = PlayerDataManager.getPlayerData(player.getUniqueId());
 
         int packetId = new WrapperPlayClientPong(event).getId();

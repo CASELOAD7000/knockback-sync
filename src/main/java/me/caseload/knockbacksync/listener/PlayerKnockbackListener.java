@@ -21,7 +21,8 @@ public class PlayerKnockbackListener implements Listener {
             return;
 
         Player victim = event.getPlayer();
-        PlayerData playerData = PlayerDataManager.getPlayerData(victim.getUniqueId());
+        if (PlayerDataManager.isExempt(victim.getUniqueId()))
+            return;
 
         EntityDamageEvent entityDamageEvent = victim.getLastDamageCause();
         if (entityDamageEvent == null)
@@ -35,6 +36,7 @@ public class PlayerKnockbackListener implements Listener {
         if (!(attacker instanceof Player))
             return;
 
+        PlayerData playerData = PlayerDataManager.getPlayerData(victim.getUniqueId());
         Integer damageTicks = playerData.getLastDamageTicks();
         if (damageTicks != null && damageTicks > 8)
             return;
