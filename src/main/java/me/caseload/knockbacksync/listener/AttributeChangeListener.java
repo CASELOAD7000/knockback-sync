@@ -18,6 +18,7 @@ public class AttributeChangeListener extends PacketListenerAbstract {
 
     public static final UUID SPRINTING_MODIFIER_UUID =
             UUID.fromString("662A6B8D-DA3E-4C1C-8813-96EA6097278D");
+
     double minGravity = -1;
     double maxGravity = 1;
     double defaultGravity = 0.08;
@@ -30,21 +31,22 @@ public class AttributeChangeListener extends PacketListenerAbstract {
     @Override
     public void onPacketSend(PacketSendEvent event) {
         // Intercept the packet that updates entity properties (attributes)
-        if (event.getPacketType() == PacketType.Play.Server.UPDATE_ATTRIBUTES) {
-            WrapperPlayServerUpdateAttributes packet = new WrapperPlayServerUpdateAttributes(event);
+        if (event.getPacketType() != PacketType.Play.Server.UPDATE_ATTRIBUTES)
+            return;
 
-            // Check if the entity is a player
-            Player player = event.getPlayer();
+        WrapperPlayServerUpdateAttributes packet = new WrapperPlayServerUpdateAttributes(event);
 
-            if (player != null) {
-                // Get the attributes from the packet
-                for (WrapperPlayServerUpdateAttributes.Property property : packet.getProperties()) {
-                    // You can now check for specific attributes
-                    if (property.getAttribute().equals(Attributes.GENERIC_GRAVITY)) {
-                        onPlayerGravityChange(player, calculateValueWithModifiers(property));
-                        break;
-                    }
-                }
+        // Check if the entity is a player
+        Player player = event.getPlayer();
+        if (player == null)
+            return;
+
+        // Get the attributes from the packet
+        for (WrapperPlayServerUpdateAttributes.Property property : packet.getProperties()) {
+            // You can now check for specific attributes
+            if (property.getAttribute().equals(Attributes.GENERIC_GRAVITY)) {
+                onPlayerGravityChange(player, calculateValueWithModifiers(property));
+                break;
             }
         }
     }
@@ -76,9 +78,8 @@ public class AttributeChangeListener extends PacketListenerAbstract {
         double newValue = (baseValue + additionSum) * (1 + multiplyBaseSum) * multiplyTotalProduct;
         newValue = MathUtil.clamp(newValue, minGravity, maxGravity);
 
-        if (newValue < minGravity || newValue > maxGravity) {
+        if (newValue < minGravity || newValue > maxGravity)
             throw new IllegalArgumentException("New value must be between min and max!");
-        }
 
         return this.currentGravity = newValue;
     }
