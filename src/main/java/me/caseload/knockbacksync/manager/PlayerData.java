@@ -45,7 +45,7 @@ public class PlayerData {
     private BukkitTask combatTask;
 
     @Nullable @Setter
-    private Long ping, previousPing, lastAdjustment;
+    private Long ping, previousPing;
 
     @Nullable @Setter
     private Double verticalVelocity;
