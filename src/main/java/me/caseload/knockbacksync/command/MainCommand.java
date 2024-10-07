@@ -3,7 +3,6 @@ package me.caseload.knockbacksync.command;
 import dev.jorel.commandapi.CommandAPICommand;
 import me.caseload.knockbacksync.command.subcommand.PingSubcommand;
 import me.caseload.knockbacksync.command.subcommand.ReloadSubcommand;
-import me.caseload.knockbacksync.command.subcommand.TestSubcommand;
 import me.caseload.knockbacksync.command.subcommand.ToggleSubcommand;
 import org.bukkit.ChatColor;
 
@@ -15,7 +14,6 @@ public class MainCommand {
                 .withSubcommand(new PingSubcommand().getCommand())
                 .withSubcommand(new ToggleSubcommand().getCommand())
                 .withSubcommand(new ReloadSubcommand().getCommand())
-                .withSubcommand(new TestSubcommand().getCommand())
                 .executes((sender, args) -> {
                     sender.sendMessage(ChatColor.translateAlternateColorCodes(
                             '&',
