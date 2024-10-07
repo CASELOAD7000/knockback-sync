@@ -53,18 +53,18 @@ Outputs: `Notch's last ping packet took <ping_time>ms.`
 Outputs: `Successfully reloaded KnockbackSync config.` (or custom message from `reload_message` config)
 
 #### **`/knockbacksync toggle`**
-**Description:** Toggles the KnockbackSync plugin on or off.  
-**Usage:** `/knockbacksync toggle`  
+**Description:** Toggles the KnockbackSync plugin on or off.  Optional argument to toggle off only for a specific player.
+**Usage:** `/knockbacksync toggle <playername>`  
 **Permission:** `knockbacksync.toggle`  
-**Example:** `/knockbacksync toggle`  
+**Example 1:** `/knockbacksync toggle`  
 Outputs:
 - Enabled: `Successfully enabled KnockbackSync.` (or custom message from `enable_message` config)
-- Disabled: `Successfully disabled KnockbackSync.` (or custom message from `disable_message` config)
+- Disabled: `Successfully disabled KnockbackSync.` (or custom message from `disable_message` config)  
 
-### Other Permissions
-**Permission:** `knockbacksync.exempt`  
-**Description:** Exempts a player from knockbacksync's kb adjustment. Requires that the player relog when this permission is changed.
-
+**Example 2:** `/knockbacksync toggle Notch`  
+  Outputs:
+- Enabled: `Successfully enabled KnockbackSync for Notch` (or custom message from `enable_player_message` config)
+- Disabled: `Successfully disabled KnockbackSync for NOtch` (or custom message from `disable_player_message` config)
 
 ### Event Listeners
 - **`KnockbackSyncConfigReloadEvent`**: Updates messages in `reload` and `toggle` commands based on the latest configuration settings.
