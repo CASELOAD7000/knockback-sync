@@ -21,6 +21,8 @@ public class ConfigManager {
 
     private String enableMessage;
     private String disableMessage;
+    private String playerEnableMessage;
+    private String playerDisableMessage;
     private String reloadMessage;
 
     private BukkitTask pingTask;
@@ -50,6 +52,8 @@ public class ConfigManager {
         spikeThreshold = instance.getConfig().getLong("spike_threshold", 20L);
         enableMessage = instance.getConfig().getString("enable_message", "&aSuccessfully enabled KnockbackSync.");
         disableMessage = instance.getConfig().getString("disable_message", "&cSuccessfully disabled KnockbackSync.");
+        playerEnableMessage = instance.getConfig().getString("enable_player_message", "&aSuccessfully enabled KnockbackSync for %player%.");
+        playerDisableMessage = instance.getConfig().getString("disable_player_message", "&cSuccessfully disabled KnockbackSync for %player%.");
         reloadMessage = instance.getConfig().getString("reload_message", "&aSuccessfully reloaded KnockbackSync.");
         PlayerData.PING_OFFSET = KnockbackSync.getInstance().getConfig().getInt("ping_offset", 25);
     }
