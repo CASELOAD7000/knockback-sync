@@ -11,5 +11,3 @@ permissions:
     default: op
   knockbacksync.ping:
     default: op
-  knockbacksync.exempt:
-    default: op

@@ -37,11 +37,23 @@ public class ToggleSubcommand implements Listener {
                     else {
                         UUID uuid = target.getUniqueId();
 
-                        boolean isExempt = PlayerDataManager.isExempt(uuid);
-                        PlayerDataManager.setExempt(uuid, !isExempt);
+                        if (PlayerDataManager.shouldExempt(uuid)) {
+                            message = ChatColor.translateAlternateColorCodes('&',
+                                    configManager.getPlayerIneligibleMessage()
+                            ).replace("%player%", target.getName());
+
+                            sender.sendMessage(message);
+                            return;
+                        }
+
+                        boolean hasPlayerData = PlayerDataManager.containsPlayerData(uuid);
+                        if (hasPlayerData)
+                            PlayerDataManager.removePlayerData(uuid);
+                        else
+                            PlayerDataManager.addPlayerData(uuid, new PlayerData(target));
 
                         message = ChatColor.translateAlternateColorCodes('&',
-                                isExempt ? configManager.getPlayerEnableMessage() : configManager.getPlayerDisableMessage()
+                                hasPlayerData ? configManager.getPlayerDisableMessage() : configManager.getPlayerEnableMessage()
                         ).replace("%player%", target.getName());
                     }
 
