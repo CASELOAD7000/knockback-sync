@@ -1,55 +1,90 @@
 package me.caseload.knockbacksync.stats;
 
-import org.bstats.charts.DrilldownPie;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import me.caseload.knockbacksync.KnockbackSync;
 import org.bstats.charts.SimplePie;
 import org.bukkit.Bukkit;
+import org.kohsuke.github.GHAsset;
+import org.kohsuke.github.GHRelease;
+import org.kohsuke.github.GitHub;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.security.MessageDigest;
-import java.util.Scanner;
+import java.util.List;
 
 public class BuildTypePie extends SimplePie {
 
-    private static final String GITHUB_API_URL = "https://api.github.com/repos/Axionize/knockback-sync/releases/latest";
     private static final String RELEASES_FILE = "releases.txt";
     private static final String DEV_BUILDS_FILE = "dev-builds.txt";
+    private static final File dataFolder = KnockbackSync.INSTANCE.getDataFolder();
+    private static String cachedBuildType = null;
 
     public BuildTypePie() {
         super("build_type", BuildTypePie::determineBuildType);
     }
 
-    private static String determineBuildType() {
+    public static String determineBuildType() {
+        if (cachedBuildType == null) {
+            cachedBuildType = calculateBuildType();
+        }
+        return cachedBuildType;
+    }
+
+    private static String calculateBuildType() {
         try {
             String currentHash = getPluginJarHash();
-            System.out.println("Current Hash: " + currentHash);
-            String latestReleaseUrl = getLatestReleaseUrl();
+            downloadBuildFiles();
 
-            if (isHashInFile(currentHash, latestReleaseUrl + RELEASES_FILE)) {
+            if (isHashInFile(currentHash, new File(dataFolder, RELEASES_FILE))) {
                 return "release";
-            } else if (isHashInFile(currentHash, latestReleaseUrl + DEV_BUILDS_FILE)) {
+            } else if (isHashInFile(currentHash, new File(dataFolder, DEV_BUILDS_FILE))) {
                 return "dev";
             } else {
                 return "fork";
             }
         } catch (Exception e) {
+            e.printStackTrace();
             return "unknown";
         }
     }
 
-    private static String getLatestReleaseUrl() throws Exception {
-        URL url = new URL(GITHUB_API_URL);
-        try (Scanner scanner = new Scanner(url.openStream())) {
-            String response = scanner.useDelimiter("\\A").next();
-            // Simple parsing, you might want to use a JSON library for more robust parsing
-            int index = response.indexOf("\"browser_download_url\"");
-            if (index != -1) {
-                int start = response.indexOf("\"", index + 23) + 1;
-                int end = response.indexOf("\"", start);
-                return response.substring(start, end);
+    private static void downloadBuildFiles() throws IOException {
+        GitHub gitHub = GitHub.connectAnonymously();
+        GHRelease latestRelease = gitHub.getRepository("Axionize/knockback-sync")
+                .getLatestRelease();
+        List<GHAsset> assets = latestRelease.listAssets().toList();
+        for (GHAsset asset : assets) {
+            if (asset.getName().equals(RELEASES_FILE) || asset.getName().equals(DEV_BUILDS_FILE)) {
+                KnockbackSync.INSTANCE.getLogger().info("Downloading: " + asset.getName());
+
+                String jsonContent = readStringFromURL(asset.getUrl().toString());
+                JsonObject jsonObject = JsonParser.parseString(jsonContent).getAsJsonObject();
+                String downloadUrl = jsonObject.get("browser_download_url").getAsString();
+
+                try (InputStream inputStream = new URL(downloadUrl).openStream();
+                     FileOutputStream outputStream = new FileOutputStream(new File(dataFolder, asset.getName()))) {
+                    inputStream.transferTo(outputStream);
+                }
+
+                KnockbackSync.INSTANCE.getLogger().info("Downloaded: " + asset.getName());
             }
         }
-        throw new Exception("Could not find latest release URL");
+    }
+
+    private static boolean isHashInFile(String hash, File file) throws IOException {
+        if (!file.exists()) {
+            return false;
+        }
+        List<String> lines = Files.readAllLines(Paths.get(file.getPath()));
+        return lines.contains(hash);
     }
 
     private static String getPluginJarHash() throws Exception {
@@ -72,17 +107,9 @@ public class BuildTypePie extends SimplePie {
         return hexString.toString();
     }
 
-
-    private static boolean isHashInFile(String hash, String fileUrl) throws Exception {
-        URL url = new URL(fileUrl);
-        try (Scanner scanner = new Scanner(url.openStream())) {
-            while (scanner.hasNextLine()) {
-                String line = scanner.nextLine();
-                if (line.startsWith(hash)) {
-                    return true;
-                }
-            }
+    private static String readStringFromURL(String urlString) throws IOException {
+        try (InputStream inputStream = new URL(urlString).openStream()) {
+            return new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
         }
-        return false;
     }
 }
