@@ -47,7 +47,9 @@ public class StatusSubcommand implements Listener {
                                         (playerStatus ? ChatColor.GREEN + "Enabled" : ChatColor.RED + "Disabled"));
                             }
                         } else {
-                            sender.sendMessage(ChatColor.RED + "You don't have permission to check the status for " +
+                            sender.sendMessage(ChatColor.RED + "You don't have the "
+                                    + (sender.equals(target) ? "knockbacksync.status.self" : "knockbacksync.status.other") +
+                                    " permission needed to check status for " +
                                     (sender.equals(target) ? "yourself" : "other players") + ".");
                         }
                     }
