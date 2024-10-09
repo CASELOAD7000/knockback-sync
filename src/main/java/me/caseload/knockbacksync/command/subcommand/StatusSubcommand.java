@@ -8,7 +8,6 @@ import me.caseload.knockbacksync.manager.ConfigManager;
 import me.caseload.knockbacksync.manager.PlayerDataManager;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
-import org.bukkit.command.CommandSender;
 import org.bukkit.event.Listener;
 
 import java.util.UUID;
@@ -40,8 +39,13 @@ public class StatusSubcommand implements Listener {
                             UUID uuid = target.getUniqueId();
                             boolean playerStatus = !PlayerDataManager.containsPlayerData(uuid);
 
-                            sender.sendMessage(ChatColor.YELLOW + target.getName() + "'s KnockbackSync status: " +
-                                    (playerStatus ? ChatColor.GREEN + "Enabled" : ChatColor.RED + "Disabled"));
+                            if (!globalStatus) {
+                                sender.sendMessage(ChatColor.YELLOW + target.getName() + "'s KnockbackSync status: " +
+                                        ChatColor.RED + "Disabled (Global toggle is off)");
+                            } else {
+                                sender.sendMessage(ChatColor.YELLOW + target.getName() + "'s KnockbackSync status: " +
+                                        (playerStatus ? ChatColor.GREEN + "Enabled" : ChatColor.RED + "Disabled"));
+                            }
                         } else {
                             sender.sendMessage(ChatColor.RED + "You don't have permission to check the status for " +
                                     (sender.equals(target) ? "yourself" : "other players") + ".");
