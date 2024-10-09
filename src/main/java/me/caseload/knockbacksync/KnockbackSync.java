@@ -50,6 +50,10 @@ public final class KnockbackSync extends JavaPlugin {
                 new PingReceiveListener()
         );
 
+        PacketEvents.getAPI().getSettings()
+                        .checkForUpdates(false)
+                        .debug(false);
+        PacketEvents.getAPI().load();
         PacketEvents.getAPI().init();
 
         Metrics metrics = new Metrics(this, 23568);
