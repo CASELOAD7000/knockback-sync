@@ -7,7 +7,11 @@ description: Synchronizes player knockback for smoother gameplay.
 permissions:
   knockbacksync.update:
     default: op
-  knockbacksync.toggle:
+  knockbacksync.toggle.global:
+    default: op
+  knockbacksync.toggle.other:
+    default: op
+  knockbacksync.toggle.self:
     default: op
   knockbacksync.ping:
     default: op
