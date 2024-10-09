@@ -8,6 +8,9 @@ import lombok.Getter;
 import me.caseload.knockbacksync.command.MainCommand;
 import me.caseload.knockbacksync.listener.*;
 import me.caseload.knockbacksync.manager.ConfigManager;
+import me.caseload.knockbacksync.stats.BuildTypePie;
+import me.caseload.knockbacksync.stats.PlayerVersionsPie;
+import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginManager;
@@ -48,6 +51,10 @@ public final class KnockbackSync extends JavaPlugin {
         );
 
         PacketEvents.getAPI().init();
+
+        Metrics metrics = new Metrics(this, 23568);
+        metrics.addCustomChart(new PlayerVersionsPie());
+        metrics.addCustomChart(new BuildTypePie());
     }
 
     @Override
