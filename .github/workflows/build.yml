@@ -49,7 +49,9 @@ jobs:
 
       - uses: Kir-Antipov/mc-publish@v3.3
         with:
-          modrinth-id: Cospm2HY
+          modrinth-id: knockbacksync
+          modrinth-featured: true
+          modrinth-unfeature-mode: subset
           modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
 
           files: |
