@@ -80,14 +80,14 @@
 
     <repositories>
         <repository>
-            <id>spigotmc-repo</id>
+            <id>spigotmc-repo</id> <!--spigot-api-->
             <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
         </repository>
-        <repository>
+        <repository> <!--packetevents-spigot-->
             <id>codemc-releases</id>
             <url>https://repo.codemc.io/repository/maven-releases/</url>
         </repository>
-        <repository>
+        <repository> <!--Backup repo, mainly for geysermc api, bstats-bukkit-->
             <id>opencollab</id>
             <url>https://repo.opencollab.dev/maven-snapshots/</url>
         </repository>
