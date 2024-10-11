@@ -34,7 +34,18 @@ jobs:
           PATCH=$((VERSION_PARTS[2] + 1))
           NEW_VERSION="${VERSION_PARTS[0]}.${VERSION_PARTS[1]}.$PATCH-dev-axionize-b${{ steps.buildnumber.outputs.build_number }}"
           echo "NEW_VERSION=${NEW_VERSION}" >> $GITHUB_ENV
-          mvn versions:set -DnewVersion=$NEW_VERSION
+          
+          # Extract the current timestamp
+          CURRENT_TIMESTAMP=$(mvn help:evaluate -Dexpression=project.build.outputTimestamp -q -DforceStdout)
+          
+          # Update version while preserving the timestamp
+          mvn versions:set -DnewVersion=$NEW_VERSION -DgenerateBackupPoms=false \
+              -DprocessAllModules=true -DupdateMatchingVersions=true \
+              -DoldProperty=project.version -DnewProperty=project.version
+          
+          # Manually update the outputTimestamp to preserve it
+          mvn versions:set-property -Dproperty=project.build.outputTimestamp -DnewVersion="$CURRENT_TIMESTAMP" -DgenerateBackupPoms=false
+          
           sed -i "s/^version: .*$/version: $NEW_VERSION/" src/main/resources/plugin.yml
 
       - name: Build with Maven
@@ -52,8 +63,8 @@ jobs:
         run: |
           cp target/KnockbackSync-${{ env.NEW_VERSION }}.jar paper-server/plugins/
           cd paper-server
-          # Start the server to remap the plugin, timeout after 35 seconds. We really only need 15 but just to be safe...
-          timeout 35 java -Xms3G -Xmx3G -XX:+UseG1GC -XX:+ParallelRefProcEnabled -XX:MaxGCPauseMillis=200 -XX:+UnlockExperimentalVMOptions -XX:+DisableExplicitGC -XX:+AlwaysPreTouch -XX:G1NewSizePercent=30 -XX:G1MaxNewSizePercent=40 -XX:G1HeapRegionSize=8M -XX:G1ReservePercent=20 -XX:G1HeapWastePercent=5 -XX:G1MixedGCCountTarget=4 -XX:InitiatingHeapOccupancyPercent=15 -XX:G1MixedGCLiveThresholdPercent=90 -XX:G1RSetUpdatingPauseTimePercent=5 -XX:SurvivorRatio=32 -XX:+PerfDisableSharedMem -XX:MaxTenuringThreshold=1 -jar -Dcom.mojang.eula.agree=true paperclip.jar --nogui || true
+          # Start the server to remap the plugin
+          timeout 60 java -Xms3G -Xmx3G -XX:+UseG1GC -XX:+ParallelRefProcEnabled -XX:MaxGCPauseMillis=200 -XX:+UnlockExperimentalVMOptions -XX:+DisableExplicitGC -XX:+AlwaysPreTouch -XX:G1NewSizePercent=30 -XX:G1MaxNewSizePercent=40 -XX:G1HeapRegionSize=8M -XX:G1ReservePercent=20 -XX:G1HeapWastePercent=5 -XX:G1MixedGCCountTarget=4 -XX:InitiatingHeapOccupancyPercent=15 -XX:G1MixedGCLiveThresholdPercent=90 -XX:G1RSetUpdatingPauseTimePercent=5 -XX:SurvivorRatio=32 -XX:+PerfDisableSharedMem -XX:MaxTenuringThreshold=1 -jar -Dcom.mojang.eula.agree=true paperclip.jar --nogui || true
 
       # Get the Hashes of the Original and Remapped JARs
       - name: Calculate Hashes
