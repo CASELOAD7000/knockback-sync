@@ -28,30 +28,30 @@ public class StatusSubcommand implements Listener {
                             (globalStatus ? ChatColor.GREEN + "Enabled" : ChatColor.RED + "Disabled"));
 
                     // Show player status
-                    if (target == null && sender instanceof Player) {
+                    if (target == null && sender instanceof Player)
                         target = (Player) sender;
-                    }
 
-                    if (target != null) {
-                        if (sender.hasPermission("knockbacksync.status.self") ||
-                                (sender.hasPermission("knockbacksync.status.other") && !sender.equals(target))) {
+                    if (target == null)
+                        return;
 
-                            UUID uuid = target.getUniqueId();
-                            boolean playerStatus = !PlayerDataManager.containsPlayerData(uuid);
+                    if (sender.hasPermission("knockbacksync.status.self") ||
+                            (sender.hasPermission("knockbacksync.status.other") && !sender.equals(target))) {
 
-                            if (!globalStatus) {
-                                sender.sendMessage(ChatColor.YELLOW + target.getName() + "'s KnockbackSync status: " +
-                                        ChatColor.RED + "Disabled (Global toggle is off)");
-                            } else {
-                                sender.sendMessage(ChatColor.YELLOW + target.getName() + "'s KnockbackSync status: " +
-                                        (playerStatus ? ChatColor.GREEN + "Enabled" : ChatColor.RED + "Disabled"));
-                            }
+                        UUID uuid = target.getUniqueId();
+                        boolean playerStatus = !PlayerDataManager.containsPlayerData(uuid);
+
+                        if (!globalStatus) {
+                            sender.sendMessage(ChatColor.YELLOW + target.getName() + "'s KnockbackSync status: " +
+                                    ChatColor.RED + "Disabled (Global toggle is off)");
                         } else {
-                            sender.sendMessage(ChatColor.RED + "You don't have the "
-                                    + (sender.equals(target) ? "knockbacksync.status.self" : "knockbacksync.status.other") +
-                                    " permission needed to check status for " +
-                                    (sender.equals(target) ? "yourself" : "other players") + ".");
+                            sender.sendMessage(ChatColor.YELLOW + target.getName() + "'s KnockbackSync status: " +
+                                    (playerStatus ? ChatColor.GREEN + "Enabled" : ChatColor.RED + "Disabled"));
                         }
+                    } else {
+                        sender.sendMessage(ChatColor.RED + "You don't have the "
+                                + (sender.equals(target) ? "knockbacksync.status.self" : "knockbacksync.status.other") +
+                                " permission needed to check status for " +
+                                (sender.equals(target) ? "yourself" : "other players") + ".");
                     }
                 });
     }

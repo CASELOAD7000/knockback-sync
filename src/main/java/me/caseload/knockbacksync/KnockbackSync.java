@@ -57,6 +57,7 @@ public final class KnockbackSync extends JavaPlugin {
         PacketEvents.getAPI().getSettings()
                         .checkForUpdates(false)
                         .debug(false);
+
         PacketEvents.getAPI().load();
         PacketEvents.getAPI().init();
 
