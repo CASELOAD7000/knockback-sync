@@ -45,8 +45,16 @@ public class ConfigManager {
 
         runnableEnabled = newRunnableEnabled;
 
-        if (runnableEnabled)
-            pingTask = KnockbackSync.INSTANCE.getScheduler().runTaskTimerAsynchronously(new PingRunnable(), 0L, runnableInterval);
+        if (runnableEnabled) {
+            long initialDelay = 0L;
+            long pingTaskRunnableInterval = runnableInterval;
+            // Folia does not allow 0 ticks of wait time
+            if (KnockbackSync.INSTANCE.isFolia) {
+                initialDelay = 1L;
+                pingTaskRunnableInterval = Math.max(pingTaskRunnableInterval, 1L);
+            }
+            pingTask = KnockbackSync.INSTANCE.getScheduler().runTaskTimerAsynchronously(new PingRunnable(), initialDelay, pingTaskRunnableInterval);
+        }
 
         notifyUpdate = instance.getConfig().getBoolean("notify_updates", true);
         runnableInterval = instance.getConfig().getLong("runnable.interval", 5L);
