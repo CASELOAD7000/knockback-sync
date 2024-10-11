@@ -26,18 +26,16 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Update version in pom.xml
+      - name: Update version in pom.xml and plugin.yml
         run: |
-          VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
-          NEW_VERSION="${VERSION}-dev.${{ steps.buildnumber.outputs.build_number }}"
-          mvn versions:set -DnewVersion=$NEW_VERSION
-
+            VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+            IFS='.' read -ra VERSION_PARTS <<< "$VERSION"
+            PATCH=$((VERSION_PARTS[2] + 1))
+            NEW_VERSION="${VERSION_PARTS[0]}.${VERSION_PARTS[1]}.$PATCH-dev-b${{ steps.buildnumber.outputs.build_number }}"
+            mvn versions:set -DnewVersion=$NEW_VERSION
+            sed -i "s/^version: .*$/version: $NEW_VERSION/" src/main/resources/plugin.yml
       - name: Build with Maven
         run: mvn clean package
-
-      - name: Update plugin.yml
-        run: |
-          sed -i 's/^version: .*$/version: ${{ steps.buildnumber.outputs.build_number }}/' src/main/resources/plugin.yml
 
       - name: Commit and push if changed
         run: |
