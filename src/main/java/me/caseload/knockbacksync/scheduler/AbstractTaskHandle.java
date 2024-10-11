@@ -8,6 +8,11 @@ import org.jetbrains.annotations.NotNull;
 public class AbstractTaskHandle {
     private BukkitTask bukkitTask;
     private ScheduledTask scheduledTask;
+    private Runnable cancellationTask;
+
+    public AbstractTaskHandle(Runnable cancellationTask) {
+        this.cancellationTask = cancellationTask;
+    }
 
     public AbstractTaskHandle(@NotNull BukkitTask bukkitTask) {
         this.bukkitTask = bukkitTask;
@@ -28,6 +33,8 @@ public class AbstractTaskHandle {
     public void cancel() {
         if (this.bukkitTask != null) {
             this.bukkitTask.cancel();
+        } else if (this.cancellationTask != null) {
+            this.cancellationTask.run();
         } else {
             this.scheduledTask.cancel();
         }

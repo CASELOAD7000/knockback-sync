@@ -3,6 +3,7 @@ package me.caseload.knockbacksync.manager;
 import lombok.Getter;
 import lombok.Setter;
 import me.caseload.knockbacksync.KnockbackSync;
+import me.caseload.knockbacksync.Platform;
 import me.caseload.knockbacksync.runnable.PingRunnable;
 import me.caseload.knockbacksync.scheduler.AbstractTaskHandle;
 import org.bukkit.scheduler.BukkitTask;
@@ -49,7 +50,7 @@ public class ConfigManager {
             long initialDelay = 0L;
             long pingTaskRunnableInterval = runnableInterval;
             // Folia does not allow 0 ticks of wait time
-            if (KnockbackSync.INSTANCE.isFolia) {
+            if (KnockbackSync.INSTANCE.platform == Platform.FOLIA) {
                 initialDelay = 1L;
                 pingTaskRunnableInterval = Math.max(pingTaskRunnableInterval, 1L);
             }

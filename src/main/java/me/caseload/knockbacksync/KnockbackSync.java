@@ -12,7 +12,6 @@ import me.caseload.knockbacksync.scheduler.BukkitSchedulerAdapter;
 import me.caseload.knockbacksync.scheduler.FoliaSchedulerAdapter;
 import me.caseload.knockbacksync.scheduler.SchedulerAdapter;
 import me.caseload.knockbacksync.stats.StatsManager;
-import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -26,7 +25,26 @@ public final class KnockbackSync extends JavaPlugin {
     public static KnockbackSync INSTANCE;
     @Getter
     private SchedulerAdapter scheduler;
-    public final boolean isFolia = io.github.retrooper.packetevents.util.folia.FoliaScheduler.isFolia();
+    public final Platform platform = getPlatform();
+
+    private Platform getPlatform() {
+        try {
+            Class.forName("io.papermc.paper.threadedregions.RegionizedServer");
+            return Platform.FOLIA; // Paper (Folia) detected
+        } catch (ClassNotFoundException ignored) {}
+
+        try {
+            Class.forName("net.fabricmc.loader.api.FabricLoader");
+            return Platform.FABRIC; // Fabric detected
+        } catch (ClassNotFoundException ignored) {}
+
+        try {
+            Class.forName("org.bukkit.Bukkit");
+            return Platform.BUKKIT; // Bukkit (Spigot/Paper without Folia) detected
+        } catch (ClassNotFoundException ignored) {}
+
+        throw new IllegalStateException("Unknown platform!");
+    }
 
     @Getter
     private final ConfigManager configManager = new ConfigManager();
@@ -43,8 +61,14 @@ public final class KnockbackSync extends JavaPlugin {
         LOGGER = getLogger();
         INSTANCE = this;
 //        checkForUpdates();
-
-        scheduler = isFolia ? new FoliaSchedulerAdapter(this) : new BukkitSchedulerAdapter(this);
+        switch (platform) {
+            case FOLIA:
+                scheduler = new FoliaSchedulerAdapter(this);
+            case BUKKIT:
+                scheduler = new BukkitSchedulerAdapter(this);
+//            case FABRIC:
+//                scheduler = new FabricSchedulerAdapter(this);
+        }
 
         saveDefaultConfig();
         configManager.loadConfig(false);
