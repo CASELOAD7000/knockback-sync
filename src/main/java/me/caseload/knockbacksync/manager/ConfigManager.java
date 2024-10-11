@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import me.caseload.knockbacksync.KnockbackSync;
 import me.caseload.knockbacksync.runnable.PingRunnable;
+import me.caseload.knockbacksync.scheduler.AbstractTaskHandle;
 import org.bukkit.scheduler.BukkitTask;
 
 @Getter
@@ -26,7 +27,7 @@ public class ConfigManager {
     private String playerIneligibleMessage;
     private String reloadMessage;
 
-    private BukkitTask pingTask;
+    private AbstractTaskHandle pingTask;
 
     public void loadConfig(boolean reloadConfig) {
         KnockbackSync instance = KnockbackSync.getInstance();
@@ -45,7 +46,7 @@ public class ConfigManager {
         runnableEnabled = newRunnableEnabled;
 
         if (runnableEnabled)
-            pingTask = new PingRunnable().runTaskTimerAsynchronously(instance, 0L, runnableInterval);
+            pingTask = KnockbackSync.INSTANCE.getScheduler().runTaskTimerAsynchronously(new PingRunnable(), 0L, runnableInterval);
 
         notifyUpdate = instance.getConfig().getBoolean("notify_updates", true);
         runnableInterval = instance.getConfig().getLong("runnable.interval", 5L);

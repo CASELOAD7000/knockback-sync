@@ -4,6 +4,7 @@ main: me.caseload.knockbacksync.KnockbackSync
 api-version: '1.18'
 authors: [ Caseload ]
 description: Synchronizes player knockback for smoother gameplay.
+folia-supported: true
 permissions:
   knockbacksync.update:
     default: op
