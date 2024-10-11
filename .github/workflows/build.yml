@@ -3,7 +3,9 @@ name: Build and Version Update
 on:
   push:
     branches:
-      - main  # or your default branch name
+      - main
+      - merge
+      - dev
 
 jobs:
   build:
