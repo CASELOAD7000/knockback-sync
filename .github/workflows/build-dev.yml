@@ -3,8 +3,6 @@ name: Build and Version Update
 on:
   push:
     branches:
-      - main
-      - merge
       - dev
 
 jobs:
