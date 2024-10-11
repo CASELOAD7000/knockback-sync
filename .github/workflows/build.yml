@@ -48,6 +48,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Plugin-JAR
+          name: KnockbackSync-${{ env.NEW_VERSION }}
           path: target/KnockbackSync-*.jar
+          retention-days: 90
 
