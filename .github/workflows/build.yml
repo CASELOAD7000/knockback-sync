@@ -36,21 +36,16 @@ jobs:
           echo "NEW_VERSION=${NEW_VERSION}" >> $GITHUB_ENV
           mvn versions:set -DnewVersion=$NEW_VERSION
           sed -i "s/^version: .*$/version: $NEW_VERSION/" src/main/resources/plugin.yml
+
       - name: Build with Maven
         run: mvn clean package
 
-      #      - name: Commit and push if changed
-      #        run: |
-      #          git config --local user.email "action@github.com"
-      #          git config --local user.name "GitHub Action"
-      #          git add pom.xml src/main/resources/plugin.yml
-      #          git commit -m "Update version to ${{ steps.buildnumber.outputs.build_number }}" || exit 0
-      #          git push
+      - name: Rename JAR file
+        run: mv target/*.jar target/KnockbackSync-${{ env.NEW_VERSION }}.jar
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: KnockbackSync-${{ env.NEW_VERSION }}
-          path: target/KnockbackSync-*.jar
+          name: KnockbackSync-${{ env.NEW_VERSION }}.jar
+          path: target/KnockbackSync-${{ env.NEW_VERSION }}.jar
           retention-days: 90
-
