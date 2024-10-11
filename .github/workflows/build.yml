@@ -17,7 +17,7 @@ jobs:
       - name: Set up JDK
         uses: actions/setup-java@v2
         with:
-          java-version: '17'  # or your preferred Java version
+          java-version: '21'  # or your preferred Java version
           distribution: 'adopt'
 
       - name: Generate build number
@@ -73,7 +73,8 @@ jobs:
           # Download the current dev-builds.txt
           curl -L -o dev-builds.txt https://github.com/Axionize/knockback-sync/releases/download/hashlist/dev-builds.txt
           
-          # Append new information
+          # Ensure the file ends with a newline, then append new information
+          sed -i -e '$a\' dev-builds.txt
           echo "KnockBackSync-${{ env.NEW_VERSION }}.jar" >> dev-builds.txt
           echo "${{ env.ORIGINAL_HASH }}" >> dev-builds.txt
           echo "KnockBackSync-${{ env.NEW_VERSION }}-remapped.jar" >> dev-builds.txt
