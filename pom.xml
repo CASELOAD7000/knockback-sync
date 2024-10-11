@@ -14,6 +14,9 @@
     <properties>
         <java.version>17</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <!--outputTimestamp must be set to a consistent arbitrary value for reproducibility-->
+        <!--Chosen value is the exact time caseload uploaded the first commit-->
+        <project.build.outputTimestamp>2024-01-18T02:53:12Z</project.build.outputTimestamp>
     </properties>
 
     <build>
