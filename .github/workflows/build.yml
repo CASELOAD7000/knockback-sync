@@ -1,0 +1,52 @@
+name: Build and Version Update
+
+on:
+  push:
+    branches:
+      - main
+      - merge
+      - dev
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up JDK
+        uses: actions/setup-java@v2
+        with:
+          java-version: '17'  # or your preferred Java version
+          distribution: 'adopt'
+
+      - name: Generate build number
+        id: buildnumber
+        uses: einaregilsson/build-number@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Update version in pom.xml and plugin.yml
+        run: |
+          VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+          IFS='.' read -ra VERSION_PARTS <<< "$VERSION"
+          PATCH=$((VERSION_PARTS[2] + 1))
+          NEW_VERSION="${VERSION_PARTS[0]}.${VERSION_PARTS[1]}.$PATCH-dev-b${{ steps.buildnumber.outputs.build_number }}"
+          mvn versions:set -DnewVersion=$NEW_VERSION
+          sed -i "s/^version: .*$/version: $NEW_VERSION/" src/main/resources/plugin.yml
+      - name: Build with Maven
+        run: mvn clean package
+
+      #      - name: Commit and push if changed
+      #        run: |
+      #          git config --local user.email "action@github.com"
+      #          git config --local user.name "GitHub Action"
+      #          git add pom.xml src/main/resources/plugin.yml
+      #          git commit -m "Update version to ${{ steps.buildnumber.outputs.build_number }}" || exit 0
+      #          git push
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Plugin-JAR
+          path: target/*.jar
