@@ -135,6 +135,7 @@ jobs:
             bukkit
             spigot
             paper
+            folia
 
           game-versions: |
             >=1.18.2
