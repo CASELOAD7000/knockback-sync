@@ -26,7 +26,7 @@ public final class KnockbackSync extends JavaPlugin {
     public static KnockbackSync INSTANCE;
     @Getter
     private SchedulerAdapter scheduler;
-    private final boolean isFolia = io.github.retrooper.packetevents.util.folia.FoliaScheduler.isFolia();
+    public final boolean isFolia = io.github.retrooper.packetevents.util.folia.FoliaScheduler.isFolia();
 
     @Getter
     private final ConfigManager configManager = new ConfigManager();
