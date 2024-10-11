@@ -46,3 +46,28 @@ jobs:
           name: KnockbackSync-${{ env.NEW_VERSION }}.jar
           path: target/KnockbackSync-${{ env.NEW_VERSION }}.jar
           retention-days: 90
+
+      - uses: Kir-Antipov/mc-publish@v3.3
+        with:
+          modrinth-id: Cospm2HY
+          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
+
+          files: |
+            target/KnockbackSync-${{ env.NEW_VERSION }}.jar
+
+          name: KnockbackSync-${{ env.NEW_VERSION }}
+          version: ${{ env.NEW_VERSION }}
+          version-type: beta
+          changelog-file: CHANGELOG.*
+
+          loaders: |
+            bukkit
+            spigot
+            paper
+
+          game-versions: |
+            >=1.18.2
+
+          retry-attempts: 2
+          retry-delay: 10000
+          fail-mode: fail
