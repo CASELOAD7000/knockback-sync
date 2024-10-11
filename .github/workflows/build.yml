@@ -43,7 +43,7 @@ jobs:
       # Download PaperSpigot (Choose version for reproducibility
       - name: Download PaperSpigot
         run: |
-          mkdir paper-server
+          mkdir 0p paper-server/plugins
           curl -o paperclip.jar https://api.papermc.io/v2/projects/paper/versions/1.21.1/builds/120/downloads/paper-1.21.1-120.jar 
           mv paperclip.jar paper-server/
 
