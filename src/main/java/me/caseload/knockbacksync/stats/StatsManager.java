@@ -9,7 +9,7 @@ public class StatsManager {
     public static Metrics metrics;
 
     public static void init() {
-        Bukkit.getScheduler().runTaskAsynchronously(KnockbackSync.getInstance(), () -> {
+        KnockbackSync.INSTANCE.getScheduler().runTaskAsynchronously(() -> {
             BuildTypePie.determineBuildType(); // Function to calculate hash
             metrics = new Metrics(KnockbackSync.INSTANCE, 23568);
             metrics.addCustomChart(new PlayerVersionsPie());

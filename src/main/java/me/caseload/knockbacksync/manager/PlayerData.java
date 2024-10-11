@@ -4,9 +4,11 @@ import com.github.retrooper.packetevents.PacketEvents;
 import com.github.retrooper.packetevents.protocol.player.ClientVersion;
 import com.github.retrooper.packetevents.protocol.player.User;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerPing;
+import io.github.retrooper.packetevents.util.folia.TaskWrapper;
 import lombok.Getter;
 import lombok.Setter;
 import me.caseload.knockbacksync.KnockbackSync;
+import me.caseload.knockbacksync.scheduler.AbstractTaskHandle;
 import me.caseload.knockbacksync.util.MathUtil;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
@@ -16,7 +18,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.BoundingBox;
 import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
@@ -44,7 +45,7 @@ public class PlayerData {
     private final Random random = new Random();
 
     @Nullable
-    private BukkitTask combatTask;
+    private AbstractTaskHandle combatTask;
 
     @Nullable @Setter
     private Long ping, previousPing;
@@ -228,8 +229,8 @@ public class PlayerData {
     }
 
     @NotNull
-    private BukkitTask newCombatTask() {
-        return Bukkit.getScheduler().runTaskLaterAsynchronously(KnockbackSync.getInstance(),
+    private AbstractTaskHandle newCombatTask() {
+        return KnockbackSync.INSTANCE.getScheduler().runTaskLaterAsynchronously(
                 () -> quitCombat(false), KnockbackSync.getInstance().getConfigManager().getCombatTimer());
     }
 
