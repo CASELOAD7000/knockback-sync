@@ -1,0 +1,139 @@
+name: Build and Version Update
+
+on:
+  push:
+    branches:
+      - main
+      - merge
+      - dev
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up JDK
+        uses: actions/setup-java@v2
+        with:
+          java-version: '21'  # or your preferred Java version
+          distribution: 'adopt'
+
+      - name: Generate build number
+        id: buildnumber
+        uses: einaregilsson/build-number@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Update version in pom.xml and plugin.yml
+        id: update_version
+        run: |
+          VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+          IFS='.' read -ra VERSION_PARTS <<< "$VERSION"
+          PATCH=$((VERSION_PARTS[2] + 1))
+          NEW_VERSION="${VERSION_PARTS[0]}.${VERSION_PARTS[1]}.$PATCH-dev-axionize-b${{ steps.buildnumber.outputs.build_number }}"
+          echo "NEW_VERSION=${NEW_VERSION}" >> $GITHUB_ENV
+          
+          # Extract the current timestamp
+          CURRENT_TIMESTAMP=$(mvn help:evaluate -Dexpression=project.build.outputTimestamp -q -DforceStdout)
+          
+          # Update version while preserving the timestamp
+          mvn versions:set -DnewVersion=$NEW_VERSION -DgenerateBackupPoms=false \
+              -DprocessAllModules=true -DupdateMatchingVersions=true \
+              -DoldProperty=project.version -DnewProperty=project.version
+          
+          # Manually update the outputTimestamp to preserve it
+          mvn versions:set-property -Dproperty=project.build.outputTimestamp -DnewVersion="$CURRENT_TIMESTAMP" -DgenerateBackupPoms=false
+          
+          sed -i "s/^version: .*$/version: $NEW_VERSION/" src/main/resources/plugin.yml
+
+      - name: Build with Maven
+        run: mvn clean package
+
+      # Download PaperSpigot (Choose version for reproducibility
+      - name: Download PaperSpigot
+        run: |
+          mkdir -p paper-server/plugins
+          curl -o paperclip.jar https://api.papermc.io/v2/projects/paper/versions/1.21.1/builds/120/downloads/paper-1.21.1-120.jar 
+          mv paperclip.jar paper-server/
+
+      # Copy Plugin into Plugins Folder and Start Server
+      - name: Copy Plugin and Start Paper Server
+        run: |
+          cp target/KnockbackSync-${{ env.NEW_VERSION }}.jar paper-server/plugins/
+          cd paper-server
+          # Start the server to remap the plugin
+          timeout 60 java -Xms3G -Xmx3G -XX:+UseG1GC -XX:+ParallelRefProcEnabled -XX:MaxGCPauseMillis=200 -XX:+UnlockExperimentalVMOptions -XX:+DisableExplicitGC -XX:+AlwaysPreTouch -XX:G1NewSizePercent=30 -XX:G1MaxNewSizePercent=40 -XX:G1HeapRegionSize=8M -XX:G1ReservePercent=20 -XX:G1HeapWastePercent=5 -XX:G1MixedGCCountTarget=4 -XX:InitiatingHeapOccupancyPercent=15 -XX:G1MixedGCLiveThresholdPercent=90 -XX:G1RSetUpdatingPauseTimePercent=5 -XX:SurvivorRatio=32 -XX:+PerfDisableSharedMem -XX:MaxTenuringThreshold=1 -jar -Dcom.mojang.eula.agree=true paperclip.jar --nogui || true
+
+      # Get the Hashes of the Original and Remapped JARs
+      - name: Calculate Hashes
+        run: |
+          # Calculate hash for the original JAR
+          ORIGINAL_HASH=$(sha256sum target/KnockbackSync-${{ env.NEW_VERSION }}.jar | awk '{print $1}')
+          echo "ORIGINAL_HASH=$ORIGINAL_HASH" >> $GITHUB_ENV
+          # Calculate hash for the remapped JAR
+          REMAPPED_HASH=$(sha256sum paper-server/plugins/.paper-remapped/KnockbackSync-${{ env.NEW_VERSION }}.jar | awk '{print $1}')
+          echo "REMAPPED_HASH=$REMAPPED_HASH" >> $GITHUB_ENV
+
+      # Download, update, and re-upload dev-builds.txt
+      - name: Update dev-builds.txt
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Get the latest release information
+          LATEST_RELEASE=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+            "https://api.github.com/repos/CASELOAD7000/knockback-sync/releases/latest")
+          RELEASE_ID=$(echo $LATEST_RELEASE | jq -r .id)
+          RELEASE_TAG=$(echo $LATEST_RELEASE | jq -r .tag_name)
+          
+          # Download the current dev-builds.txt
+          curl -L -o dev-builds.txt "https://github.com/CASELOAD7000/knockback-sync/releases/download/$RELEASE_TAG/dev-builds.txt"
+          
+          # Ensure the file ends with a newline, then append new information
+          sed -i -e '$a\' dev-builds.txt
+          echo "KnockBackSync-${{ env.NEW_VERSION }}.jar" >> dev-builds.txt
+          echo "${{ env.ORIGINAL_HASH }}" >> dev-builds.txt
+          echo "KnockBackSync-${{ env.NEW_VERSION }}-remapped.jar" >> dev-builds.txt
+          echo "${{ env.REMAPPED_HASH }}" >> dev-builds.txt
+          
+          # Delete the old dev-builds.txt asset
+          ASSET_ID=$(echo $LATEST_RELEASE | jq -r '.assets[] | select(.name == "dev-builds.txt") | .id')
+          if [ ! -z "$ASSET_ID" ]; then
+            curl -X DELETE -H "Authorization: token $GITHUB_TOKEN" \
+              "https://api.github.com/repos/CASELOAD7000/knockback-sync/releases/assets/$ASSET_ID"
+          fi
+          
+          # Upload the new dev-builds.txt
+          curl -X POST -H "Authorization: token $GITHUB_TOKEN" \
+            -H "Content-Type: application/octet-stream" \
+            --data-binary @dev-builds.txt \
+            "https://uploads.github.com/repos/CASELOAD7000/knockback-sync/releases/$RELEASE_ID/assets?name=dev-builds.txt"
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: KnockbackSync-${{ env.NEW_VERSION }}.jar
+          path: target/KnockbackSync-${{ env.NEW_VERSION }}.jar
+          retention-days: 90
+
+      - uses: Kir-Antipov/mc-publish@v3.3
+        with:
+          github-tag: dev
+          github-generate-changelog: true
+          github-draft: false
+          github-prerelease: true
+          github-commitish: dev
+          github-discussion: Announcements
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+          files: |
+            target/KnockbackSync-${{ env.NEW_VERSION }}.jar
+
+          name: KnockbackSync-${{ env.NEW_VERSION }}
+          version: ${{ env.NEW_VERSION }}
+          version-type: beta
+
+          retry-attempts: 2
+          retry-delay: 10000
+          fail-mode: fail
