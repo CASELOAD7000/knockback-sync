@@ -23,6 +23,7 @@ public class ConfigManager {
     private String disableMessage;
     private String playerEnableMessage;
     private String playerDisableMessage;
+    private String playerIneligibleMessage;
     private String reloadMessage;
 
     private BukkitTask pingTask;
@@ -52,8 +53,9 @@ public class ConfigManager {
         spikeThreshold = instance.getConfig().getLong("spike_threshold", 20L);
         enableMessage = instance.getConfig().getString("enable_message", "&aSuccessfully enabled KnockbackSync.");
         disableMessage = instance.getConfig().getString("disable_message", "&cSuccessfully disabled KnockbackSync.");
-        playerEnableMessage = instance.getConfig().getString("enable_player_message", "&aSuccessfully enabled KnockbackSync for %player%.");
-        playerDisableMessage = instance.getConfig().getString("disable_player_message", "&cSuccessfully disabled KnockbackSync for %player%.");
+        playerEnableMessage = instance.getConfig().getString("player_enable_message", "&aSuccessfully enabled KnockbackSync for %player%.");
+        playerDisableMessage = instance.getConfig().getString("player_disable_message", "&cSuccessfully disabled KnockbackSync for %player%.");
+        playerIneligibleMessage = instance.getConfig().getString("player_ineligible_message", "&c%player% is ineligible for KnockbackSync. If you believe this is an error, please open an issue on the github page.");
         reloadMessage = instance.getConfig().getString("reload_message", "&aSuccessfully reloaded KnockbackSync.");
         PlayerData.PING_OFFSET = KnockbackSync.getInstance().getConfig().getInt("ping_offset", 25);
     }

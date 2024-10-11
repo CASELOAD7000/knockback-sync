@@ -25,8 +25,9 @@ spike_threshold: 20
 
 enable_message: "&aSuccessfully enabled KnockbackSync."
 disable_message: "&cSuccessfully disabled KnockbackSync."
-enable_player_message: "&aSuccessfully enabled KnockbackSync for %player%."
-disable_player_message: "&cSuccessfully disabled KnockbackSync for %player%."
+player_enable_message: "&aSuccessfully enabled KnockbackSync for %player%."
+player_disable_message: "&cSuccessfully disabled KnockbackSync for %player%."
+player_ineligible_message: "&c%player% is ineligible for KnockbackSync. If you believe this is an error, please open an issue on the github page."
 reload_message: "&aSuccessfully reloaded KnockbackSync config."
 
 # Read FAQ!

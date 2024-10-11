@@ -4,6 +4,7 @@ public class MathUtil {
 
     private static final double TERMINAL_VELOCITY = 3.92;
     private static final double MULTIPLIER = 0.98;
+    private static final int MAX_TICKS = 20;
 
     public static double calculateDistanceTraveled(double velocity, int time, double acceleration)
     {
@@ -24,6 +25,9 @@ public class MathUtil {
         int ticks = 0;
 
         while (distance > 0) {
+            if (ticks > MAX_TICKS)
+                return -1;
+
             velocity += acceleration;
             velocity = Math.min(velocity, TERMINAL_VELOCITY);
             velocity *= MULTIPLIER;

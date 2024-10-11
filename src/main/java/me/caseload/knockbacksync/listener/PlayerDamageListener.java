@@ -18,10 +18,10 @@ public class PlayerDamageListener implements Listener {
         if (!(event.getEntity() instanceof Player victim) || !(event.getDamager() instanceof Player attacker))
             return;
 
-        if (PlayerDataManager.isExempt(victim.getUniqueId()))
+        PlayerData playerData = PlayerDataManager.getPlayerData(victim.getUniqueId());
+        if (playerData == null)
             return;
 
-        PlayerData playerData = PlayerDataManager.getPlayerData(victim.getUniqueId());
         playerData.setVerticalVelocity(playerData.calculateVerticalVelocity(attacker)); // do not move this calculation
         playerData.setLastDamageTicks(victim.getNoDamageTicks());
         playerData.updateCombat();

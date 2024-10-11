@@ -121,6 +121,9 @@ public class PlayerData {
         double mH = verticalVelocity > 0 ? MathUtil.calculateDistanceTraveled(verticalVelocity, tMax, gravity) : 0;
         int tFall = MathUtil.calculateFallTime(verticalVelocity, mH + gDist, gravity);
 
+        if (tFall == -1)
+            return false; // reached the max tick limit, not safe to predict
+
         return getEstimatedPing() >= tMax + tFall / 20.0 * 1000 && gDist <= 1.3;
     }
 

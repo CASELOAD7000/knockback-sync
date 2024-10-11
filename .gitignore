@@ -1,0 +1,8 @@
+# Ignores all of the Intellij Project settings
+.idea/
+
+# Ignore maven reduced POM built when importing/packaging project
+dependency-reduced-pom.xml
+
+# Ignore maven build files
+target/

@@ -20,17 +20,13 @@ public class PingReceiveListener extends PacketListenerAbstract {
             return;
 
         Player player = event.getPlayer();
-        if (PlayerDataManager.isExempt(player.getUniqueId()))
-            return;
-
         PlayerData playerData = PlayerDataManager.getPlayerData(player.getUniqueId());
-        // IDE may think this can never be null. That is not true.
+
         // If player is timed out by the server and removed from the map on the main thread
         // The server can still receive ping packets from the disconnected client
         // At which point the entry will no longer be in the map but this code will be processed!
         if (playerData == null)
             return;
-
 
         int packetId = new WrapperPlayClientPong(event).getId();
 
