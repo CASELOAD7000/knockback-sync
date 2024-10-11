@@ -32,7 +32,7 @@ jobs:
           VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
           IFS='.' read -ra VERSION_PARTS <<< "$VERSION"
           PATCH=$((VERSION_PARTS[2] + 1))
-          NEW_VERSION="${VERSION_PARTS[0]}.${VERSION_PARTS[1]}.$PATCH-dev-b${{ steps.buildnumber.outputs.build_number }}"
+          NEW_VERSION="${VERSION_PARTS[0]}.${VERSION_PARTS[1]}.$PATCH-dev-axionize-b${{ steps.buildnumber.outputs.build_number }}"
           echo "NEW_VERSION=${NEW_VERSION}" >> $GITHUB_ENV
           mvn versions:set -DnewVersion=$NEW_VERSION
           sed -i "s/^version: .*$/version: $NEW_VERSION/" src/main/resources/plugin.yml
