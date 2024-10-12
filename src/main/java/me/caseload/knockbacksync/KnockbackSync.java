@@ -30,6 +30,7 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.kohsuke.github.GitHub;
 
+import java.io.File;
 import java.util.List;
 import java.util.logging.Logger;
 

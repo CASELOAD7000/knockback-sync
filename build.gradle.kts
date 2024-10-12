@@ -55,6 +55,8 @@ dependencies {
     shadeThisThing(implementation("com.github.retrooper:packetevents-spigot:2.5.0")!!)
     shadeThisThing(implementation("dev.jorel:commandapi-bukkit-shade:9.5.3")!!)
     shadeThisThing(implementation("org.kohsuke:github-api:1.326")!!)
+    shadeThisThing(implementation("com.fasterxml.jackson.core:jackson-databind:2.17.2")!!) // Jackson 2.17.2 corresponds to org.kohsuke 1.326
+    shadeThisThing(implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.17.2")!!)
     shadeThisThing(implementation("org.bstats:bstats-bukkit:3.0.2")!!)
 
     implementation("me.lucko:commodore:2.2")
