@@ -4,7 +4,8 @@ import com.github.retrooper.packetevents.event.PacketListenerAbstract;
 import com.github.retrooper.packetevents.event.PacketReceiveEvent;
 import com.github.retrooper.packetevents.protocol.packettype.PacketType;
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPong;
-import me.caseload.knockbacksync.KnockbackSync;
+import me.caseload.knockbacksync.KnockbackSyncBase;
+import me.caseload.knockbacksync.KnockbackSyncPlugin;
 import me.caseload.knockbacksync.manager.PlayerData;
 import me.caseload.knockbacksync.manager.PlayerDataManager;
 import org.bukkit.entity.Player;
@@ -13,7 +14,7 @@ public class PingReceiveListener extends PacketListenerAbstract {
 
     @Override
     public void onPacketReceive(PacketReceiveEvent event) {
-        if (!KnockbackSync.getInstance().getConfigManager().isToggled())
+        if (!KnockbackSyncBase.INSTANCE.getConfigManager().isToggled())
             return;
 
         if (event.getPacketType() != PacketType.Play.Client.PONG)

@@ -3,7 +3,8 @@ package me.caseload.knockbacksync.command.subcommand;
 import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.CommandPermission;
 import dev.jorel.commandapi.arguments.PlayerArgument;
-import me.caseload.knockbacksync.KnockbackSync;
+import me.caseload.knockbacksync.KnockbackSyncBase;
+import me.caseload.knockbacksync.KnockbackSyncPlugin;
 import me.caseload.knockbacksync.manager.ConfigManager;
 import me.caseload.knockbacksync.manager.PlayerData;
 import me.caseload.knockbacksync.manager.PlayerDataManager;
@@ -21,7 +22,7 @@ public class ToggleSubcommand implements Listener {
                 .withPermission(CommandPermission.NONE)
                 .withOptionalArguments(new PlayerArgument("target"))
                 .executes((sender, args) -> {
-                    ConfigManager configManager = KnockbackSync.getInstance().getConfigManager();
+                    ConfigManager configManager = KnockbackSyncBase.INSTANCE.getConfigManager();
                     Player target = (Player) args.get("target");
                     String message;
 
@@ -31,8 +32,8 @@ public class ToggleSubcommand implements Listener {
                             boolean toggledState = !configManager.isToggled();
                             configManager.setToggled(toggledState);
 
-                            KnockbackSync.getInstance().getConfig().set("enabled", toggledState);
-                            KnockbackSync.getInstance().saveConfig();
+                            KnockbackSyncBase.INSTANCE.getConfigManager().getConfig().set("enabled", toggledState);
+                            KnockbackSyncBase.INSTANCE.getConfigManager().saveConfig();
 
                             message = ChatColor.translateAlternateColorCodes('&',
                                     toggledState ? configManager.getEnableMessage() : configManager.getDisableMessage()

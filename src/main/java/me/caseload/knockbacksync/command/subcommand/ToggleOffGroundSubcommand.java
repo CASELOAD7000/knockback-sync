@@ -1,6 +1,7 @@
 package me.caseload.knockbacksync.command.subcommand;
 import dev.jorel.commandapi.CommandAPICommand;
-import me.caseload.knockbacksync.KnockbackSync;
+import me.caseload.knockbacksync.KnockbackSyncBase;
+import me.caseload.knockbacksync.KnockbackSyncPlugin;
 import org.bukkit.ChatColor;
 
 public class ToggleOffGroundSubcommand {
@@ -8,13 +9,13 @@ public class ToggleOffGroundSubcommand {
         return new CommandAPICommand("toggleoffground")
                 .withPermission("knockbacksync.toggleoffground")
                 .executes((sender, args) -> {
-                    boolean toggledState = !KnockbackSync.INSTANCE.getConfig().getBoolean("toggle_experimental_offground");
-                    KnockbackSync.INSTANCE.getConfig().set("toggle_experimental_offground", toggledState);
-                    KnockbackSync.INSTANCE.saveConfig();
+                    boolean toggledState = !KnockbackSyncBase.INSTANCE.getConfigManager().getConfig().getBoolean("toggle_experimental_offground", false);
+                    KnockbackSyncBase.INSTANCE.getConfigManager().getConfig().set("toggle_experimental_offground", toggledState);
+                    KnockbackSyncBase.INSTANCE.getConfigManager().saveConfig();
                     String message = ChatColor.translateAlternateColorCodes('&',
                             toggledState ?
-                                    KnockbackSync.INSTANCE.getConfig().getString("enable_message", "&aSuccessfully enabled offground experiment.") :
-                                    KnockbackSync.INSTANCE.getConfig().getString("disable_message", "&cSuccessfully disabled offground experiment.")
+                                    KnockbackSyncBase.INSTANCE.getConfigManager().getConfig().getString("enable_message", "&aSuccessfully enabled offground experiment.") :
+                                    KnockbackSyncBase.INSTANCE.getConfigManager().getConfig().getString("disable_message", "&cSuccessfully disabled offground experiment.")
                     );
                     sender.sendMessage(message);
                 });

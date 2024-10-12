@@ -1,13 +1,13 @@
 package me.caseload.knockbacksync.command;
 
 import com.mojang.brigadier.Command;
-import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import me.caseload.knockbacksync.KnockbackSync;
+import me.caseload.knockbacksync.KnockbackSyncBase;
 import me.caseload.knockbacksync.manager.PlayerData;
 import me.caseload.knockbacksync.manager.PlayerDataManager;
+import me.caseload.knockbacksync.permission.PermissionChecker;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
@@ -15,6 +15,8 @@ import net.minecraft.commands.arguments.selector.EntitySelector;
 import net.minecraft.server.level.ServerPlayer;
 
 public class KnockbackSyncCommand implements Command<CommandSourceStack> {
+
+    private static final PermissionChecker permissionChecker = KnockbackSyncBase.INSTANCE.getPermissionChecker();
 
     @Override
     public int run(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
@@ -34,7 +36,7 @@ public class KnockbackSyncCommand implements Command<CommandSourceStack> {
         return Commands.literal("knockbacksync")
                 .executes(new KnockbackSyncCommand())
                 .then(Commands.literal("ping")
-                        .requires(source -> source.hasPermission(2))
+                        .requires(source -> permissionChecker.hasPermission(source, "knockbacksync.ping", true))
                         .executes(context -> { // Added .executes() here to handle no target
                             if (context.getSource().getEntity() instanceof ServerPlayer) {
                                 ServerPlayer sender = (ServerPlayer) context.getSource().getEntity();

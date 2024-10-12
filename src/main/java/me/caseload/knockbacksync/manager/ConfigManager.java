@@ -4,13 +4,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import lombok.Getter;
 import lombok.Setter;
-import me.caseload.knockbacksync.KnockbackSync;
+import me.caseload.knockbacksync.ConfigWrapper;
+import me.caseload.knockbacksync.KnockbackSyncBase;
 import me.caseload.knockbacksync.Platform;
 import me.caseload.knockbacksync.runnable.PingRunnable;
 import me.caseload.knockbacksync.scheduler.AbstractTaskHandle;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 @Getter
@@ -35,21 +37,47 @@ public class ConfigManager {
 
     private AbstractTaskHandle pingTask;
 
-    public void loadConfig(boolean reloadConfig) {
-        KnockbackSync instance = KnockbackSync.getInstance();
-        File configFile = new File(instance.getDataFolder(), "config.yml");
+    private Map<String, Object> config;
+    private File configFile;
+    private ObjectMapper mapper;
 
-        if (reloadConfig || !configFile.exists()) {
-            instance.saveDefaultConfig();
+    public ConfigManager() {
+        mapper = new ObjectMapper(new YAMLFactory());
+        KnockbackSyncBase instance = KnockbackSyncBase.INSTANCE;
+        configFile = new File(instance.getDataFolder(), "config.yml");
+    }
+
+    public ConfigWrapper getConfig() {
+        if (config == null) {
+            reloadConfig();
         }
+        return new ConfigWrapper(config);
+    }
 
-        ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
-        Map<String, Object> config;
+    public void reloadConfig() {
         try {
+            if (!configFile.exists()) {
+                KnockbackSyncBase.INSTANCE.saveDefaultConfig();
+            }
             config = mapper.readValue(configFile, Map.class);
         } catch (IOException e) {
             e.printStackTrace();
-            return;
+            config = new HashMap<>();
+        }
+    }
+
+    public void saveConfig() {
+        try {
+            mapper.writeValue(configFile, config);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    public void loadConfig(boolean reloadConfig) {
+        if (reloadConfig || config == null) {
+            reloadConfig();
         }
 
         toggled = (boolean) config.getOrDefault("enabled", true);
@@ -66,11 +94,11 @@ public class ConfigManager {
             long initialDelay = 0L;
             long pingTaskRunnableInterval = runnableInterval;
             // Folia does not allow 0 ticks of wait time
-            if (KnockbackSync.INSTANCE.platform == Platform.FOLIA) {
+            if (KnockbackSyncBase.INSTANCE.platform == Platform.FOLIA) {
                 initialDelay = 1L;
                 pingTaskRunnableInterval = Math.max(pingTaskRunnableInterval, 1L);
             }
-            pingTask = KnockbackSync.INSTANCE.getScheduler().runTaskTimerAsynchronously(new PingRunnable(), initialDelay, pingTaskRunnableInterval);
+            pingTask = KnockbackSyncBase.INSTANCE.getScheduler().runTaskTimerAsynchronously(new PingRunnable(), initialDelay, pingTaskRunnableInterval);
         }
 
         notifyUpdate = (boolean) config.getOrDefault("notify_updates", true);

@@ -3,7 +3,8 @@ package me.caseload.knockbacksync.command.subcommand;
 import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.CommandPermission;
 import dev.jorel.commandapi.arguments.PlayerArgument;
-import me.caseload.knockbacksync.KnockbackSync;
+import me.caseload.knockbacksync.KnockbackSyncBase;
+import me.caseload.knockbacksync.KnockbackSyncPlugin;
 import me.caseload.knockbacksync.manager.ConfigManager;
 import me.caseload.knockbacksync.manager.PlayerDataManager;
 import org.bukkit.ChatColor;
@@ -19,7 +20,7 @@ public class StatusSubcommand implements Listener {
                 .withPermission(CommandPermission.NONE)
                 .withOptionalArguments(new PlayerArgument("target"))
                 .executes((sender, args) -> {
-                    ConfigManager configManager = KnockbackSync.getInstance().getConfigManager();
+                    ConfigManager configManager = KnockbackSyncBase.INSTANCE.getConfigManager();
                     Player target = (Player) args.get("target");
 
                     // Show global status

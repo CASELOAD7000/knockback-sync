@@ -1,6 +1,7 @@
 package me.caseload.knockbacksync.listener;
 
-import me.caseload.knockbacksync.KnockbackSync;
+import me.caseload.knockbacksync.KnockbackSyncBase;
+import me.caseload.knockbacksync.KnockbackSyncPlugin;
 import me.caseload.knockbacksync.manager.PlayerData;
 import me.caseload.knockbacksync.manager.PlayerDataManager;
 import org.bukkit.entity.Player;
@@ -12,7 +13,7 @@ public class PlayerDamageListener implements Listener {
 
     @EventHandler(ignoreCancelled = true)
     public void onPlayerDamage(EntityDamageByEntityEvent event) {
-        if (!KnockbackSync.getInstance().getConfigManager().isToggled())
+        if (!KnockbackSyncBase.INSTANCE.getConfigManager().isToggled())
             return;
 
         if (!(event.getEntity() instanceof Player victim) || !(event.getDamager() instanceof Player attacker))
@@ -26,7 +27,7 @@ public class PlayerDamageListener implements Listener {
         playerData.setLastDamageTicks(victim.getNoDamageTicks());
         playerData.updateCombat();
 
-        if (!KnockbackSync.getInstance().getConfigManager().isRunnableEnabled())
+        if (!KnockbackSyncBase.INSTANCE.getConfigManager().isRunnableEnabled())
             playerData.sendPing();
     }
 }

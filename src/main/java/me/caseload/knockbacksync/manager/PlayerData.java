@@ -4,18 +4,16 @@ import com.github.retrooper.packetevents.PacketEvents;
 import com.github.retrooper.packetevents.protocol.player.ClientVersion;
 import com.github.retrooper.packetevents.protocol.player.User;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerPing;
-import io.github.retrooper.packetevents.util.folia.TaskWrapper;
 import lombok.Getter;
 import lombok.Setter;
-import me.caseload.knockbacksync.KnockbackSync;
+import me.caseload.knockbacksync.KnockbackSyncBase;
+import me.caseload.knockbacksync.KnockbackSyncPlugin;
 import me.caseload.knockbacksync.scheduler.AbstractTaskHandle;
 import me.caseload.knockbacksync.util.MathUtil;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.BoundingBox;
@@ -62,7 +60,7 @@ public class PlayerData {
     public PlayerData(Player player) {
         this.player = player;
         this.user = PacketEvents.getAPI().getPlayerManager().getUser(player);
-        PING_OFFSET = KnockbackSync.getInstance().getConfig().getInt("ping_offset", 25);
+        PING_OFFSET = KnockbackSyncBase.INSTANCE.getConfigManager().getConfig().getInt("ping_offset", 25);
     }
 
     /**
@@ -75,7 +73,7 @@ public class PlayerData {
     public long getEstimatedPing() {
         long currentPing = (ping != null) ? ping : player.getPing();
         long lastPing = (previousPing != null) ? previousPing : player.getPing();
-        long ping = (currentPing - lastPing > KnockbackSync.getInstance().getConfigManager().getSpikeThreshold()) ? lastPing : currentPing;
+        long ping = (currentPing - lastPing > KnockbackSyncBase.INSTANCE.getConfigManager().getSpikeThreshold()) ? lastPing : currentPing;
 
         return Math.max(1, ping - PING_OFFSET);
     }
@@ -230,8 +228,8 @@ public class PlayerData {
 
     @NotNull
     private AbstractTaskHandle newCombatTask() {
-        return KnockbackSync.INSTANCE.getScheduler().runTaskLaterAsynchronously(
-                () -> quitCombat(false), KnockbackSync.getInstance().getConfigManager().getCombatTimer());
+        return KnockbackSyncBase.INSTANCE.getScheduler().runTaskLaterAsynchronously(
+                () -> quitCombat(false), KnockbackSyncBase.INSTANCE.getConfigManager().getCombatTimer());
     }
 
     public ClientVersion getClientVersion() {

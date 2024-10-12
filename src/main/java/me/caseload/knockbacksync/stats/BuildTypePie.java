@@ -2,7 +2,7 @@ package me.caseload.knockbacksync.stats;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import me.caseload.knockbacksync.KnockbackSync;
+import me.caseload.knockbacksync.KnockbackSyncBase;
 import org.bstats.charts.SimplePie;
 import org.bukkit.Bukkit;
 import org.kohsuke.github.GHAsset;
@@ -24,7 +24,7 @@ public class BuildTypePie extends SimplePie {
 
     private static final String RELEASES_FILE = "releases.txt";
     private static final String DEV_BUILDS_FILE = "dev-builds.txt";
-    private static final File dataFolder = KnockbackSync.INSTANCE.getDataFolder();
+    private static final File dataFolder = KnockbackSyncBase.INSTANCE.getDataFolder();
     private static String cachedBuildType = null;
 
     public BuildTypePie() {
@@ -63,7 +63,7 @@ public class BuildTypePie extends SimplePie {
         List<GHAsset> assets = latestRelease.listAssets().toList();
         for (GHAsset asset : assets) {
             if (asset.getName().equals(RELEASES_FILE) || asset.getName().equals(DEV_BUILDS_FILE)) {
-                KnockbackSync.INSTANCE.getLogger().info("Downloading: " + asset.getName());
+                KnockbackSyncBase.INSTANCE.getLogger().info("Downloading: " + asset.getName());
 
                 String jsonContent = readStringFromURL(asset.getUrl().toString());
                 JsonObject jsonObject = JsonParser.parseString(jsonContent).getAsJsonObject();
@@ -74,7 +74,7 @@ public class BuildTypePie extends SimplePie {
                     inputStream.transferTo(outputStream);
                 }
 
-                KnockbackSync.INSTANCE.getLogger().info("Downloaded: " + asset.getName());
+                KnockbackSyncBase.INSTANCE.getLogger().info("Downloaded: " + asset.getName());
             }
         }
     }

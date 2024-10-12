@@ -1,17 +1,17 @@
 package me.caseload.knockbacksync.stats;
 
-import me.caseload.knockbacksync.KnockbackSync;
+import me.caseload.knockbacksync.KnockbackSyncBase;
+import me.caseload.knockbacksync.KnockbackSyncPlugin;
 import org.bstats.bukkit.Metrics;
-import org.bukkit.Bukkit;
 
 public class StatsManager {
 
     public static Metrics metrics;
 
     public static void init() {
-        KnockbackSync.INSTANCE.getScheduler().runTaskAsynchronously(() -> {
+        KnockbackSyncBase.INSTANCE.getScheduler().runTaskAsynchronously(() -> {
             BuildTypePie.determineBuildType(); // Function to calculate hash
-            metrics = new Metrics(KnockbackSync.INSTANCE, 23568);
+            metrics = new Metrics(null, 23568);
             metrics.addCustomChart(new PlayerVersionsPie());
             metrics.addCustomChart(new BuildTypePie());
         });

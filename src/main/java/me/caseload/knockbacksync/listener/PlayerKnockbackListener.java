@@ -1,6 +1,7 @@
 package me.caseload.knockbacksync.listener;
 
-import me.caseload.knockbacksync.KnockbackSync;
+import me.caseload.knockbacksync.KnockbackSyncBase;
+import me.caseload.knockbacksync.KnockbackSyncPlugin;
 import me.caseload.knockbacksync.manager.PlayerData;
 import me.caseload.knockbacksync.manager.PlayerDataManager;
 import org.bukkit.entity.Entity;
@@ -17,7 +18,7 @@ public class PlayerKnockbackListener implements Listener {
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onPlayerVelocity(PlayerVelocityEvent event) {
-        if (!KnockbackSync.getInstance().getConfigManager().isToggled())
+        if (!KnockbackSyncBase.INSTANCE.getConfigManager().isToggled())
             return;
 
         Player victim = event.getPlayer();
