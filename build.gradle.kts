@@ -30,6 +30,7 @@ repositories {
     maven(url = "https://maven.fabricmc.net/") {
         name = "Fabric"
     }
+    maven("https://libraries.minecraft.net/")
 }
 
 loom {
@@ -55,6 +56,9 @@ dependencies {
     shadeThisThing(implementation("dev.jorel:commandapi-bukkit-shade:9.5.3")!!)
     shadeThisThing(implementation("org.kohsuke:github-api:1.326")!!)
     shadeThisThing(implementation("org.bstats:bstats-bukkit:3.0.2")!!)
+
+    shadeThisThing(implementation("me.lucko:commodore:2.2")!!)
+//    shadeThisThing(implementation("com.mojang:brigadier:1.0.18")!!)
 }
 
 tasks.processResources {
@@ -102,6 +106,9 @@ tasks.jar {
     archiveClassifier.set("dev-slim")
 }
 tasks.shadowJar {
+    dependencies {
+        exclude(dependency("com.mojang:brigadier"))
+    }
     archiveClassifier.set("dev")
     configurations = listOf(shadeThisThing)
     isEnableRelocation = true

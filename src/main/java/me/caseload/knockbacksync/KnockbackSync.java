@@ -5,14 +5,18 @@ import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandAPIBukkitConfig;
 import io.github.retrooper.packetevents.factory.spigot.SpigotPacketEventsBuilder;
 import lombok.Getter;
+import me.caseload.knockbacksync.command.KnockbackSyncCommand;
 import me.caseload.knockbacksync.command.MainCommand;
 import me.caseload.knockbacksync.listener.*;
 import me.caseload.knockbacksync.manager.ConfigManager;
 import me.caseload.knockbacksync.scheduler.BukkitSchedulerAdapter;
-//import me.caseload.knockbacksync.scheduler.FabricSchedulerAdapter;
+import me.caseload.knockbacksync.scheduler.FabricSchedulerAdapter;
 import me.caseload.knockbacksync.scheduler.FoliaSchedulerAdapter;
 import me.caseload.knockbacksync.scheduler.SchedulerAdapter;
 import me.caseload.knockbacksync.stats.StatsManager;
+import me.lucko.commodore.Commodore;
+import me.lucko.commodore.CommodoreProvider;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -62,20 +66,30 @@ public final class KnockbackSync extends JavaPlugin {
         LOGGER = getLogger();
         INSTANCE = this;
 //        checkForUpdates();
+        Commodore commodore = null;
         switch (platform) {
             case FOLIA:
                 scheduler = new FoliaSchedulerAdapter(this);
+                commodore = CommodoreProvider.getCommodore(this);
+                commodore.register(KnockbackSyncCommand.build());
+                break;
             case BUKKIT:
                 scheduler = new BukkitSchedulerAdapter(this);
-//            case FABRIC:
-//                scheduler = new FabricSchedulerAdapter(this);
+                commodore = CommodoreProvider.getCommodore(this);
+                commodore.register(KnockbackSyncCommand.build());
+                break;
+            case FABRIC:
+                scheduler = new FabricSchedulerAdapter();
+                CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) ->
+                        dispatcher.register(KnockbackSyncCommand.build()));
+                break;
         }
 
         saveDefaultConfig();
         configManager.loadConfig(false);
 
-        CommandAPI.onEnable();
-        new MainCommand().register();
+//        CommandAPI.onEnable();
+//        new MainCommand().register();
 
         registerListeners(
                 new PlayerDamageListener(),
@@ -100,7 +114,7 @@ public final class KnockbackSync extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        CommandAPI.onDisable();
+//        CommandAPI.onDisable();
         PacketEvents.getAPI().terminate();
     }
 
