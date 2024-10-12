@@ -38,7 +38,7 @@ public class StatusSubcommand implements Listener {
                             (sender.hasPermission("knockbacksync.status.other") && !sender.equals(target))) {
 
                         UUID uuid = target.getUniqueId();
-                        boolean playerStatus = !PlayerDataManager.containsPlayerData(uuid);
+                        boolean playerStatus = PlayerDataManager.containsPlayerData(uuid);
 
                         if (!globalStatus) {
                             sender.sendMessage(ChatColor.YELLOW + target.getName() + "'s KnockbackSync status: " +
