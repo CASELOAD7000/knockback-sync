@@ -9,6 +9,7 @@ import me.caseload.knockbacksync.command.MainCommand;
 import me.caseload.knockbacksync.listener.*;
 import me.caseload.knockbacksync.manager.ConfigManager;
 import me.caseload.knockbacksync.scheduler.BukkitSchedulerAdapter;
+//import me.caseload.knockbacksync.scheduler.FabricSchedulerAdapter;
 import me.caseload.knockbacksync.scheduler.FoliaSchedulerAdapter;
 import me.caseload.knockbacksync.scheduler.SchedulerAdapter;
 import me.caseload.knockbacksync.stats.StatsManager;
