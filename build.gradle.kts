@@ -1,5 +1,5 @@
 plugins {
-    id("fabric-loom") version "1.7.4"
+    id("fabric-loom") version "1.8.6"
     id("maven-publish")
     id("com.gradleup.shadow") version "8.3.3"
 }
@@ -11,8 +11,9 @@ base {
     archivesName.set(project.property("archives_base_name") as String)
 }
 
-configurations {
-    register("shadeThisThing")
+val shadeThisThing: Configuration by configurations.creating {
+    isCanBeConsumed = true
+    isTransitive = true
 }
 
 repositories {
@@ -31,6 +32,11 @@ repositories {
     }
 }
 
+loom {
+    // Since this is a plugin, client classes in the classpath aren't needed
+    serverOnlyMinecraftJar()
+}
+
 dependencies {
     // To change the versions see the gradle.properties file
     minecraft("com.mojang:minecraft:${project.property("minecraft_version")}")
@@ -45,10 +51,10 @@ dependencies {
     compileOnly("org.projectlombok:lombok:1.18.34")
     annotationProcessor("org.projectlombok:lombok:1.18.34")
 
-    shadeThisThing(implementation("com.github.retrooper:packetevents-spigot:2.5.0"))
-    shadeThisThing(implementation("dev.jorel:commandapi-bukkit-shade:9.5.3"))
-    shadeThisThing(implementation("org.kohsuke:github-api:1.326"))
-    shadeThisThing(implementation("org.bstats:bstats-bukkit:3.0.2"))
+    shadeThisThing(implementation("com.github.retrooper:packetevents-spigot:2.5.0")!!)
+    shadeThisThing(implementation("dev.jorel:commandapi-bukkit-shade:9.5.3")!!)
+    shadeThisThing(implementation("org.kohsuke:github-api:1.326")!!)
+    shadeThisThing(implementation("org.bstats:bstats-bukkit:3.0.2")!!)
 }
 
 tasks.processResources {
@@ -78,12 +84,6 @@ tasks.withType<JavaCompile>().configureEach {
     }
 }
 
-tasks.shadowJar {
-    configurations = listOf(configurations.named("shadeThisThing").get())
-    enableRelocation(true)
-    relocationPrefix("com.example.shaded")
-}
-
 java {
     val javaVersion = JavaVersion.toVersion(targetJavaVersion)
     if (JavaVersion.current() < javaVersion) {
@@ -99,6 +99,19 @@ tasks.jar {
     from("LICENSE") {
         rename { "${it}_${project.property("archives_base_name")}" }
     }
+    archiveClassifier.set("dev-slim")
+}
+tasks.shadowJar {
+    archiveClassifier.set("dev")
+    configurations = listOf(shadeThisThing)
+    isEnableRelocation = true
+    relocationPrefix = "${project.property("maven_group")}.${project.property("archives_base_name")}.shaded"
+    finalizedBy(tasks.remapJar)
+}
+tasks.remapJar {
+    archiveClassifier.set(null as String?)
+    dependsOn(tasks.shadowJar)
+    inputFile = tasks.shadowJar.get().archiveFile
 }
 
 // configure the maven publication
