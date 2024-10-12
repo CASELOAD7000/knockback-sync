@@ -18,7 +18,15 @@ public class KnockbackSyncCommand implements Command<CommandSourceStack> {
 
     @Override
     public int run(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
-//        context.getSource().sendSuccess(() -> net.minecraft.network.chat.Component.literal(target.getDisplayName().getString() + "’s last ping packet took " + playerData.getPing() + "ms."), false);
+        // Check if the sender is a player
+        context.getSource().sendFailure(net.minecraft.network.chat.Component.literal("Does not work"));
+//        if (context.getSource().getEntity() instanceof ServerPlayer) {
+//            ServerPlayer sender = (ServerPlayer) context.getSource().getEntity();
+//            PlayerData playerData = PlayerDataManager.getPlayerData(sender.getUUID());
+//            context.getSource().sendSuccess(() -> net.minecraft.network.chat.Component.literal("Your last ping packet took " + playerData.getPing() + "ms."), false);
+//        } else {
+//            context.getSource().sendFailure(net.minecraft.network.chat.Component.literal("This command can only be used by players."));
+//        }
         return 1;
     }
 
@@ -27,6 +35,16 @@ public class KnockbackSyncCommand implements Command<CommandSourceStack> {
                 .executes(new KnockbackSyncCommand())
                 .then(Commands.literal("ping")
                         .requires(source -> source.hasPermission(2))
+                        .executes(context -> { // Added .executes() here to handle no target
+                            if (context.getSource().getEntity() instanceof ServerPlayer) {
+                                ServerPlayer sender = (ServerPlayer) context.getSource().getEntity();
+                                PlayerData playerData = PlayerDataManager.getPlayerData(sender.getUUID());
+                                context.getSource().sendSuccess(() -> net.minecraft.network.chat.Component.literal("Your last ping packet took " + playerData.getPing() + "ms."), false);
+                            } else {
+                                context.getSource().sendFailure(net.minecraft.network.chat.Component.literal("This command can only be used by players."));
+                            }
+                            return 1;
+                        })
                         .then(Commands.argument("target", EntityArgument.player())
                                 .executes(context -> {
                                     EntitySelector selector = context.getArgument("target", EntitySelector.class);
@@ -37,6 +55,5 @@ public class KnockbackSyncCommand implements Command<CommandSourceStack> {
                                 })
                         )
                 );
-        // Add other subcommands here...
     }
 }

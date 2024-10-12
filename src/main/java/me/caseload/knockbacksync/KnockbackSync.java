@@ -1,9 +1,12 @@
 package me.caseload.knockbacksync;
 
 import com.github.retrooper.packetevents.PacketEvents;
-import dev.jorel.commandapi.CommandAPI;
-import dev.jorel.commandapi.CommandAPIBukkitConfig;
+import com.mojang.brigadier.Command;
+import com.mojang.brigadier.CommandDispatcher;
+import dev.jorel.commandapi.*;
 import io.github.retrooper.packetevents.factory.spigot.SpigotPacketEventsBuilder;
+import io.papermc.paper.plugin.lifecycle.event.LifecycleEventManager;
+import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import lombok.Getter;
 import me.caseload.knockbacksync.command.KnockbackSyncCommand;
 import me.caseload.knockbacksync.command.MainCommand;
@@ -17,11 +20,17 @@ import me.caseload.knockbacksync.stats.StatsManager;
 import me.lucko.commodore.Commodore;
 import me.lucko.commodore.CommodoreProvider;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
+import org.bukkit.command.CommandMap;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.event.Listener;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.kohsuke.github.GitHub;
 
+import java.util.List;
 import java.util.logging.Logger;
 
 public final class KnockbackSync extends JavaPlugin {
@@ -66,17 +75,17 @@ public final class KnockbackSync extends JavaPlugin {
         LOGGER = getLogger();
         INSTANCE = this;
 //        checkForUpdates();
-        Commodore commodore = null;
+        CommandDispatcher<CommandSourceStack> pluginCommandDispatcher = null;
         switch (platform) {
             case FOLIA:
                 scheduler = new FoliaSchedulerAdapter(this);
-                commodore = CommodoreProvider.getCommodore(this);
-                commodore.register(KnockbackSyncCommand.build());
+//                pluginCommandDispatcher = new CommandDispatcher<>();
+//                pluginCommandDispatcher.register(KnockbackSyncCommand.build());
+                Brigadier.getCommandDispatcher().register(KnockbackSyncCommand.build());
                 break;
             case BUKKIT:
                 scheduler = new BukkitSchedulerAdapter(this);
-                commodore = CommodoreProvider.getCommodore(this);
-                commodore.register(KnockbackSyncCommand.build());
+                Brigadier.getCommandDispatcher().register(KnockbackSyncCommand.build());
                 break;
             case FABRIC:
                 scheduler = new FabricSchedulerAdapter();
@@ -110,6 +119,9 @@ public final class KnockbackSync extends JavaPlugin {
         PacketEvents.getAPI().init();
 
         StatsManager.init();
+
+//        CommandMap commandMap = CommandAPIBukkit.get().getSimpleCommandMap();
+//        commandMap.register("knockback", null);
     }
 
     @Override
