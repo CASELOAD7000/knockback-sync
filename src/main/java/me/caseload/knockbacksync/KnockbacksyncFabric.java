@@ -1,11 +1,18 @@
 package me.caseload.knockbacksync;
 
 import com.github.retrooper.packetevents.PacketEvents;
+import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import me.caseload.knockbacksync.command.KnockbackSyncCommand;
 import me.caseload.knockbacksync.permission.FabricPermissionChecker;
 import me.caseload.knockbacksync.permission.PermissionChecker;
 import me.caseload.knockbacksync.scheduler.FabricSchedulerAdapter;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
 import net.minecraft.server.MinecraftServer;
 
 import java.io.File;
@@ -56,7 +63,12 @@ public class KnockbacksyncFabric implements ModInitializer {
 
     @Override
     protected void registerCommands() {
-      //in history
+//      ServerLifecycleEvents.SERVER_STARTED.register(server -> {
+//        CommandDispatcher<CommandSourceStack> dispatcher = server.getCommands().getDispatcher();
+//        dispatcher.register(KnockbackSyncCommand.build());
+//      });
+      CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) ->
+              dispatcher.register(KnockbackSyncCommand.build()));
     }
 
     @Override
