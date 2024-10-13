@@ -11,12 +11,14 @@ import lombok.Getter;
 import lombok.Setter;
 import me.caseload.knockbacksync.KnockbackSyncBase;
 import me.caseload.knockbacksync.player.BukkitPlayer;
+import me.caseload.knockbacksync.player.FabricPlayer;
 import me.caseload.knockbacksync.player.PlatformPlayer;
 import me.caseload.knockbacksync.world.PlatformWorld;
 import me.caseload.knockbacksync.scheduler.AbstractTaskHandle;
 import me.caseload.knockbacksync.util.MathUtil;
 import me.caseload.knockbacksync.world.raytrace.FluidHandling;
 import me.caseload.knockbacksync.world.raytrace.RayTraceResult;
+import net.minecraft.server.level.ServerPlayer;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -69,6 +71,13 @@ public class PlayerData {
         this.platformPlayer = new BukkitPlayer(player);
 //        this.player = player;
 //        this.serverPlayer = ((CraftPlayer) player).getHandle();
+        PING_OFFSET = KnockbackSyncBase.INSTANCE.getConfigManager().getConfigWrapper().getInt("ping_offset", 25);
+    }
+
+    public PlayerData(ServerPlayer player) {
+        this.uuid = player.getUUID();
+        this.user = PacketEvents.getAPI().getPlayerManager().getUser(player);
+        this.platformPlayer = new FabricPlayer(player);
         PING_OFFSET = KnockbackSyncBase.INSTANCE.getConfigManager().getConfigWrapper().getInt("ping_offset", 25);
     }
 

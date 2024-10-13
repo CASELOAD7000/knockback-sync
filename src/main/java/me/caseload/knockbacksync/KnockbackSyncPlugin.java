@@ -73,7 +73,8 @@ public final class KnockbackSyncPlugin extends JavaPlugin {
             dispatcher.register(KnockbackSyncCommand.build());
             dispatcher.register(
                     Commands.literal("kbsync")
-                            .redirect(dispatcher.getRoot().getChild("knockbacksync")));
+                            .redirect(dispatcher.getRoot().getChild("knockbacksync"))
+            );
         }
 
         @Override

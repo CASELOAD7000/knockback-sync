@@ -5,10 +5,14 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import me.caseload.knockbacksync.KnockbackSyncBase;
+import me.caseload.knockbacksync.command.subcommand.StatusSubCommand;
+import me.caseload.knockbacksync.command.subcommand.ToggleOffGroundSubcommand;
+import me.caseload.knockbacksync.command.subcommand.ToggleSubCommand;
 import me.caseload.knockbacksync.manager.ConfigManager;
 import me.caseload.knockbacksync.manager.PlayerData;
 import me.caseload.knockbacksync.manager.PlayerDataManager;
 import me.caseload.knockbacksync.permission.PermissionChecker;
+import me.caseload.knockbacksync.util.ChatUtil;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
@@ -18,7 +22,6 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.server.level.ServerPlayer;
-import org.bukkit.ChatColor;
 
 public class KnockbackSyncCommand implements Command<CommandSourceStack> {
 
@@ -26,8 +29,6 @@ public class KnockbackSyncCommand implements Command<CommandSourceStack> {
 
     @Override
     public int run(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
-        // Check if the sender is a player
-        context.getSource().sendFailure(net.minecraft.network.chat.Component.literal("Does not work"));
         // Use the builder pattern to create a styled message
         MutableComponent message = Component.literal("This server is running the ")
                 .withStyle(Style.EMPTY.withColor(TextColor.fromRgb(0xFFAA00))) // Gold color
@@ -77,8 +78,7 @@ public class KnockbackSyncCommand implements Command<CommandSourceStack> {
                         configManager.loadConfig(true);
 
                         String rawReloadMessage = configManager.getReloadMessage();
-                        // won't work on fabric take care later
-                        String reloadMessage = ChatColor.translateAlternateColorCodes('&', rawReloadMessage);
+                        String reloadMessage = ChatUtil.translateAlternateColorCodes('&', rawReloadMessage);
 
                         // Send the message to the command source (the player or console that executed the command)
                         context.getSource().sendSuccess(() ->
@@ -87,7 +87,11 @@ public class KnockbackSyncCommand implements Command<CommandSourceStack> {
                         );
 
                         return Command.SINGLE_SUCCESS;
-                    }))
+                    })
+                )
+                .then(StatusSubCommand.build())
+                .then(ToggleSubCommand.build())
+                .then(ToggleOffGroundSubcommand.build())
                 .executes(new KnockbackSyncCommand());
     }
 }
