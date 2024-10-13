@@ -17,7 +17,6 @@ import me.caseload.knockbacksync.scheduler.AbstractTaskHandle;
 import me.caseload.knockbacksync.util.MathUtil;
 import me.caseload.knockbacksync.world.raytrace.FluidHandling;
 import me.caseload.knockbacksync.world.raytrace.RayTraceResult;
-import org.bukkit.attribute.Attribute;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;

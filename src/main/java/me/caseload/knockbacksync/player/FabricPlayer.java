@@ -3,21 +3,20 @@ package me.caseload.knockbacksync.player;
 import com.github.retrooper.packetevents.util.Vector3d;
 import me.caseload.knockbacksync.world.FabricWorld;
 import me.caseload.knockbacksync.world.PlatformWorld;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.math.Vec3d;
-
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.phys.Vec3;
 import java.util.UUID;
 
 public class FabricPlayer implements PlatformPlayer {
-    private final ServerPlayerEntity player;
+    private final ServerPlayer player;
 
-    public FabricPlayer(ServerPlayerEntity player) {
+    public FabricPlayer(ServerPlayer player) {
         this.player = player;
     }
 
     @Override
     public UUID getUUID() {
-        return player.getUuid();
+        return player.getUUID();
     }
 
     @Override
@@ -42,22 +41,22 @@ public class FabricPlayer implements PlatformPlayer {
 
     @Override
     public float getPitch() {
-        return player.getPitch();
+        return player.getXRot();
     }
 
     @Override
     public float getYaw() {
-        return player.getYaw();
+        return player.getYRot();
     }
 
     @Override
     public boolean isOnGround() {
-        return player.isOnGround();
+        return player.onGround();
     }
 
     @Override
     public int getPing() {
-        return player.networkHandler.getLatency();
+        return player.connection.latency();
     }
 
     @Override
@@ -67,12 +66,12 @@ public class FabricPlayer implements PlatformPlayer {
 
     @Override
     public PlatformWorld getWorld() {
-        return new FabricWorld(player.getWorld());
+        return new FabricWorld(player.level());
     }
 
     @Override
     public Vector3d getLocation() {
-        Vec3d pos = player.getPos();
+        Vec3 pos = player.position();
         return new Vector3d(pos.x, pos.y, pos.z);
     }
 

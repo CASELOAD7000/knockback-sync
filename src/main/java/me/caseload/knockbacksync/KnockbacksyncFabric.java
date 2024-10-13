@@ -1,7 +1,10 @@
 package me.caseload.knockbacksync;
 
+import com.github.retrooper.packetevents.PacketEvents;
+import me.caseload.knockbacksync.permission.FabricPermissionChecker;
+import me.caseload.knockbacksync.permission.PermissionChecker;
+import me.caseload.knockbacksync.scheduler.FabricSchedulerAdapter;
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.server.MinecraftServer;
 
@@ -9,30 +12,83 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.util.logging.Logger;
 
 public class KnockbacksyncFabric implements ModInitializer {
 
   public static MinecraftServer server;
 
-  @Override
-  public void onInitialize() {
-    System.out.println("Knockbacksync Fabric initialized");
-    saveDefaultConfig(); // Ensure the default config is saved
-    ServerLifecycleEvents.SERVER_STARTING.register(server -> {
-      KnockbacksyncFabric.server = server;
-    });
-  }
+  private final KnockbackSyncBase core = new KnockbackSyncBase() {
 
-  private void saveDefaultConfig() {
-    File configFile = new File(FabricLoader.getInstance().getConfigDir().toFile(), "config.yml");
-    if (!configFile.exists()) {
-      try (InputStream inputStream = getClass().getResourceAsStream("/config.yml")) {
-        if (inputStream != null) {
-          Files.copy(inputStream, configFile.toPath());
+    private final Logger logger = Logger.getLogger(KnockbacksyncFabric.class.getName());
+    private final FabricPermissionChecker permissionChecker = new FabricPermissionChecker();
+
+    @Override
+    public Logger getLogger() {
+      return logger;
+    }
+
+    @Override
+    public File getDataFolder() {
+      return FabricLoader.getInstance().getConfigDir().toFile();
+    }
+
+    @Override
+    public InputStream getResource(String filename) {
+      return getClass().getResourceAsStream("/config.yml");
+    }
+
+    @Override
+    public void load() {
+//      PacketEvents.setAPI();
+      PacketEvents.getAPI().load();
+    }
+
+    @Override
+    protected void initializeScheduler() {
+      scheduler = new FabricSchedulerAdapter();
+    }
+
+    @Override
+    protected void registerPlatformListeners() {
+      //todo
+    }
+
+    @Override
+    protected void registerCommands() {
+      //in history
+    }
+
+    @Override
+    protected String getVersion() {
+      return FabricLoader.getInstance().getModContainer("knockbacksync")
+              .map(modContainer -> modContainer.getMetadata().getVersion().getFriendlyString())
+              .orElse("unknown");
+    }
+
+    @Override
+    public void saveDefaultConfig() {
+      File configFile = new File(FabricLoader.getInstance().getConfigDir().toFile(), "config.yml");
+      if (!configFile.exists()) {
+        try (InputStream inputStream = getClass().getResourceAsStream("/config.yml")) {
+          if (inputStream != null) {
+            Files.copy(inputStream, configFile.toPath());
+          }
+        } catch (IOException e) {
+          e.printStackTrace();
         }
-      } catch (IOException e) {
-        e.printStackTrace();
       }
     }
+
+    @Override
+    public PermissionChecker getPermissionChecker() {
+      return permissionChecker;
+    }
+  };
+
+  @Override
+  public void onInitialize() {
+    core.load();
+    core.enable();
   }
 }

@@ -1,7 +1,7 @@
 package me.caseload.knockbacksync.util;
 
 import com.github.retrooper.packetevents.protocol.world.BlockFace;
-import net.minecraft.util.math.Direction;
+import net.minecraft.core.Direction;
 
 public class BlockFaceUtil {
     public static BlockFace getFrom(Direction direction) {

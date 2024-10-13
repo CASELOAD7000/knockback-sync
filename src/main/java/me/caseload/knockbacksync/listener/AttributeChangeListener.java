@@ -30,24 +30,22 @@ public class AttributeChangeListener extends PacketListenerAbstract {
 
     @Override
     public void onPacketSend(PacketSendEvent event) {
-        // Intercept the packet that updates entity properties (attributes)
-        if (event.getPacketType() != PacketType.Play.Server.UPDATE_ATTRIBUTES)
-            return;
+        if (event.getPacketType() == PacketType.Play.Server.UPDATE_ATTRIBUTES) {
 
-        WrapperPlayServerUpdateAttributes packet = new WrapperPlayServerUpdateAttributes(event);
+            WrapperPlayServerUpdateAttributes packet = new WrapperPlayServerUpdateAttributes(event);
 
-        // Check if the entity is a player
-        Player player = event.getPlayer();
-        if (player == null || !PlayerDataManager.containsPlayerData(player.getUniqueId()))
-            return;
+            UUID uuid = event.getUser().getUUID();
+            if (!PlayerDataManager.containsPlayerData(uuid))
+                return;
 
-        // Get the attributes from the packet
-        for (WrapperPlayServerUpdateAttributes.Property property : packet.getProperties()) {
-            // You can now check for specific attributes
-            if (property.getAttribute().equals(Attributes.GENERIC_GRAVITY)) {
-                onPlayerGravityChange(player, calculateValueWithModifiers(property));
-            } else if (property.getAttribute().equals(Attributes.GENERIC_KNOCKBACK_RESISTANCE)) {
-                onPlayerKnockBackChange(player, calculateValueWithModifiers(property));
+            // Get the attributes from the packet
+            for (WrapperPlayServerUpdateAttributes.Property property : packet.getProperties()) {
+                // You can now check for specific attributes
+                if (property.getAttribute().equals(Attributes.GENERIC_GRAVITY)) {
+                    onPlayerGravityChange(uuid, calculateValueWithModifiers(property));
+                } else if (property.getAttribute().equals(Attributes.GENERIC_KNOCKBACK_RESISTANCE)) {
+                    onPlayerKnockBackChange(uuid, calculateValueWithModifiers(property));
+                }
             }
         }
     }
@@ -87,8 +85,8 @@ public class AttributeChangeListener extends PacketListenerAbstract {
 
     // Yes this is not properly latency compensated, that would require including a proper simulation engine
     // Laggy players will just have to deal with being on the wrong gravity for a few hundred ms, too bad!
-    public void onPlayerGravityChange(Player player, double newGravity) {
-        PlayerData playerData = PlayerDataManager.getPlayerData(player.getUniqueId());
+    public void onPlayerGravityChange(UUID uuid, double newGravity) {
+        PlayerData playerData = PlayerDataManager.getPlayerData(uuid);
         if (playerData.getClientVersion().isNewerThanOrEquals(ClientVersion.V_1_20_5)) {
             playerData.setGravityAttribute(newGravity);
         } else {
@@ -96,8 +94,8 @@ public class AttributeChangeListener extends PacketListenerAbstract {
         }
     }
 
-    private void onPlayerKnockBackChange(Player player, double newKnockbackResistance) {
-        PlayerData playerData = PlayerDataManager.getPlayerData(player.getUniqueId());
+    private void onPlayerKnockBackChange(UUID uuid, double newKnockbackResistance) {
+        PlayerData playerData = PlayerDataManager.getPlayerData(uuid);
         playerData.setKnockbackResistanceAttribute(newKnockbackResistance);
     }
 }
