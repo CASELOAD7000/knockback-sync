@@ -13,7 +13,7 @@ public class StatsManager {
         if (KnockbackSyncBase.INSTANCE.platform != Platform.FABRIC) {
             KnockbackSyncBase.INSTANCE.getScheduler().runTaskAsynchronously(() -> {
                 BuildTypePie.determineBuildType(); // Function to calculate hash
-                metrics = new Metrics(null, 23568);
+                metrics = new Metrics(KnockbackSyncPlugin.getPlugin(KnockbackSyncPlugin.class), 23568);
                 metrics.addCustomChart(new PlayerVersionsPie());
                 metrics.addCustomChart(new BuildTypePie());
             });

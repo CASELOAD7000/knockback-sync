@@ -51,7 +51,7 @@ public class KnockbackSyncFabric implements ModInitializer {
     }
 
     @Override
-    protected void initializeScheduler() {
+    public void initializeScheduler() {
       scheduler = new FabricSchedulerAdapter();
     }
 

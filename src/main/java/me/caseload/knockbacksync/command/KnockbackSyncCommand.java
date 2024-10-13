@@ -28,37 +28,26 @@ public class KnockbackSyncCommand implements Command<CommandSourceStack> {
     public int run(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         // Check if the sender is a player
         context.getSource().sendFailure(net.minecraft.network.chat.Component.literal("Does not work"));
-//        if (context.getSource().getEntity() instanceof ServerPlayer) {
-//            ServerPlayer sender = (ServerPlayer) context.getSource().getEntity();
-//            PlayerData playerData = PlayerDataManager.getPlayerData(sender.getUUID());
-//            context.getSource().sendSuccess(() -> net.minecraft.network.chat.Component.literal("Your last ping packet took " + playerData.getPing() + "ms."), false);
-//        } else {
-//            context.getSource().sendFailure(net.minecraft.network.chat.Component.literal("This command can only be used by players."));
-//        }
+        // Use the builder pattern to create a styled message
+        MutableComponent message = Component.literal("This server is running the ")
+                .withStyle(Style.EMPTY.withColor(TextColor.fromRgb(0xFFAA00))) // Gold color
+
+                .append(Component.literal("KnockbackSync")
+                        .withStyle(Style.EMPTY.withColor(TextColor.fromRgb(0xFFFF55)))) // Yellow color
+
+                .append(Component.literal(" plugin. ")
+                        .withStyle(Style.EMPTY.withColor(TextColor.fromRgb(0xFFAA00)))) // Gold color
+
+                .append(Component.literal("https://github.com/CASELOAD7000/knockback-sync")
+                        .withStyle(Style.EMPTY.withColor(TextColor.fromRgb(0x55FFFF)))); // Aqua color
+
+        // Send the styled message
+        context.getSource().sendSuccess(() -> message, false);
         return 1;
     }
 
     public static LiteralArgumentBuilder<CommandSourceStack> build() {
         return Commands.literal("knockbacksync")
-//                .executes(new KnockbackSyncCommand())
-                .executes((context) -> {
-                    // Use the builder pattern to create a styled message
-                    MutableComponent message = Component.literal("This server is running the ")
-                            .withStyle(Style.EMPTY.withColor(TextColor.fromRgb(0xFFAA00))) // Gold color
-
-                            .append(Component.literal("KnockbackSync")
-                                    .withStyle(Style.EMPTY.withColor(TextColor.fromRgb(0xFFFF55)))) // Yellow color
-
-                            .append(Component.literal(" plugin. ")
-                                    .withStyle(Style.EMPTY.withColor(TextColor.fromRgb(0xFFAA00)))) // Gold color
-
-                            .append(Component.literal("https://github.com/CASELOAD7000/knockback-sync")
-                                    .withStyle(Style.EMPTY.withColor(TextColor.fromRgb(0x55FFFF)))); // Aqua color
-
-                    // Send the styled message
-                    context.getSource().sendSuccess(() -> message, false);
-                    return 1;
-                })
                 .then(Commands.literal("ping")
                         .requires(source -> permissionChecker.hasPermission(source, "knockbacksync.ping", true))
                         .executes(context -> { // Added .executes() here to handle no target
@@ -81,7 +70,7 @@ public class KnockbackSyncCommand implements Command<CommandSourceStack> {
                                 })
                         )
                 )
-                .then(Commands.literal("reload"))
+                .then(Commands.literal("reload")
                     .requires(source -> permissionChecker.hasPermission(source, "knockbacksync.reload", false))
                     .executes(context -> {
                         ConfigManager configManager = KnockbackSyncBase.INSTANCE.getConfigManager();
@@ -98,6 +87,7 @@ public class KnockbackSyncCommand implements Command<CommandSourceStack> {
                         );
 
                         return Command.SINGLE_SUCCESS;
-                    });
+                    }))
+                .executes(new KnockbackSyncCommand());
     }
 }

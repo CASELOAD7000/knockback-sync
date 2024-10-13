@@ -47,12 +47,14 @@ public final class KnockbackSyncPlugin extends JavaPlugin {
         }
 
         @Override
-        protected void initializeScheduler() {
+        public void initializeScheduler() {
             switch (platform) {
                 case BUKKIT:
-                    scheduler = new BukkitSchedulerAdapter(KnockbackSyncPlugin.this);
+                    super.scheduler = new BukkitSchedulerAdapter(KnockbackSyncPlugin.this);
+                    break;
                 case FOLIA:
-                    scheduler = new FoliaSchedulerAdapter(KnockbackSyncPlugin.this);
+                    super.scheduler = new FoliaSchedulerAdapter(KnockbackSyncPlugin.this);
+                    break;
             }
         }
 
@@ -92,16 +94,19 @@ public final class KnockbackSyncPlugin extends JavaPlugin {
 
     @Override
     public void onLoad() {
+        CommandAPI.onLoad(new CommandAPIBukkitConfig(this));
         core.load();
     }
 
     @Override
     public void onEnable() {
+        CommandAPI.onEnable();
         core.enable();
     }
 
     @Override
     public void onDisable() {
+        CommandAPI.onDisable();
         PacketEvents.getAPI().terminate();
     }
 

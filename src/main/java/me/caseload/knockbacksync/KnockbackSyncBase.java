@@ -20,9 +20,8 @@ public abstract class KnockbackSyncBase {
     public static Logger LOGGER;
     public static KnockbackSyncBase INSTANCE;
 
-    @Getter
-    protected SchedulerAdapter scheduler;
-    public final Platform platform;
+    public SchedulerAdapter scheduler = null;
+    public Platform platform;
 
     @Getter
     protected ConfigManager configManager;
@@ -37,17 +36,17 @@ public abstract class KnockbackSyncBase {
         try {
             Class.forName("io.papermc.paper.threadedregions.RegionizedServer");
             return Platform.FOLIA; // Paper (Folia) detected
-        } catch (ClassNotFoundException ignored) {}
-
-        try {
-            Class.forName("net.fabricmc.loader.api.FabricLoader");
-            return Platform.FABRIC; // Fabric detected
-        } catch (ClassNotFoundException ignored) {}
+        } catch (ClassNotFoundException ignored1) {}
 
         try {
             Class.forName("org.bukkit.Bukkit");
             return Platform.BUKKIT; // Bukkit (Spigot/Paper without Folia) detected
-        } catch (ClassNotFoundException ignored) {}
+        } catch (ClassNotFoundException ignored2) {}
+
+        try {
+            Class.forName("net.fabricmc.loader.api.FabricLoader");
+            return Platform.FABRIC; // Fabric detected
+        } catch (ClassNotFoundException ignored3) {}
 
         throw new IllegalStateException("Unknown platform!");
     }
@@ -64,14 +63,16 @@ public abstract class KnockbackSyncBase {
         initializeScheduler();
         initializePacketEvents();
         configManager.loadConfig(false);
+        registerPlatformListeners();
         registerCommonListeners();
+        registerCommands();
         StatsManager.init();
         checkForUpdates();
     }
 
-    protected abstract void initializeScheduler();
+    public abstract void initializeScheduler();
 
-    protected void initializePacketEvents() {
+    public void initializePacketEvents() {
         PacketEvents.getAPI().getEventManager().registerListeners(
                 new AttributeChangeListener(),
                 new PingReceiveListener()
@@ -124,6 +125,10 @@ public abstract class KnockbackSyncBase {
     public abstract void saveDefaultConfig();
 
     public abstract PermissionChecker getPermissionChecker();
+
+    public SchedulerAdapter getScheduler() {
+        return scheduler;
+    }
 }
 
 
