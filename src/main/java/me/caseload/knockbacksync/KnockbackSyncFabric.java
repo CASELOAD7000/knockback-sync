@@ -1,9 +1,7 @@
 package me.caseload.knockbacksync;
 
 import com.github.retrooper.packetevents.PacketEvents;
-import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import io.github.retrooper.packetevents.impl.netty.factory.NettyPacketEventsBuilder;
+import io.github.retrooper.packetevents.factory.fabric.FabricPacketEventsBuilder;
 import me.caseload.knockbacksync.command.KnockbackSyncCommand;
 import me.caseload.knockbacksync.permission.FabricPermissionChecker;
 import me.caseload.knockbacksync.permission.PermissionChecker;
@@ -12,9 +10,9 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.client.Minecraft;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,13 +20,13 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.util.logging.Logger;
 
-public class KnockbacksyncFabric implements ModInitializer {
+public class KnockbackSyncFabric implements ModInitializer {
 
   public static MinecraftServer server;
 
   private final KnockbackSyncBase core = new KnockbackSyncBase() {
 
-    private final Logger logger = Logger.getLogger(KnockbacksyncFabric.class.getName());
+    private final Logger logger = Logger.getLogger(KnockbackSyncFabric.class.getName());
     private final FabricPermissionChecker permissionChecker = new FabricPermissionChecker();
 
     @Override
@@ -48,7 +46,7 @@ public class KnockbacksyncFabric implements ModInitializer {
 
     @Override
     public void load() {
-//      PacketEvents.setAPI(new NettyPacketEventsBuilder().bu);
+      PacketEvents.setAPI(FabricPacketEventsBuilder.build("knockbacksync"));
       PacketEvents.getAPI().load();
     }
 
@@ -105,6 +103,9 @@ public class KnockbacksyncFabric implements ModInitializer {
 
   @Override
   public void onInitialize() {
+    ServerLifecycleEvents.SERVER_STARTING.register((minecraftServer -> {
+      server = minecraftServer;
+    }));
     core.load();
     core.enable();
   }

@@ -40,6 +40,7 @@ public class ConfigManager {
     private Map<String, Object> config;
     private File configFile;
     private ObjectMapper mapper;
+    private ConfigWrapper configWrapper; // Cache the ConfigWrapper instance
 
     public ConfigManager() {
         mapper = new ObjectMapper(new YAMLFactory());
@@ -47,11 +48,11 @@ public class ConfigManager {
         configFile = new File(instance.getDataFolder(), "config.yml");
     }
 
-    public ConfigWrapper getConfig() {
-        if (config == null) {
+    public ConfigWrapper getConfigWrapper() {
+        if (configWrapper == null) {
             reloadConfig();
         }
-        return new ConfigWrapper(config);
+        return configWrapper;
     }
 
     public void reloadConfig() {
@@ -60,9 +61,11 @@ public class ConfigManager {
                 KnockbackSyncBase.INSTANCE.saveDefaultConfig();
             }
             config = mapper.readValue(configFile, Map.class);
+            configWrapper = new ConfigWrapper(config);
         } catch (IOException e) {
             e.printStackTrace();
             config = new HashMap<>();
+            configWrapper = new ConfigWrapper(config);
         }
     }
 
@@ -74,19 +77,21 @@ public class ConfigManager {
         }
     }
 
-
     public void loadConfig(boolean reloadConfig) {
         if (reloadConfig || config == null) {
             reloadConfig();
         }
 
-        toggled = (boolean) config.getOrDefault("enabled", true);
+        ConfigWrapper config = getConfigWrapper(); // Use cached ConfigWrapper
+
+        toggled = config.getBoolean("enabled", true);
 
         // Checks to see if the runnable was enabled...
         // and if we now want to disable it
-        boolean newRunnableEnabled = (boolean) config.getOrDefault("runnable.enabled", true);
-        if (runnableEnabled && newRunnableEnabled && pingTask != null) // null check for first startup
+        boolean newRunnableEnabled = config.getBoolean("runnable.enabled", true);
+        if (runnableEnabled && newRunnableEnabled && pingTask != null) { // null check for first startup
             pingTask.cancel();
+        }
 
         runnableEnabled = newRunnableEnabled;
 
@@ -101,16 +106,16 @@ public class ConfigManager {
             pingTask = KnockbackSyncBase.INSTANCE.getScheduler().runTaskTimerAsynchronously(new PingRunnable(), initialDelay, pingTaskRunnableInterval);
         }
 
-        notifyUpdate = (boolean) config.getOrDefault("notify_updates", true);
-        runnableInterval = (long) config.getOrDefault("runnable.interval", 5L);
-        combatTimer = (long) config.getOrDefault("runnable.timer", 30L);
-        spikeThreshold = (long) config.getOrDefault("spike_threshold", 20L);
-        enableMessage = (String) config.getOrDefault("enable_message", "&aSuccessfully enabled KnockbackSync.");
-        disableMessage = (String) config.getOrDefault("disable_message", "&cSuccessfully disabled KnockbackSync.");
-        playerEnableMessage = (String) config.getOrDefault("player_enable_message", "&aSuccessfully enabled KnockbackSync for %player%.");
-        playerDisableMessage = (String) config.getOrDefault("player_disable_message", "&cSuccessfully disabled KnockbackSync for %player%.");
-        playerIneligibleMessage = (String) config.getOrDefault("player_ineligible_message", "&c%player% is ineligible for KnockbackSync. If you believe this is an error, please open an issue on the github page.");
-        reloadMessage = (String) config.getOrDefault("reload_message", "&aSuccessfully reloaded KnockbackSync.");
-        PlayerData.PING_OFFSET = (int) config.getOrDefault("ping_offset", 25);
+        notifyUpdate = config.getBoolean("notify_updates", true);
+        runnableInterval = config.getLong("runnable.interval", 5L);
+        combatTimer = config.getLong("runnable.timer", 30L);
+        spikeThreshold = config.getLong("spike_threshold", 20L);
+        enableMessage = config.getString("enable_message", "&aSuccessfully enabled KnockbackSync.");
+        disableMessage = config.getString("disable_message", "&cSuccessfully disabled KnockbackSync.");
+        playerEnableMessage = config.getString("player_enable_message", "&aSuccessfully enabled KnockbackSync for %player%.");
+        playerDisableMessage = config.getString("player_disable_message", "&cSuccessfully disabled KnockbackSync for %player%.");
+        playerIneligibleMessage = config.getString("player_ineligible_message", "&c%player% is ineligible for KnockbackSync. If you believe this is an error, please open an issue on the github page.");
+        reloadMessage = config.getString("reload_message", "&aSuccessfully reloaded KnockbackSync.");
+        PlayerData.PING_OFFSET = config.getInt("ping_offset", 25);
     }
 }

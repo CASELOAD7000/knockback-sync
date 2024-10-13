@@ -69,7 +69,7 @@ public class PlayerData {
         this.platformPlayer = new BukkitPlayer(player);
 //        this.player = player;
 //        this.serverPlayer = ((CraftPlayer) player).getHandle();
-        PING_OFFSET = KnockbackSyncBase.INSTANCE.getConfigManager().getConfig().getInt("ping_offset", 25);
+        PING_OFFSET = KnockbackSyncBase.INSTANCE.getConfigManager().getConfigWrapper().getInt("ping_offset", 25);
     }
 
     /**

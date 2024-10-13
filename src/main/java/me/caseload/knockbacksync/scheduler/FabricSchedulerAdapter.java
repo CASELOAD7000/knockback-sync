@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import me.caseload.knockbacksync.KnockbacksyncFabric;
+import me.caseload.knockbacksync.KnockbackSyncFabric;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.server.MinecraftServer;
 
@@ -13,7 +13,7 @@ public class FabricSchedulerAdapter implements SchedulerAdapter {
     private final List<ScheduledTask> taskList;
 
     public FabricSchedulerAdapter() {
-        this.server = KnockbacksyncFabric.server;
+        this.server = KnockbackSyncFabric.server;
         this.taskList = new ArrayList<>();
         ServerTickEvents.END_SERVER_TICK.register(this::handleTasks);
     }

@@ -6,6 +6,7 @@ import net.minecraft.commands.CommandSourceStack;
 public class FabricPermissionChecker implements PermissionChecker {
     @Override
     public boolean hasPermission(CommandSourceStack source, String s, boolean defaultIfUnset) {
-        return Permissions.check(source, s, defaultIfUnset);
+        return true;
+//        return Permissions.check(source, s, defaultIfUnset);
     }
 }

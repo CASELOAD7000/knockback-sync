@@ -25,11 +25,12 @@ public abstract class KnockbackSyncBase {
     public final Platform platform;
 
     @Getter
-    protected final ConfigManager configManager = new ConfigManager();
+    protected ConfigManager configManager;
 
     protected KnockbackSyncBase() {
         this.platform = getPlatform();
         INSTANCE = this;
+        configManager = new ConfigManager();
     }
 
     private Platform getPlatform() {

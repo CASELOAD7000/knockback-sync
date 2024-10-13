@@ -32,7 +32,7 @@ public class ToggleSubcommand implements Listener {
                             boolean toggledState = !configManager.isToggled();
                             configManager.setToggled(toggledState);
 
-                            KnockbackSyncBase.INSTANCE.getConfigManager().getConfig().set("enabled", toggledState);
+                            KnockbackSyncBase.INSTANCE.getConfigManager().getConfigWrapper().set("enabled", toggledState);
                             KnockbackSyncBase.INSTANCE.getConfigManager().saveConfig();
 
                             message = ChatColor.translateAlternateColorCodes('&',

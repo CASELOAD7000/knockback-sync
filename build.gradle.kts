@@ -36,7 +36,7 @@ repositories {
 
 loom {
     // Since this is a plugin, client classes in the classpath aren't needed
-    serverOnlyMinecraftJar()
+//    serverOnlyMinecraftJar()
 }
 
 dependencies {
@@ -49,6 +49,7 @@ dependencies {
 
     // We can use include() since we only ever use this dependency on fabric
     include(modImplementation("me.lucko:fabric-permissions-api:0.3.1")!!)
+    modImplementation("com.github.retrooper:packetevents-fabric:2.5.0")
 
 //    compileOnly("org.spigotmc:spigot:1.18.2-R0.1-SNAPSHOT")
     compileOnly("org.spigotmc:spigot-api:1.18.2-R0.1-SNAPSHOT")
@@ -57,6 +58,7 @@ dependencies {
     compileOnly("org.projectlombok:lombok:1.18.34")
     annotationProcessor("org.projectlombok:lombok:1.18.34")
 
+    shadeThisThing(modImplementation("com.github.retrooper:packetevents-fabric:2.5.0")!!)
     shadeThisThing(implementation("com.github.retrooper:packetevents-spigot:2.5.0")!!)
     shadeThisThing(implementation("dev.jorel:commandapi-bukkit-shade:9.5.3")!!)
     shadeThisThing(implementation("org.kohsuke:github-api:1.326")!!)
