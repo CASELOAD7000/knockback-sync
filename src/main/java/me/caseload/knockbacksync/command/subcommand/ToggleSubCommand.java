@@ -5,20 +5,17 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import me.caseload.knockbacksync.KnockbackSyncBase;
-import me.caseload.knockbacksync.KnockbackSyncPlugin;
 import me.caseload.knockbacksync.manager.ConfigManager;
 import me.caseload.knockbacksync.manager.PlayerData;
 import me.caseload.knockbacksync.manager.PlayerDataManager;
 import me.caseload.knockbacksync.permission.PermissionChecker;
+import me.caseload.knockbacksync.util.ChatUtil;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.arguments.selector.EntitySelector;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
 
 import java.util.UUID;
 
@@ -35,7 +32,7 @@ public class ToggleSubCommand implements Command<CommandSourceStack> {
         if (permissionChecker.hasPermission(context.getSource(), "knockbacksync.toggle.global", false)) {
             toggleGlobalKnockback(configManager, context);
         } else {
-            sendMessage(context, ChatColor.RED + "You don't have permission to toggle the global setting.");
+            sendMessage(context, ChatUtil.translateAlternateColorCodes('&', "&cYou don't have permission to toggle the global setting."));
         }
 
         return Command.SINGLE_SUCCESS;
@@ -54,7 +51,7 @@ public class ToggleSubCommand implements Command<CommandSourceStack> {
                             ServerPlayer sender = context.getSource().getPlayerOrException();
 
                             if (!configManager.isToggled()) {
-                                sendMessage(context, ChatColor.RED + "Knockbacksync is currently disabled on this server. Contact your server administrator for more information.");
+                                sendMessage(context, ChatUtil.translateAlternateColorCodes('&',"&cKnockbacksync is currently disabled on this server. Contact your server administrator for more information."));
                             } else {
                                 togglePlayerKnockback(target, configManager, context);
                             }
@@ -70,7 +67,7 @@ public class ToggleSubCommand implements Command<CommandSourceStack> {
         KnockbackSyncBase.INSTANCE.getConfigManager().getConfigWrapper().set("enabled", toggledState);
         KnockbackSyncBase.INSTANCE.getConfigManager().saveConfig();
 
-        String message = ChatColor.translateAlternateColorCodes('&',
+        String message = ChatUtil.translateAlternateColorCodes('&',
                 toggledState ? configManager.getEnableMessage() : configManager.getDisableMessage()
         );
         sendMessage(context, message);
@@ -80,7 +77,7 @@ public class ToggleSubCommand implements Command<CommandSourceStack> {
         UUID uuid = target.getUUID();
 
         if (PlayerDataManager.shouldExempt(uuid)) {
-            String message = ChatColor.translateAlternateColorCodes('&',
+            String message = ChatUtil.translateAlternateColorCodes('&',
                     configManager.getPlayerIneligibleMessage()
             ).replace("%player%", target.getDisplayName().getString());
 
@@ -95,7 +92,7 @@ public class ToggleSubCommand implements Command<CommandSourceStack> {
             switch (KnockbackSyncBase.INSTANCE.platform) {
                 case BUKKIT:
                 case FOLIA:
-                    Player player = Bukkit.getPlayer(target.getUUID());
+                    org.bukkit.entity.Player player = org.bukkit.Bukkit.getPlayer(target.getUUID());
                     PlayerDataManager.addPlayerData(uuid, new PlayerData(player));
                 case FABRIC:
                     PlayerDataManager.addPlayerData(uuid, new PlayerData(target));
@@ -103,7 +100,7 @@ public class ToggleSubCommand implements Command<CommandSourceStack> {
 
         }
 
-        String message = ChatColor.translateAlternateColorCodes('&',
+        String message = ChatUtil.translateAlternateColorCodes('&',
                 hasPlayerData ? configManager.getPlayerDisableMessage() : configManager.
                         getPlayerEnableMessage()
         ).replace("%player%", target.getDisplayName().getString());

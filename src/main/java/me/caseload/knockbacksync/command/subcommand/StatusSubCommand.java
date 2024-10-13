@@ -8,13 +8,13 @@ import me.caseload.knockbacksync.KnockbackSyncBase;
 import me.caseload.knockbacksync.manager.ConfigManager;
 import me.caseload.knockbacksync.manager.PlayerDataManager;
 import me.caseload.knockbacksync.permission.PermissionChecker;
+import me.caseload.knockbacksync.util.ChatUtil;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.arguments.selector.EntitySelector;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
-import org.bukkit.ChatColor;
 
 import java.util.UUID;
 
@@ -29,11 +29,14 @@ public class StatusSubCommand implements Command<CommandSourceStack> {
 
         // Show global status
         boolean globalStatus = configManager.isToggled();
-        sendMessage(context, ChatColor.YELLOW + "Global KnockbackSync status: " +
-                (globalStatus ? ChatColor.GREEN + "Enabled" : ChatColor.RED + "Disabled"));
+        sendMessage(context, ChatUtil.translateAlternateColorCodes('&',
+                configManager.getConfigWrapper().getString("global_status_message", "&eGlobal KnockbackSync status: ")) +
+                (globalStatus
+                        ? ChatUtil.translateAlternateColorCodes('&',"&aEnabled")
+                        : ChatUtil.translateAlternateColorCodes('&', "&cDisabled")));
 
         // Show player status for the sender (no target specified)
-        showPlayerStatus(context, sender, sender);
+        showPlayerStatus(context, sender, sender, configManager);
 
         return Command.SINGLE_SUCCESS;
     }
@@ -45,26 +48,33 @@ public class StatusSubCommand implements Command<CommandSourceStack> {
                 .then(Commands.argument("target", EntityArgument.player())
                         .requires(source -> permissionChecker.hasPermission(source, "knockbacksync.status.other", true)) // Requires other permission for target
                         .executes(context -> {
+                            ConfigManager configManager = KnockbackSyncBase.INSTANCE.getConfigManager();
                             EntitySelector selector = context.getArgument("target", EntitySelector.class);
                             ServerPlayer target = selector.findSinglePlayer(context.getSource());
                             ServerPlayer sender = context.getSource().getPlayerOrException();
-                            showPlayerStatus(context, sender, target);
+                            showPlayerStatus(context, sender, target, configManager);
                             return Command.SINGLE_SUCCESS;
                         }));
     }
 
-    private static void showPlayerStatus(CommandContext<CommandSourceStack> context, ServerPlayer sender, ServerPlayer target) {
-        ConfigManager configManager = KnockbackSyncBase.INSTANCE.getConfigManager();
+    private static void showPlayerStatus(CommandContext<CommandSourceStack> context, ServerPlayer sender, ServerPlayer target, ConfigManager configManager) {
         boolean globalStatus = configManager.isToggled();
         UUID uuid = target.getUUID();
         boolean playerStatus = PlayerDataManager.containsPlayerData(uuid);
 
         if (!globalStatus) {
-            sendMessage(context, ChatColor.YELLOW + target.getDisplayName().getString() + "'s KnockbackSync status: " +
-                    ChatColor.RED + "Disabled (Global toggle is off)");
+            sendMessage(context, ChatUtil.translateAlternateColorCodes('&',
+                    configManager.getConfigWrapper().getString("player_status_message", "&e%player%'s KnockbackSync status: ")
+                            .replace("%player%", target.getDisplayName().getString())) +
+                    ChatUtil.translateAlternateColorCodes('&',
+                            configManager.getConfigWrapper().getString("player_disabled_global_message", "&cDisabled (Global toggle is off)")));
         } else {
-            sendMessage(context, ChatColor.YELLOW + target.getDisplayName().getString() + "'s KnockbackSync status: " +
-                    (playerStatus ? ChatColor.GREEN + "Enabled" : ChatColor.RED + "Disabled"));
+            sendMessage(context, ChatUtil.translateAlternateColorCodes('&',
+                    configManager.getConfigWrapper().getString("player_status_message", "&e%player%'s KnockbackSync status: ")
+                            .replace("%player%", target.getDisplayName().getString())) +
+                    (playerStatus
+                            ? ChatUtil.translateAlternateColorCodes('&',  "&aEnabled")
+                            : ChatUtil.translateAlternateColorCodes('&', "&cDisabled")));
         }
     }
 

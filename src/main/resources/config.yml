@@ -23,12 +23,19 @@ runnable:
 # the threshold, the previous ping value is used to avoid calculation inaccuracies.
 spike_threshold: 20
 
+enable_experimental_offground: false
+
 enable_message: "&aSuccessfully enabled KnockbackSync."
 disable_message: "&cSuccessfully disabled KnockbackSync."
 player_enable_message: "&aSuccessfully enabled KnockbackSync for %player%."
 player_disable_message: "&cSuccessfully disabled KnockbackSync for %player%."
 player_ineligible_message: "&c%player% is ineligible for KnockbackSync. If you believe this is an error, please open an issue on the github page."
 reload_message: "&aSuccessfully reloaded KnockbackSync config."
+global_status_message: "&eGlobal KnockbackSync status: "
+player_status_message: "&e%player%'s KnockbackSync status: "
+player_disabled_global_message: "&cDisabled (Global toggle is off)"
+enable_experimental_offground_message: "&aSuccessfully enabled offground experiment."
+disable_experimental_offground_message: "&cSuccessfully disabled offground experiment."
 
 # Read FAQ!
 ping_offset: 25
