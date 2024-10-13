@@ -46,7 +46,8 @@ public class AttributeChangeListener extends PacketListenerAbstract {
             // You can now check for specific attributes
             if (property.getAttribute().equals(Attributes.GENERIC_GRAVITY)) {
                 onPlayerGravityChange(player, calculateValueWithModifiers(property));
-                break;
+            } else if (property.getAttribute().equals(Attributes.GENERIC_KNOCKBACK_RESISTANCE)) {
+                onPlayerKnockBackChange(player, calculateValueWithModifiers(property));
             }
         }
     }
@@ -89,9 +90,14 @@ public class AttributeChangeListener extends PacketListenerAbstract {
     public void onPlayerGravityChange(Player player, double newGravity) {
         PlayerData playerData = PlayerDataManager.getPlayerData(player.getUniqueId());
         if (playerData.getClientVersion().isNewerThanOrEquals(ClientVersion.V_1_20_5)) {
-            playerData.setGravity(newGravity);
+            playerData.setGravityAttribute(newGravity);
         } else {
             currentGravity = defaultGravity;
         }
+    }
+
+    private void onPlayerKnockBackChange(Player player, double newKnockbackResistance) {
+        PlayerData playerData = PlayerDataManager.getPlayerData(player.getUniqueId());
+        playerData.setKnockbackResistanceAttribute(newKnockbackResistance);
     }
 }

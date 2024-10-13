@@ -3,7 +3,7 @@ package me.caseload.knockbacksync;
 import java.util.Map;
 
 public class ConfigWrapper {
-    private Map<String, Object> configMap;
+    private final Map<String, Object> configMap;
 
     public ConfigWrapper(Map<String, Object> configMap) {
         this.configMap = configMap;

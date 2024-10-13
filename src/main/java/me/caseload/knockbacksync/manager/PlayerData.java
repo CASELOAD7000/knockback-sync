@@ -3,33 +3,37 @@ package me.caseload.knockbacksync.manager;
 import com.github.retrooper.packetevents.PacketEvents;
 import com.github.retrooper.packetevents.protocol.player.ClientVersion;
 import com.github.retrooper.packetevents.protocol.player.User;
+import com.github.retrooper.packetevents.protocol.world.states.WrappedBlockState;
+import com.github.retrooper.packetevents.protocol.world.states.type.StateTypes;
+import com.github.retrooper.packetevents.util.Vector3d;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerPing;
 import lombok.Getter;
 import lombok.Setter;
 import me.caseload.knockbacksync.KnockbackSyncBase;
-import me.caseload.knockbacksync.KnockbackSyncPlugin;
+import me.caseload.knockbacksync.player.BukkitPlayer;
+import me.caseload.knockbacksync.player.PlatformPlayer;
+import me.caseload.knockbacksync.world.PlatformWorld;
 import me.caseload.knockbacksync.scheduler.AbstractTaskHandle;
 import me.caseload.knockbacksync.util.MathUtil;
-import org.bukkit.*;
+import me.caseload.knockbacksync.world.raytrace.FluidHandling;
+import me.caseload.knockbacksync.world.raytrace.RayTraceResult;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
-import org.bukkit.util.BoundingBox;
-import org.bukkit.util.RayTraceResult;
-import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+import java.util.UUID;
 
 @Getter
 public class PlayerData {
 
-    private final Player player;
+//    private final Player player;
+    private final PlatformPlayer platformPlayer;
+    private final UUID uuid;
 
     public final User user;
 
@@ -55,11 +59,17 @@ public class PlayerData {
     private Integer lastDamageTicks;
 
     @Setter
-    private double gravity = 0.08;
+    private double gravityAttribute = 0.08;
+
+    @Setter
+    private double knockbackResistanceAttribute = 0.0;
 
     public PlayerData(Player player) {
-        this.player = player;
+        this.uuid = player.getUniqueId();
         this.user = PacketEvents.getAPI().getPlayerManager().getUser(player);
+        this.platformPlayer = new BukkitPlayer(player);
+//        this.player = player;
+//        this.serverPlayer = ((CraftPlayer) player).getHandle();
         PING_OFFSET = KnockbackSyncBase.INSTANCE.getConfigManager().getConfig().getInt("ping_offset", 25);
     }
 
@@ -71,8 +81,8 @@ public class PlayerData {
      * @return The compensated ping, with a minimum of 1.
      */
     public long getEstimatedPing() {
-        long currentPing = (ping != null) ? ping : player.getPing();
-        long lastPing = (previousPing != null) ? previousPing : player.getPing();
+        long currentPing = (ping != null) ? ping : platformPlayer.getPing();
+        long lastPing = (previousPing != null) ? previousPing : platformPlayer.getPing();
         long ping = (currentPing - lastPing > KnockbackSyncBase.INSTANCE.getConfigManager().getSpikeThreshold()) ? lastPing : currentPing;
 
         return Math.max(1, ping - PING_OFFSET);
@@ -84,7 +94,7 @@ public class PlayerData {
         timeline.put(packetId, System.currentTimeMillis());
 
         WrapperPlayServerPing packet = new WrapperPlayServerPing(packetId);
-        PacketEvents.getAPI().getPlayerManager().sendPacket(player, packet);
+        user.sendPacket(packet);
     }
 
     /**
@@ -104,10 +114,15 @@ public class PlayerData {
      * @return <code>true</code> if the Player is on the ground; <code>false</code> otherwise.
      */
     public boolean isOnGround(double verticalVelocity) {
-        Material material = player.getLocation().getBlock().getType();
-        if (player.isGliding() || material == Material.WATER || material == Material.LAVA
-                || material == Material.COBWEB || material == Material.SCAFFOLDING)
+        WrappedBlockState blockState = platformPlayer.getWorld().getBlockStateAt(platformPlayer.getLocation());
+
+        if (platformPlayer.isGliding() ||
+                blockState.getType() == StateTypes.WATER ||
+                blockState.getType() == StateTypes.LAVA ||
+                blockState.getType() == StateTypes.COBWEB ||
+                blockState.getType() == StateTypes.SCAFFOLDING) {
             return false;
+        }
 
         if (ping == null || ping < PING_OFFSET)
             return false;
@@ -116,9 +131,9 @@ public class PlayerData {
         if (gDist <= 0)
             return false; // prevent player from taking adjusted knockback when on ground serverside
 
-        int tMax = verticalVelocity > 0 ? MathUtil.calculateTimeToMaxVelocity(verticalVelocity, gravity) : 0;
-        double mH = verticalVelocity > 0 ? MathUtil.calculateDistanceTraveled(verticalVelocity, tMax, gravity) : 0;
-        int tFall = MathUtil.calculateFallTime(verticalVelocity, mH + gDist, gravity);
+        int tMax = verticalVelocity > 0 ? MathUtil.calculateTimeToMaxVelocity(verticalVelocity, gravityAttribute) : 0;
+        double mH = verticalVelocity > 0 ? MathUtil.calculateDistanceTraveled(verticalVelocity, tMax, gravityAttribute) : 0;
+        int tFall = MathUtil.calculateFallTime(verticalVelocity, mH + gDist, gravityAttribute);
 
         if (tFall == -1)
             return false; // reached the max tick limit, not safe to predict
@@ -135,14 +150,15 @@ public class PlayerData {
     public double getDistanceToGround() {
         double collisionDist = 5;
 
-        World world = player.getWorld();
+        PlatformWorld world = platformPlayer.getWorld();
 
-        for (Location corner : getBBCorners()) {
-            RayTraceResult result = world.rayTraceBlocks(corner, new Vector(0, -1, 0), 5, FluidCollisionMode.NEVER, true);
-            if (result == null || result.getHitBlock() == null)
+        for (Vector3d corner : getBBCorners()) {
+            RayTraceResult result = world.rayTraceBlocks(corner, new Vector3d(0, -1, 0), 5, FluidHandling.NONE, true);
+
+            if (result == null || result.getHitPosition() == null)
                 continue;
 
-            collisionDist = Math.min(collisionDist, corner.getY() - result.getHitBlock().getY());
+            collisionDist = Math.min(collisionDist, corner.getY() - result.getHitPosition().getY());
         }
 
         return collisionDist - 1;
@@ -153,18 +169,17 @@ public class PlayerData {
      *
      * @return An array of locations representing the corners of the bounding box.
      */
-    public Location @NotNull [] getBBCorners() {
-        BoundingBox boundingBox = player.getBoundingBox();
-        Location location = player.getLocation();
-        World world = location.getWorld();
+    private Vector3d[] getBBCorners() {
+        Vector3d playerPos = platformPlayer.getLocation();
+        double width = 0.6;  // typical player width
+//        double height = 1.8;  // typical player height
+        double adjustment = 0.01;
 
-        double adjustment = 0.01; // To ensure the bounding box isn't clipping inside a wall
-
-        return new Location[] {
-                new Location(world, boundingBox.getMinX() + adjustment, location.getY(), boundingBox.getMinZ() + adjustment),
-                new Location(world, boundingBox.getMinX() + adjustment, location.getY(), boundingBox.getMaxZ() - adjustment),
-                new Location(world, boundingBox.getMaxX() - adjustment, location.getY(), boundingBox.getMinZ() + adjustment),
-                new Location(world, boundingBox.getMaxX() - adjustment, location.getY(), boundingBox.getMaxZ() - adjustment)
+        return new Vector3d[] {
+                new Vector3d(playerPos.getX() - width/2 + adjustment, playerPos.getY(), playerPos.getZ() - width/2 + adjustment),
+                new Vector3d(playerPos.getX() - width/2 + adjustment, playerPos.getY(), playerPos.getZ() + width/2 - adjustment),
+                new Vector3d(playerPos.getX() + width/2 - adjustment, playerPos.getY(), playerPos.getZ() - width/2 + adjustment),
+                new Vector3d(playerPos.getX() + width/2 - adjustment, playerPos.getY(), playerPos.getZ() + width/2 - adjustment)
         };
     }
 
@@ -180,8 +195,8 @@ public class PlayerData {
 
         if (!attacker.isSprinting()) {
             yAxis = 0.36080000519752503;
-            double knockbackResistance = player.getAttribute(Attribute.GENERIC_KNOCKBACK_RESISTANCE).getValue();
-            double resistanceFactor = 0.04000000119 * knockbackResistance * 10;
+//            double knockbackResistance = knockbackResistanceAttribute;
+            double resistanceFactor = 0.04000000119 * knockbackResistanceAttribute * 10;
             yAxis -= resistanceFactor;
         }
 
@@ -193,17 +208,17 @@ public class PlayerData {
     }
 
     // might need soon
-    public double calculateJumpVelocity() {
-        double jumpVelocity = 0.42;
-
-        PotionEffect jumpEffect = player.getPotionEffect(PotionEffectType.JUMP);
-        if (jumpEffect != null) {
-            int amplifier = jumpEffect.getAmplifier();
-            jumpVelocity += (amplifier + 1) * 0.1F;
-        }
-
-        return jumpVelocity;
-    }
+//    public double calculateJumpVelocity() {
+//        double jumpVelocity = 0.42;
+//
+//        PotionEffect jumpEffect = player.getPotionEffect(PotionEffectType.JUMP);
+//        if (jumpEffect != null) {
+//            int amplifier = jumpEffect.getAmplifier();
+//            jumpVelocity += (amplifier + 1) * 0.1F;
+//        }
+//
+//        return jumpVelocity;
+//    }
 
     public boolean isInCombat() {
         return combatTask != null;
@@ -214,7 +229,7 @@ public class PlayerData {
             combatTask.cancel();
 
         combatTask = newCombatTask();
-        CombatManager.addPlayer(player.getUniqueId());
+        CombatManager.addPlayer(uuid);
     }
 
     public void quitCombat(boolean cancelTask) {
@@ -222,7 +237,7 @@ public class PlayerData {
             combatTask.cancel();
 
         combatTask = null;
-        CombatManager.removePlayer(player.getUniqueId());
+        CombatManager.removePlayer(uuid);
         timeline.clear(); // failsafe for packet loss idk
     }
 

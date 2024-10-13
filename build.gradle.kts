@@ -22,6 +22,7 @@ repositories {
     // Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
     // See https://docs.gradle.org/current/userguide/declaring_repositories.html
     // for more information about repositories.
+    mavenLocal()
     mavenCentral()
     maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
     maven("https://repo.codemc.io/repository/maven-releases/")
@@ -49,6 +50,7 @@ dependencies {
     // We can use include() since we only ever use this dependency on fabric
     include(modImplementation("me.lucko:fabric-permissions-api:0.3.1")!!)
 
+//    compileOnly("org.spigotmc:spigot:1.18.2-R0.1-SNAPSHOT")
     compileOnly("org.spigotmc:spigot-api:1.18.2-R0.1-SNAPSHOT")
     compileOnly("org.geysermc.floodgate:api:2.0-SNAPSHOT")
     compileOnly("dev.folia:folia-api:1.20.4-R0.1-SNAPSHOT")
