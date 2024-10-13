@@ -5,6 +5,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import me.caseload.knockbacksync.KnockbackSyncBase;
+import me.caseload.knockbacksync.manager.ConfigManager;
 import me.caseload.knockbacksync.manager.PlayerData;
 import me.caseload.knockbacksync.manager.PlayerDataManager;
 import me.caseload.knockbacksync.permission.PermissionChecker;
@@ -12,7 +13,12 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.arguments.selector.EntitySelector;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextColor;
 import net.minecraft.server.level.ServerPlayer;
+import org.bukkit.ChatColor;
 
 public class KnockbackSyncCommand implements Command<CommandSourceStack> {
 
@@ -34,7 +40,25 @@ public class KnockbackSyncCommand implements Command<CommandSourceStack> {
 
     public static LiteralArgumentBuilder<CommandSourceStack> build() {
         return Commands.literal("knockbacksync")
-                .executes(new KnockbackSyncCommand())
+//                .executes(new KnockbackSyncCommand())
+                .executes((context) -> {
+                    // Use the builder pattern to create a styled message
+                    MutableComponent message = Component.literal("This server is running the ")
+                            .withStyle(Style.EMPTY.withColor(TextColor.fromRgb(0xFFAA00))) // Gold color
+
+                            .append(Component.literal("KnockbackSync")
+                                    .withStyle(Style.EMPTY.withColor(TextColor.fromRgb(0xFFFF55)))) // Yellow color
+
+                            .append(Component.literal(" plugin. ")
+                                    .withStyle(Style.EMPTY.withColor(TextColor.fromRgb(0xFFAA00)))) // Gold color
+
+                            .append(Component.literal("https://github.com/CASELOAD7000/knockback-sync")
+                                    .withStyle(Style.EMPTY.withColor(TextColor.fromRgb(0x55FFFF)))); // Aqua color
+
+                    // Send the styled message
+                    context.getSource().sendSuccess(() -> message, false);
+                    return 1;
+                })
                 .then(Commands.literal("ping")
                         .requires(source -> permissionChecker.hasPermission(source, "knockbacksync.ping", true))
                         .executes(context -> { // Added .executes() here to handle no target
@@ -56,6 +80,24 @@ public class KnockbackSyncCommand implements Command<CommandSourceStack> {
                                     return 1;
                                 })
                         )
-                );
+                )
+                .then(Commands.literal("reload"))
+                    .requires(source -> permissionChecker.hasPermission(source, "knockbacksync.reload", false))
+                    .executes(context -> {
+                        ConfigManager configManager = KnockbackSyncBase.INSTANCE.getConfigManager();
+                        configManager.loadConfig(true);
+
+                        String rawReloadMessage = configManager.getReloadMessage();
+                        // won't work on fabric take care later
+                        String reloadMessage = ChatColor.translateAlternateColorCodes('&', rawReloadMessage);
+
+                        // Send the message to the command source (the player or console that executed the command)
+                        context.getSource().sendSuccess(() ->
+                                Component.literal(reloadMessage),
+                                false
+                        );
+
+                        return Command.SINGLE_SUCCESS;
+                    });
     }
 }

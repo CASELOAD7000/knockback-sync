@@ -3,6 +3,7 @@ package me.caseload.knockbacksync;
 import com.github.retrooper.packetevents.PacketEvents;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import io.github.retrooper.packetevents.impl.netty.factory.NettyPacketEventsBuilder;
 import me.caseload.knockbacksync.command.KnockbackSyncCommand;
 import me.caseload.knockbacksync.permission.FabricPermissionChecker;
 import me.caseload.knockbacksync.permission.PermissionChecker;
@@ -47,7 +48,7 @@ public class KnockbacksyncFabric implements ModInitializer {
 
     @Override
     public void load() {
-//      PacketEvents.setAPI();
+//      PacketEvents.setAPI(new NettyPacketEventsBuilder().bu);
       PacketEvents.getAPI().load();
     }
 
@@ -67,8 +68,12 @@ public class KnockbacksyncFabric implements ModInitializer {
 //        CommandDispatcher<CommandSourceStack> dispatcher = server.getCommands().getDispatcher();
 //        dispatcher.register(KnockbackSyncCommand.build());
 //      });
-      CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) ->
-              dispatcher.register(KnockbackSyncCommand.build()));
+      CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
+        dispatcher.register(KnockbackSyncCommand.build());
+        dispatcher.register(
+                Commands.literal("kbsync")
+                        .redirect(dispatcher.getRoot().getChild("knockbacksync")));
+      });
     }
 
     @Override

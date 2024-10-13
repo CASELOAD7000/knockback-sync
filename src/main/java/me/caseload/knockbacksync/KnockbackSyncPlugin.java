@@ -1,6 +1,7 @@
 package me.caseload.knockbacksync;
 
 import com.github.retrooper.packetevents.PacketEvents;
+import com.mojang.brigadier.CommandDispatcher;
 import dev.jorel.commandapi.*;
 import io.github.retrooper.packetevents.factory.spigot.SpigotPacketEventsBuilder;
 import me.caseload.knockbacksync.command.KnockbackSyncCommand;
@@ -9,6 +10,7 @@ import me.caseload.knockbacksync.permission.PermissionChecker;
 import me.caseload.knockbacksync.permission.PluginPermissionChecker;
 import me.caseload.knockbacksync.scheduler.BukkitSchedulerAdapter;
 import me.caseload.knockbacksync.scheduler.FoliaSchedulerAdapter;
+import net.minecraft.commands.Commands;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -65,7 +67,11 @@ public final class KnockbackSyncPlugin extends JavaPlugin {
 
         @Override
         protected void registerCommands() {
-            Brigadier.getCommandDispatcher().register(KnockbackSyncCommand.build());
+            CommandDispatcher dispatcher = Brigadier.getCommandDispatcher();
+            dispatcher.register(KnockbackSyncCommand.build());
+            dispatcher.register(
+                    Commands.literal("kbsync")
+                            .redirect(dispatcher.getRoot().getChild("knockbacksync")));
         }
 
         @Override
