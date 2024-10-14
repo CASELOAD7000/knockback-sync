@@ -14,6 +14,7 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.loader.api.FabricLoader;
+import net.fabricmc.loader.api.entrypoint.PreLaunchEntrypoint;
 import net.minecraft.commands.Commands;
 import net.minecraft.server.MinecraftServer;
 //import net.minecraft.client.Minecraft;
@@ -24,7 +25,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.util.logging.Logger;
 
-public class KnockbackSyncFabric implements ModInitializer {
+public class KnockbackSyncFabric implements PreLaunchEntrypoint, ModInitializer {
 
   public static MinecraftServer server;
 
@@ -117,12 +118,15 @@ public class KnockbackSyncFabric implements ModInitializer {
   };
 
   @Override
+  public void onPreLaunch() {
+    core.load();
+  }
+
+  @Override
   public void onInitialize() {
     ServerLifecycleEvents.SERVER_STARTING.register((minecraftServer -> {
       server = minecraftServer;
     }));
-    core.load();
     core.enable();
-    BuildTypePie.determineBuildType();
   }
 }
