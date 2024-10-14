@@ -7,6 +7,7 @@ import com.github.retrooper.packetevents.protocol.world.states.WrappedBlockState
 import com.github.retrooper.packetevents.protocol.world.states.type.StateTypes;
 import com.github.retrooper.packetevents.util.Vector3d;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerPing;
+import io.netty.channel.Channel;
 import lombok.Getter;
 import lombok.Setter;
 import me.caseload.knockbacksync.KnockbackSyncBase;
@@ -73,8 +74,11 @@ public class PlayerData {
 
     public PlayerData(ServerPlayer player) {
         this.uuid = player.getUUID();
-        // exists temporarily until I fix packetevents
-        this.user = null; // PacketEvents.getAPI().getPlayerManager().getUser(player);
+        // ping listener doesn't work beause I can't get the user
+        // this exists temporarily until I fix packetevents
+        Channel channel = (Channel) PacketEvents.getAPI().getProtocolManager().getChannel(uuid);
+        this.user = PacketEvents.getAPI().getProtocolManager().getUser(channel);
+//        this.user = null; // PacketEvents.getAPI().getPlayerManager().getUser(player);
         this.platformPlayer = new FabricPlayer(player);
         PING_OFFSET = KnockbackSyncBase.INSTANCE.getConfigManager().getConfigWrapper().getInt("ping_offset", 25);
     }
