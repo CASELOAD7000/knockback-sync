@@ -43,7 +43,10 @@ dependencies {
     // To change the versions see the gradle.properties file
     minecraft("com.mojang:minecraft:${project.property("minecraft_version")}")
 //    mappings("net.fabricmc:yarn:${property("yarn_mappings")}:v2")
-    mappings(loom.officialMojangMappings())
+    mappings(loom.layered {
+        officialMojangMappings()
+        parchment("org.parchmentmc.data:parchment-1.21:${project.property("parchment_mappings")}")
+    })
     modImplementation("net.fabricmc:fabric-loader:${project.property("loader_version")}")
     modImplementation("net.fabricmc.fabric-api:fabric-api:${project.property("fabric_version")}")
 
@@ -65,7 +68,7 @@ dependencies {
     shadeThisThing(implementation("org.kohsuke:github-api:1.326")!!)
     shadeThisThing(implementation("com.fasterxml.jackson.core:jackson-databind:2.17.2")!!) // Jackson 2.17.2 corresponds to org.kohsuke 1.326
     shadeThisThing(implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.17.2")!!)
-    shadeThisThing(implementation("org.bstats:bstats-bukkit:3.0.2")!!)
+//    shadeThisThing(implementation("org.bstats:bstats-bukkit:3.0.2")!!)
 
 //    include(implementation("me.lucko:fabric-permissions-api:0.3.1")!!)
 //    implementation("me.lucko:commodore:2.2")

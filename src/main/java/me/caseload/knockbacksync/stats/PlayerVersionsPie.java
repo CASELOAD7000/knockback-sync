@@ -2,7 +2,6 @@ package me.caseload.knockbacksync.stats;
 
 import me.caseload.knockbacksync.manager.PlayerData;
 import me.caseload.knockbacksync.manager.PlayerDataManager;
-import org.bstats.charts.AdvancedPie;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
