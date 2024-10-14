@@ -2,6 +2,9 @@ package me.caseload.knockbacksync.player;
 
 import com.github.retrooper.packetevents.util.Vector3d;
 import me.caseload.knockbacksync.world.PlatformWorld;
+import org.bukkit.util.Vector;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
@@ -21,5 +24,17 @@ public interface PlatformPlayer {
     PlatformWorld getWorld();
 
     Vector3d getLocation();
+
+    void sendMessage(@NotNull String s);
+
+    double getAttackCooldown();
+
+    boolean isSprinting();
+
+    int getMainHandKnockbackLevel();
+
+    @Nullable Integer getNoDamageTicks();
+
+    void setVelocity(Vector adjustedVelocity);
     // Add more methods as needed
 }

@@ -1,25 +1,16 @@
 package me.caseload.knockbacksync.listener;
 
 import me.caseload.knockbacksync.KnockbackSyncBase;
-import me.caseload.knockbacksync.KnockbackSyncPlugin;
 import me.caseload.knockbacksync.manager.PlayerData;
 import me.caseload.knockbacksync.manager.PlayerDataManager;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import me.caseload.knockbacksync.player.PlatformPlayer;
 
-public class PlayerDamageListener implements Listener {
-
-    @EventHandler(ignoreCancelled = true)
-    public void onPlayerDamage(EntityDamageByEntityEvent event) {
+public abstract class PlayerDamageListener {
+    public void onPlayerDamage(PlatformPlayer victim, PlatformPlayer attacker) {
         if (!KnockbackSyncBase.INSTANCE.getConfigManager().isToggled())
             return;
 
-        if (!(event.getEntity() instanceof Player victim) || !(event.getDamager() instanceof Player attacker))
-            return;
-
-        PlayerData playerData = PlayerDataManager.getPlayerData(victim.getUniqueId());
+        PlayerData playerData = PlayerDataManager.getPlayerData(victim.getUUID());
         if (playerData == null)
             return;
 

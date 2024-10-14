@@ -73,11 +73,6 @@ public abstract class KnockbackSyncBase {
     public abstract void initializeScheduler();
 
     public void initializePacketEvents() {
-        PacketEvents.getAPI().getEventManager().registerListeners(
-                new AttributeChangeListener(),
-                new PingReceiveListener()
-        );
-
         PacketEvents.getAPI().getSettings()
                 .checkForUpdates(false)
                 .debug(false);
@@ -86,10 +81,10 @@ public abstract class KnockbackSyncBase {
     }
 
     protected void registerCommonListeners() {
-        PacketEvents.getAPI().getEventManager().registerListeners(
-                new AttributeChangeListener(),
-                new PingReceiveListener()
-        );
+//        PacketEvents.getAPI().getEventManager().registerListeners(
+//                new AttributeChangeListener(),
+//                new PingReceiveListener()
+//        );
     }
 
     protected abstract void registerPlatformListeners();

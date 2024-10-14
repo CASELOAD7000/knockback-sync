@@ -1,6 +1,8 @@
 package me.caseload.knockbacksync.permission;
 
 import lombok.SneakyThrows;
+import me.caseload.knockbacksync.player.BukkitPlayer;
+import me.caseload.knockbacksync.player.PlatformPlayer;
 import net.minecraft.commands.CommandSourceStack;
 import org.bukkit.command.CommandSender;
 
@@ -22,5 +24,10 @@ public class PluginPermissionChecker implements PermissionChecker {
     @Override
     public boolean hasPermission(CommandSourceStack source, String s, boolean defaultIfUnset) {
         return ((CommandSender) getBukkitSenderMethod.invoke(source)).hasPermission(s);
+    }
+
+    @Override
+    public boolean hasPermission(PlatformPlayer platformPlayer, String s) {
+        return ((BukkitPlayer) platformPlayer).bukkitPlayer.hasPermission(s);
     }
 }

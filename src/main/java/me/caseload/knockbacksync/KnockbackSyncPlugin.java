@@ -5,7 +5,9 @@ import com.mojang.brigadier.CommandDispatcher;
 import dev.jorel.commandapi.*;
 import io.github.retrooper.packetevents.factory.spigot.SpigotPacketEventsBuilder;
 import me.caseload.knockbacksync.command.KnockbackSyncCommand;
-import me.caseload.knockbacksync.listener.*;
+import me.caseload.knockbacksync.listener.bukkit.BukkitPlayerJoinQuitListener;
+import me.caseload.knockbacksync.listener.bukkit.BukkitPlayerDamageListener;
+import me.caseload.knockbacksync.listener.bukkit.BukkitPlayerKnockbackListener;
 import me.caseload.knockbacksync.permission.PermissionChecker;
 import me.caseload.knockbacksync.permission.PluginPermissionChecker;
 import me.caseload.knockbacksync.scheduler.BukkitSchedulerAdapter;
@@ -61,9 +63,9 @@ public final class KnockbackSyncPlugin extends JavaPlugin {
         @Override
         protected void registerPlatformListeners() {
             registerPluginListeners(
-                    new PlayerDamageListener(),
-                    new PlayerKnockbackListener(),
-                    new PlayerJoinQuitListener()
+                    new BukkitPlayerDamageListener(),
+                    new BukkitPlayerKnockbackListener(),
+                    new BukkitPlayerJoinQuitListener()
             );
         }
 

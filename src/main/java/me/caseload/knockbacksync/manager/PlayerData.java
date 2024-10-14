@@ -19,7 +19,6 @@ import me.caseload.knockbacksync.util.MathUtil;
 import me.caseload.knockbacksync.world.raytrace.FluidHandling;
 import me.caseload.knockbacksync.world.raytrace.RayTraceResult;
 import net.minecraft.server.level.ServerPlayer;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -78,6 +77,13 @@ public class PlayerData {
         this.uuid = player.getUUID();
         this.user = PacketEvents.getAPI().getPlayerManager().getUser(player);
         this.platformPlayer = new FabricPlayer(player);
+        PING_OFFSET = KnockbackSyncBase.INSTANCE.getConfigManager().getConfigWrapper().getInt("ping_offset", 25);
+    }
+
+    public PlayerData(PlatformPlayer platformPlayer) {
+        this.uuid = platformPlayer.getUUID();
+        this.user = PacketEvents.getAPI().getPlayerManager().getUser(platformPlayer);
+        this.platformPlayer = platformPlayer;
         PING_OFFSET = KnockbackSyncBase.INSTANCE.getConfigManager().getConfigWrapper().getInt("ping_offset", 25);
     }
 
@@ -198,7 +204,7 @@ public class PlayerData {
      * @param attacker The player who is attacking.
      * @return The calculated positive vertical velocity, consistent with vanilla behavior.
      */
-    public double calculateVerticalVelocity(Player attacker) {
+    public double calculateVerticalVelocity(PlatformPlayer attacker) {
         double yAxis = attacker.getAttackCooldown() > 0.848 ? 0.4 : 0.36080000519752503;
 
         if (!attacker.isSprinting()) {
@@ -209,7 +215,7 @@ public class PlayerData {
         }
 
         // vertical velocity is always 0.4 when you have knockback level higher than 0
-        if (attacker.getInventory().getItemInMainHand().getEnchantmentLevel(Enchantment.KNOCKBACK) > 0)
+        if (attacker.getMainHandKnockbackLevel() > 0)
             yAxis = 0.4;
 
         return yAxis;

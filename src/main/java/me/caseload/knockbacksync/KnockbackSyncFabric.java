@@ -3,6 +3,8 @@ package me.caseload.knockbacksync;
 import com.github.retrooper.packetevents.PacketEvents;
 import io.github.retrooper.packetevents.factory.fabric.FabricPacketEventsBuilder;
 import me.caseload.knockbacksync.command.KnockbackSyncCommand;
+import me.caseload.knockbacksync.listener.fabric.FabricPlayerDamageListener;
+import me.caseload.knockbacksync.listener.fabric.FabricPlayerJoinQuitListener;
 import me.caseload.knockbacksync.permission.FabricPermissionChecker;
 import me.caseload.knockbacksync.permission.PermissionChecker;
 import me.caseload.knockbacksync.scheduler.FabricSchedulerAdapter;
@@ -12,7 +14,7 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.commands.Commands;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.client.Minecraft;
+//import net.minecraft.client.Minecraft;
 
 import java.io.File;
 import java.io.IOException;
@@ -57,7 +59,8 @@ public class KnockbackSyncFabric implements ModInitializer {
 
     @Override
     protected void registerPlatformListeners() {
-      //todo
+      new FabricPlayerJoinQuitListener().register();
+      new FabricPlayerDamageListener().register();
     }
 
     @Override
@@ -98,6 +101,15 @@ public class KnockbackSyncFabric implements ModInitializer {
     @Override
     public PermissionChecker getPermissionChecker() {
       return permissionChecker;
+    }
+
+    @Override
+    public void initializePacketEvents() {
+      PacketEvents.getAPI().getSettings()
+              .checkForUpdates(false)
+              .debug(false);
+
+      PacketEvents.getAPI().init();
     }
   };
 
