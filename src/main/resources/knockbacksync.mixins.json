@@ -4,6 +4,7 @@
   "package": "me.caseload.knockbacksync.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
+    "PlayerMixin",
     "ServerEntityMixin"
   ],
   "injectors": {

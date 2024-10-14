@@ -12,8 +12,8 @@ public class FabricPlayerKnockbackListener extends PlayerKnockbackListener {
         PlayerVelocityCallback.EVENT.register((player, velocity) -> {
             onPlayerVelocity(new FabricPlayer(player), new Vector3d(velocity.x, velocity.y, velocity.z));
             // This SHOULD mean we return original velocity for Fabric (no modification here)
-            // But since we set it ourselves due to following bukkit's design patterns and doing victim.setVelo()
-            // Re return a pass so velocity isn't set twice
+            // But since we set it ourselves due to following bukkit's design patterns and doing victim
+            // We return a pass so velocity isn't set twice
             return InteractionResult.PASS;
         });
     }

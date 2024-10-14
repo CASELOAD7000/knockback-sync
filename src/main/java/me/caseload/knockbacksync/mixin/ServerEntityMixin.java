@@ -16,6 +16,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(ServerEntity.class)
 public class ServerEntityMixin {
 
+
     @Shadow @Final
     private Entity entity;
 
@@ -31,7 +32,7 @@ public class ServerEntityMixin {
                 this.entity.hurtMarked = false;
                 ci.cancel();
             } else if (result == InteractionResult.SUCCESS) {
-                // The velocity might have been modified by the event handler
+                // Currently unnecessary since we do this in the handler, will move later
                 player.setDeltaMovement(velocity);
             }
         }
