@@ -3,6 +3,9 @@ package me.caseload.knockbacksync.stats;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import me.caseload.knockbacksync.KnockbackSyncBase;
+import me.caseload.knockbacksync.KnockbackSyncPlugin;
+import net.fabricmc.loader.api.FabricLoader;
+import net.fabricmc.loader.api.ModContainer;
 import org.bstats.charts.SimplePie;
 import org.bukkit.Bukkit;
 import org.kohsuke.github.GHAsset;
@@ -19,6 +22,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.util.List;
+import java.util.Optional;
 
 public class BuildTypePie extends SimplePie {
 
@@ -88,7 +92,22 @@ public class BuildTypePie extends SimplePie {
     }
 
     private static String getPluginJarHash() throws Exception {
-        URL jarUrl = Bukkit.getPluginManager().getPlugin("KnockbackSync").getClass().getProtectionDomain().getCodeSource().getLocation();
+        URL jarUrl = null;
+        switch (KnockbackSyncBase.INSTANCE.platform) {
+            case BUKKIT:
+            case FOLIA:
+                // Will give path to remapped jar on paper forks, actual jar on Spigot
+                jarUrl = Bukkit.getPluginManager().getPlugin("KnockbackSync").getClass().getProtectionDomain().getCodeSource().getLocation();
+                break;
+            case FABRIC:
+                Optional<ModContainer> modContainer = FabricLoader.getInstance().getModContainer("knockbacksync");
+                if (modContainer.isPresent()) {
+                    String jarPath = modContainer.get().getRootPath().getFileSystem().toString();
+//                    jarPath = jarPath.replaceAll("^jar:", "").replaceAll("!/$", "");
+                    jarUrl = new File(jarPath).toURI().toURL();
+                }
+                break;
+        }
         MessageDigest digest = MessageDigest.getInstance("SHA-256");
         try (InputStream is = jarUrl.openStream()) {
             byte[] buffer = new byte[8192];
