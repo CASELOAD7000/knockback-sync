@@ -25,7 +25,6 @@ public class StatusSubCommand implements Command<CommandSourceStack> {
     @Override
     public int run(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         ConfigManager configManager = KnockbackSyncBase.INSTANCE.getConfigManager();
-        ServerPlayer sender = context.getSource().getPlayerOrException(); // Get the sender as a ServerPlayer
 
         // Show global status
         boolean globalStatus = configManager.isToggled();
@@ -36,7 +35,9 @@ public class StatusSubCommand implements Command<CommandSourceStack> {
                         : ChatUtil.translateAlternateColorCodes('&', "&cDisabled")));
 
         // Show player status for the sender (no target specified)
-        showPlayerStatus(context, sender, sender, configManager);
+        if (context.getSource().getEntity() instanceof ServerPlayer sender) {
+            showPlayerStatus(context, sender, sender, configManager);
+        }
 
         return Command.SINGLE_SUCCESS;
     }
@@ -51,7 +52,7 @@ public class StatusSubCommand implements Command<CommandSourceStack> {
                             ConfigManager configManager = KnockbackSyncBase.INSTANCE.getConfigManager();
                             EntitySelector selector = context.getArgument("target", EntitySelector.class);
                             ServerPlayer target = selector.findSinglePlayer(context.getSource());
-                            ServerPlayer sender = context.getSource().getPlayerOrException();
+                            ServerPlayer sender = context.getSource().getPlayer();
                             showPlayerStatus(context, sender, target, configManager);
                             return Command.SINGLE_SUCCESS;
                         }));
