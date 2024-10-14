@@ -2,11 +2,8 @@ package me.caseload.knockbacksync;
 
 import com.github.retrooper.packetevents.PacketEvents;
 import lombok.Getter;
-import me.caseload.knockbacksync.listener.AttributeChangeListener;
-import me.caseload.knockbacksync.listener.PingReceiveListener;
 import me.caseload.knockbacksync.manager.ConfigManager;
 import me.caseload.knockbacksync.permission.PermissionChecker;
-import me.caseload.knockbacksync.scheduler.FabricSchedulerAdapter;
 import me.caseload.knockbacksync.scheduler.SchedulerAdapter;
 import me.caseload.knockbacksync.stats.StatsManager;
 import org.kohsuke.github.GitHub;

@@ -1,4 +1,4 @@
-package me.caseload.knockbacksync.listener;
+package me.caseload.knockbacksync.listener.packetevents;
 
 import com.github.retrooper.packetevents.event.PacketListenerAbstract;
 import com.github.retrooper.packetevents.event.PacketSendEvent;
@@ -9,7 +9,6 @@ import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerUp
 import me.caseload.knockbacksync.manager.PlayerData;
 import me.caseload.knockbacksync.manager.PlayerDataManager;
 import me.caseload.knockbacksync.util.MathUtil;
-import org.bukkit.entity.Player;
 
 import java.util.List;
 import java.util.UUID;

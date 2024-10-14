@@ -48,8 +48,8 @@ public class KnockbackSyncFabric implements ModInitializer {
 
     @Override
     public void load() {
-      PacketEvents.setAPI(FabricPacketEventsBuilder.build("knockbacksync"));
-      PacketEvents.getAPI().load();
+//      PacketEvents.setAPI(FabricPacketEventsBuilder.build("knockbacksync"));
+//      PacketEvents.getAPI().load();
     }
 
     @Override
@@ -105,11 +105,11 @@ public class KnockbackSyncFabric implements ModInitializer {
 
     @Override
     public void initializePacketEvents() {
-      PacketEvents.getAPI().getSettings()
-              .checkForUpdates(false)
-              .debug(false);
-
-      PacketEvents.getAPI().init();
+//      PacketEvents.getAPI().getSettings()
+//              .checkForUpdates(false)
+//              .debug(false);
+//
+//      PacketEvents.getAPI().init();
     }
   };
 
