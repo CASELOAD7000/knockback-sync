@@ -57,9 +57,9 @@ public class KnockbackSyncCommand implements Command<CommandSourceStack> {
                                 PlayerData playerData = PlayerDataManager.getPlayerData(sender.getUUID());
                                 context.getSource().sendSuccess(() -> {
                                     if (playerData.getPing() == null) {
-                                        return Component.literal("your first ping packet has not been processed. Estimated ping is " + playerData.getEstimatedPing() + "ms.");
+                                        return Component.literal("Pong not received. Your estimated ping is " + playerData.getEstimatedPing() + "ms.");
                                     } else {
-                                        return Component.literal("your last ping packet took " + playerData.getPing() + "ms.");
+                                        return Component.literal("Your last ping packet took " + playerData.getPing() + "ms.");
                                     }
                                 }, false);
                             } else {
@@ -74,7 +74,7 @@ public class KnockbackSyncCommand implements Command<CommandSourceStack> {
                                     PlayerData playerData = PlayerDataManager.getPlayerData(target.getUUID());
                                     context.getSource().sendSuccess(() -> {
                                         if (playerData.getPing() == null) {
-                                            return Component.literal(target.getDisplayName().getString() + "’s first ping packet has not been processed. Estimated ping is " + playerData.getEstimatedPing() + "ms.");
+                                            return Component.literal("Pong not received. " + target.getDisplayName().getString() + "’s estimated ping is " + playerData.getEstimatedPing() + "ms.");
                                         } else {
                                             return Component.literal(target.getDisplayName().getString() + "’s last ping packet took " + playerData.getPing() + "ms.");
                                         }
