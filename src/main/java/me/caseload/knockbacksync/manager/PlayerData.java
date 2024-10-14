@@ -73,7 +73,8 @@ public class PlayerData {
 
     public PlayerData(ServerPlayer player) {
         this.uuid = player.getUUID();
-        this.user = PacketEvents.getAPI().getPlayerManager().getUser(player);
+        // exists temporarily until I fix packetevents
+        this.user = null; // PacketEvents.getAPI().getPlayerManager().getUser(player);
         this.platformPlayer = new FabricPlayer(player);
         PING_OFFSET = KnockbackSyncBase.INSTANCE.getConfigManager().getConfigWrapper().getInt("ping_offset", 25);
     }
@@ -105,12 +106,14 @@ public class PlayerData {
     }
 
     public void sendPing() {
-        int packetId = random.nextInt(1, 10000);
+        if (user != null) {
+            int packetId = random.nextInt(1, 10000);
 
-        timeline.put(packetId, System.currentTimeMillis());
+            timeline.put(packetId, System.currentTimeMillis());
 
-        WrapperPlayServerPing packet = new WrapperPlayServerPing(packetId);
-        user.sendPacket(packet);
+            WrapperPlayServerPing packet = new WrapperPlayServerPing(packetId);
+            user.sendPacket(packet);
+        }
     }
 
     /**
@@ -264,6 +267,8 @@ public class PlayerData {
     }
 
     public ClientVersion getClientVersion() {
+        if (user == null)
+            return ClientVersion.UNKNOWN;
         ClientVersion ver = user.getClientVersion();
         if (ver == null) {
             // If temporarily null, assume server version...

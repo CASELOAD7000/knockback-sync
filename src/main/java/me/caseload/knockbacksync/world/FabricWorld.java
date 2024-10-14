@@ -9,10 +9,12 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import com.github.retrooper.packetevents.util.Vector3d;
+import org.bukkit.block.Block;
 
 public class FabricWorld implements PlatformWorld {
     private final Level world;
@@ -23,12 +25,13 @@ public class FabricWorld implements PlatformWorld {
 
     @Override
     public WrappedBlockState getBlockStateAt(int x, int y, int z) {
-        return null;
+        BlockState blockState = this.world.getBlockState(new BlockPos(x, y, z));
+        return WrappedBlockState.getByString(blockState.getBlock().getName().toString());
     }
 
     @Override
     public WrappedBlockState getBlockStateAt(Vector3d loc) {
-        return null;
+        return getBlockStateAt((int) Math.floor(loc.x), (int) Math.floor(loc.x), (int) Math.floor(loc.x));
     }
 
     @Override
