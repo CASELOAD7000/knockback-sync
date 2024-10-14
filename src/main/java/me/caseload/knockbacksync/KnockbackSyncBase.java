@@ -7,7 +7,7 @@ import me.caseload.knockbacksync.listener.packetevents.PingReceiveListener;
 import me.caseload.knockbacksync.manager.ConfigManager;
 import me.caseload.knockbacksync.permission.PermissionChecker;
 import me.caseload.knockbacksync.scheduler.SchedulerAdapter;
-import me.caseload.knockbacksync.stats.StatsManager;
+import me.caseload.knockbacksync.stats.custom.StatsManager;
 import org.kohsuke.github.GitHub;
 
 import java.io.File;

@@ -1,8 +1,9 @@
-package me.caseload.knockbacksync.stats;
+package me.caseload.knockbacksync.stats.custom;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import me.caseload.knockbacksync.KnockbackSyncBase;
+import me.caseload.knockbacksync.stats.SimplePie;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import org.bukkit.Bukkit;

@@ -1,8 +1,6 @@
-package me.caseload.knockbacksync.stats;
+package me.caseload.knockbacksync.stats.custom;
 
 import me.caseload.knockbacksync.KnockbackSyncBase;
-import me.caseload.knockbacksync.KnockbackSyncFabric;
-import me.caseload.knockbacksync.KnockbackSyncPlugin;
 
 public class StatsManager {
 
@@ -12,17 +10,19 @@ public class StatsManager {
             case FOLIA:
                 KnockbackSyncBase.INSTANCE.getScheduler().runTaskAsynchronously(() -> {
                     BuildTypePie.determineBuildType(); // Function to calculate hash
-                    MetricsBukkit metrics = new MetricsBukkit(KnockbackSyncPlugin.getPlugin(KnockbackSyncPlugin.class), 23568);
+                    MetricsBukkit metrics = new MetricsBukkit(23568);
                     metrics.addCustomChart(new PlayerVersionsPie());
                     metrics.addCustomChart(new BuildTypePie());
                 });
+                break;
             case FABRIC:
                 KnockbackSyncBase.INSTANCE.getScheduler().runTaskAsynchronously(() -> {
                     BuildTypePie.determineBuildType();
-                    MetricsFabric metricsFabric = new MetricsFabric(KnockbackSyncFabric.server, 23568);
+                    MetricsFabric metricsFabric = new MetricsFabric(23568);
                     metricsFabric.addCustomChart(new PlayerVersionsPie());
                     metricsFabric.addCustomChart(new BuildTypePie());
                 });
+                break;
         }
     }
 }

@@ -1,4 +1,4 @@
-package me.caseload.knockbacksync.stats;
+package me.caseload.knockbacksync.stats.custom;
 
 /*
  * This Metrics class was auto-generated and can be copied into your project if you are
@@ -15,35 +15,17 @@ package me.caseload.knockbacksync.stats;
  * Violations will result in a ban of your plugin and account from bStats.
  */
 
-import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.lang.reflect.Method;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 import java.util.logging.Level;
-import java.util.stream.Collectors;
-import java.util.zip.GZIPOutputStream;
-import javax.net.ssl.HttpsURLConnection;
 
 import me.caseload.knockbacksync.KnockbackSyncBase;
+import me.caseload.knockbacksync.KnockbackSyncPlugin;
+import me.caseload.knockbacksync.stats.CustomChart;
+import me.caseload.knockbacksync.stats.JsonObjectBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -55,15 +37,9 @@ public class MetricsBukkit implements Metrics {
 
     private final MetricsBase metricsBase;
 
-    /**
-     * Creates a new Metrics instance.
-     *
-     * @param plugin    Your plugin instance.
-     * @param serviceId The id of the service. It can be found at <a
-     *                  href="https://bstats.org/what-is-my-plugin-id">What is my plugin id?</a>
-     */
-    public MetricsBukkit(Plugin plugin, int serviceId) {
-        this.plugin = plugin;
+
+    public MetricsBukkit(int serviceId) {
+        this.plugin = KnockbackSyncPlugin.getPlugin(KnockbackSyncPlugin.class);
         // Get the config file
         File bStatsFolder = new File(plugin.getDataFolder().getParentFile(), "bStats");
         File configFile = new File(bStatsFolder, "config.yml");

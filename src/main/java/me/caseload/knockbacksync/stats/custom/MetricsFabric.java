@@ -1,4 +1,4 @@
-package me.caseload.knockbacksync.stats;
+package me.caseload.knockbacksync.stats.custom;
 
 /*
  * This Metrics class was auto-generated and can be copied into your project if you are
@@ -19,24 +19,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import me.caseload.knockbacksync.ConfigWrapper;
 import me.caseload.knockbacksync.KnockbackSyncBase;
+import me.caseload.knockbacksync.KnockbackSyncFabric;
+import me.caseload.knockbacksync.stats.CustomChart;
+import me.caseload.knockbacksync.stats.JsonObjectBuilder;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.server.MinecraftServer;
 
-import javax.net.ssl.HttpsURLConnection;
 import java.io.*;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 import java.util.logging.Level;
-import java.util.stream.Collectors;
-import java.util.zip.GZIPOutputStream;
 
 public class MetricsFabric implements Metrics {
 
@@ -51,8 +42,8 @@ public class MetricsFabric implements Metrics {
      * @param serviceId The id of the service. It can be found at <a
      *     href="https://bstats.org/what-is-my-plugin-id">What is my plugin id?</a>
      */
-    public MetricsFabric(MinecraftServer server, int serviceId) {
-        this.server = server;
+    public MetricsFabric(int serviceId) {
+        this.server = KnockbackSyncFabric.server;
         // Get the config file
         File bStatsFolder = new File(FabricLoader.getInstance().getConfigDir().toString(), "bStats");
         File configFile = new File(bStatsFolder, "config.yml");

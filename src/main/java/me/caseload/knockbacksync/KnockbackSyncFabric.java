@@ -9,7 +9,7 @@ import me.caseload.knockbacksync.listener.fabric.FabricPlayerKnockbackListener;
 import me.caseload.knockbacksync.permission.FabricPermissionChecker;
 import me.caseload.knockbacksync.permission.PermissionChecker;
 import me.caseload.knockbacksync.scheduler.FabricSchedulerAdapter;
-import me.caseload.knockbacksync.stats.BuildTypePie;
+import me.caseload.knockbacksync.stats.custom.BuildTypePie;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;

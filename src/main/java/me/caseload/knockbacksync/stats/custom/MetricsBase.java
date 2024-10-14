@@ -1,11 +1,13 @@
-package me.caseload.knockbacksync.stats;
+package me.caseload.knockbacksync.stats.custom;
+
+import me.caseload.knockbacksync.stats.CustomChart;
+import me.caseload.knockbacksync.stats.JsonObjectBuilder;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.io.*;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
