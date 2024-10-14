@@ -52,8 +52,8 @@ dependencies {
 
     // We can use include() since we only ever use this dependency on fabric
     include(modImplementation("me.lucko:fabric-permissions-api:0.3.1")!!)
-    // THIS IS A CUSTOM BUILD OF PACKETEVENTS WITH THE PACKET ENCODER/DECODER REMOVED
-    include(modImplementation("com.github.retrooper:packetevents-fabric:2.5.2-SNAPSHOT")!!)
+    // THIS IS A CUSTOM BUILD OF PACKETEVENTS UNTIL UPSTREAM MERGES PR
+    include(modImplementation("com.github.retrooper:packetevents-fabric:2.5.3-SNAPSHOT")!!)
 
 //    compileOnly("org.spigotmc:spigot:1.18.2-R0.1-SNAPSHOT")
     compileOnly("org.spigotmc:spigot-api:1.18.2-R0.1-SNAPSHOT")

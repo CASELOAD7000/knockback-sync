@@ -79,7 +79,6 @@ public abstract class KnockbackSyncBase {
         PacketEvents.getAPI().init();
     }
 
-    // Currentlly does nothing on
     protected void registerCommonListeners() {
         PacketEvents.getAPI().getEventManager().registerListeners(
                 new AttributeChangeListener(),
