@@ -1,14 +1,14 @@
 package me.caseload.knockbacksync.listener;
 
+import com.github.retrooper.packetevents.util.Vector3d;
 import me.caseload.knockbacksync.KnockbackSyncBase;
 import me.caseload.knockbacksync.manager.PlayerData;
 import me.caseload.knockbacksync.manager.PlayerDataManager;
 import me.caseload.knockbacksync.player.PlatformPlayer;
-import org.bukkit.util.Vector;
 
 public abstract class PlayerKnockbackListener {
 
-    public void onPlayerVelocity(PlatformPlayer victim, Vector velocity) {
+    public void onPlayerVelocity(PlatformPlayer victim, Vector3d velocity) {
         if (!KnockbackSyncBase.INSTANCE.getConfigManager().isToggled())
             return;
 
@@ -24,7 +24,9 @@ public abstract class PlayerKnockbackListener {
         if (verticalVelocity == null || !playerData.isOnGround(velocity.getY()))
             return;
 
-        Vector adjustedVelocity = velocity.clone().setY(verticalVelocity);
+        // Since we're already changing types do we need to use withY to get a new object
+        // Or can we just go velcoity.y = verticalVelocity ?
+        Vector3d adjustedVelocity = velocity.withY(verticalVelocity);
         victim.setVelocity(adjustedVelocity); // Use PlatformPlayer's setVelocity
     }
 }

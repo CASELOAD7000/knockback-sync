@@ -1,30 +1,39 @@
 package me.caseload.knockbacksync.mixin;
 
+import me.caseload.knockbacksync.callback.PlayerVelocityCallback;
 import net.minecraft.server.level.ServerEntity;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.InteractionResult;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-//@Mixin(ServerEntity.class)
-//public class ServerEntityMixin {
-//
-//    @Inject(method = "sendChanges", at = @At("HEAD"), cancellable = true)
-//    private void onSendChanges(CallbackInfo ci) {
-//        // Your custom logic here
-//        System.out.println("ServerEntity sendChanges called");
-//
-//        // Example: Modify the entity's velocity
-//        Entity entity = ((ServerEntity) (Object) this).getEntity();
-//        Vec3 velocity = entity.getDeltaMovement();
-//
-//        // Print the current velocity
-//        System.out.println("Current velocity: " + velocity);
-//
-//        // Modify the velocity if needed
-//        // entity.setDeltaMovement(new Vec3(x, y, z));
-//    }
-//}
+@Mixin(ServerEntity.class)
+public class ServerEntityMixin {
+
+    @Shadow @Final
+    private Entity entity;
+
+    @Inject(method = "sendChanges", at = @At(value = "FIELD", target = "Lnet/minecraft/world/entity/Entity;hurtMarked:Z", ordinal = 1))
+    private void onSendChanges(CallbackInfo ci) {
+        if (this.entity.hurtMarked && this.entity instanceof ServerPlayer) {
+            ServerPlayer player = (ServerPlayer) this.entity;
+            Vec3 velocity = player.getDeltaMovement();
+
+            InteractionResult result = PlayerVelocityCallback.EVENT.invoker().onVelocityChange(player, velocity);
+
+            if (result == InteractionResult.FAIL) {
+                this.entity.hurtMarked = false;
+                ci.cancel();
+            } else if (result == InteractionResult.SUCCESS) {
+                // The velocity might have been modified by the event handler
+                player.setDeltaMovement(velocity);
+            }
+        }
+    }
+}

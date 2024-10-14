@@ -2,7 +2,6 @@ package me.caseload.knockbacksync.player;
 
 import com.github.retrooper.packetevents.util.Vector3d;
 import me.caseload.knockbacksync.world.PlatformWorld;
-import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -35,6 +34,6 @@ public interface PlatformPlayer {
 
     @Nullable Integer getNoDamageTicks();
 
-    void setVelocity(Vector adjustedVelocity);
+    void setVelocity(Vector3d adjustedVelocity);
     // Add more methods as needed
 }

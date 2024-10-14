@@ -106,7 +106,7 @@ public class BukkitPlayer implements PlatformPlayer {
     }
 
     @Override
-    public void setVelocity(Vector adjustedVelocity) {
-        bukkitPlayer.setVelocity(adjustedVelocity);
+    public void setVelocity(Vector3d adjustedVelocity) {
+        bukkitPlayer.setVelocity(new Vector(adjustedVelocity.x, adjustedVelocity.y, adjustedVelocity.z));
     }
 }

@@ -80,12 +80,16 @@ public class PlayerData {
         PING_OFFSET = KnockbackSyncBase.INSTANCE.getConfigManager().getConfigWrapper().getInt("ping_offset", 25);
     }
 
-    public PlayerData(PlatformPlayer platformPlayer) {
-        this.uuid = platformPlayer.getUUID();
-        this.user = PacketEvents.getAPI().getPlayerManager().getUser(platformPlayer);
-        this.platformPlayer = platformPlayer;
-        PING_OFFSET = KnockbackSyncBase.INSTANCE.getConfigManager().getConfigWrapper().getInt("ping_offset", 25);
-    }
+//    public PlayerData(PlatformPlayer platformPlayer) {
+//        this.uuid = platformPlayer.getUUID();
+//        if (platformPlayer instanceof FabricPlayer player) {
+//            this.user = PacketEvents.getAPI().getPlayerManager().getUser(player.fabricPlayer);
+//        } else if (platformPlayer instanceof BukkitPlayer player) {
+//            this.user = PacketEvents.getAPI().getPlayerManager().getUser(player.bukkitPlayer);
+//        }
+//        this.platformPlayer = platformPlayer;
+//        PING_OFFSET = KnockbackSyncBase.INSTANCE.getConfigManager().getConfigWrapper().getInt("ping_offset", 25);
+//    }
 
     /**
      * Calculates the player's ping with compensation for lag spikes.

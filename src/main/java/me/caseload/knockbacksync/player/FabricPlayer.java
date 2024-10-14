@@ -128,8 +128,11 @@ public class FabricPlayer implements PlatformPlayer {
     }
 
     @Override
-    public void setVelocity(Vector adjustedVelocity) {
-
+    public void setVelocity(Vector3d adjustedVelocity) {
+        fabricPlayer.setDeltaMovement(adjustedVelocity.x, adjustedVelocity.y, adjustedVelocity.z);
+        // TODO
+        // fix paper-ism? for some reason setVelocity() in paper marks the entity as hurt marked every time its called?
+        fabricPlayer.hurtMarked = true;
     }
 
     // Implement other methods

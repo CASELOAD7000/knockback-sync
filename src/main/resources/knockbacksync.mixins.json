@@ -1,9 +1,10 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "com.knockbacksync.mixin",
+  "package": "me.caseload.knockbacksync.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
+    "ServerEntityMixin"
   ],
   "injectors": {
     "defaultRequire": 1

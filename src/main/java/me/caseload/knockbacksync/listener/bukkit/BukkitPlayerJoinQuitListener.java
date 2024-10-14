@@ -18,7 +18,7 @@ public class BukkitPlayerJoinQuitListener extends PlayerJoinQuitListener impleme
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
-        onPlayerJoin(new BukkitPlayer(event.getPlayer()));
+        onPlayerJoin(new PlayerData(event.getPlayer()));
     }
 
     @EventHandler

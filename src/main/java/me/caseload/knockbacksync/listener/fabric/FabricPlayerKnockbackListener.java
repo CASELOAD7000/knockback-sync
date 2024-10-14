@@ -1,15 +1,20 @@
 package me.caseload.knockbacksync.listener.fabric;
 
+import com.github.retrooper.packetevents.util.Vector3d;
+import me.caseload.knockbacksync.callback.PlayerVelocityCallback;
 import me.caseload.knockbacksync.listener.PlayerKnockbackListener;
 import me.caseload.knockbacksync.player.FabricPlayer;
-import org.bukkit.util.Vector;
+import net.minecraft.world.InteractionResult;
 
 public class FabricPlayerKnockbackListener extends PlayerKnockbackListener {
 
     public void register() {
-//        PlayerVelocityUpdateCallback.EVENT.register((player, velocity) -> {
-//            onPlayerVelocity(new FabricPlayer(player), new Vector(velocity.x, velocity.y, velocity.z));
-//            return velocity; // Return the original velocity for Fabric (no modification here)
-//        });
+        PlayerVelocityCallback.EVENT.register((player, velocity) -> {
+            onPlayerVelocity(new FabricPlayer(player), new Vector3d(velocity.x, velocity.y, velocity.z));
+            // This SHOULD mean we return original velocity for Fabric (no modification here)
+            // But since we set it ourselves due to following bukkit's design patterns and doing victim.setVelo()
+            // Re return a pass so velocity isn't set twice
+            return InteractionResult.PASS;
+        });
     }
 }

@@ -1,5 +1,6 @@
 package me.caseload.knockbacksync.listener.bukkit;
 
+import com.github.retrooper.packetevents.util.Vector3d;
 import me.caseload.knockbacksync.KnockbackSyncBase;
 import me.caseload.knockbacksync.listener.PlayerKnockbackListener;
 import me.caseload.knockbacksync.manager.PlayerData;
@@ -13,6 +14,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerVelocityEvent;
+import org.bukkit.util.Vector;
 
 public class BukkitPlayerKnockbackListener extends PlayerKnockbackListener implements Listener {
 
@@ -31,7 +33,8 @@ public class BukkitPlayerKnockbackListener extends PlayerKnockbackListener imple
         if (!(attacker instanceof Player))
             return;
 
-        onPlayerVelocity(new BukkitPlayer(victim), event.getVelocity());
-//        event.setVelocity(victim.getVelocity()); // Update the event's velocity in Spigot
+        Vector vector = event.getVelocity();
+        onPlayerVelocity(new BukkitPlayer(victim), new Vector3d(vector.getX(), vector.getY(), vector.getZ()));
+//        callback.setVelocity(victim.getVelocity()); // Update the callback's velocity in Spigot
     }
 }
