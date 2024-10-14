@@ -55,7 +55,13 @@ public class KnockbackSyncCommand implements Command<CommandSourceStack> {
                             if (context.getSource().getEntity() instanceof ServerPlayer) {
                                 ServerPlayer sender = (ServerPlayer) context.getSource().getEntity();
                                 PlayerData playerData = PlayerDataManager.getPlayerData(sender.getUUID());
-                                context.getSource().sendSuccess(() -> net.minecraft.network.chat.Component.literal("Your last ping packet took " + playerData.getPing() + "ms."), false);
+                                context.getSource().sendSuccess(() -> {
+                                    if (playerData.getPing() == null) {
+                                        return Component.literal("your first ping packet has not been processed. Estimated ping is " + playerData.getEstimatedPing() + "ms.");
+                                    } else {
+                                        return Component.literal("your last ping packet took " + playerData.getPing() + "ms.");
+                                    }
+                                }, false);
                             } else {
                                 context.getSource().sendFailure(net.minecraft.network.chat.Component.literal("This command can only be used by players."));
                             }
@@ -66,7 +72,13 @@ public class KnockbackSyncCommand implements Command<CommandSourceStack> {
                                     EntitySelector selector = context.getArgument("target", EntitySelector.class);
                                     ServerPlayer target = selector.findSinglePlayer(context.getSource());
                                     PlayerData playerData = PlayerDataManager.getPlayerData(target.getUUID());
-                                    context.getSource().sendSuccess(() -> net.minecraft.network.chat.Component.literal(target.getDisplayName().getString() + "’s last ping packet took " + playerData.getPing() + "ms."), false);
+                                    context.getSource().sendSuccess(() -> {
+                                        if (playerData.getPing() == null) {
+                                            return Component.literal(target.getDisplayName().getString() + "’s first ping packet has not been processed. Estimated ping is " + playerData.getEstimatedPing() + "ms.");
+                                        } else {
+                                            return Component.literal(target.getDisplayName().getString() + "’s last ping packet took " + playerData.getPing() + "ms.");
+                                        }
+                                    }, false);
                                     return 1;
                                 })
                         )

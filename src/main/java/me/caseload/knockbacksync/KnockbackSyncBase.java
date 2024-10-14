@@ -2,6 +2,8 @@ package me.caseload.knockbacksync;
 
 import com.github.retrooper.packetevents.PacketEvents;
 import lombok.Getter;
+import me.caseload.knockbacksync.listener.packetevents.AttributeChangeListener;
+import me.caseload.knockbacksync.listener.packetevents.PingReceiveListener;
 import me.caseload.knockbacksync.manager.ConfigManager;
 import me.caseload.knockbacksync.permission.PermissionChecker;
 import me.caseload.knockbacksync.scheduler.SchedulerAdapter;
@@ -77,11 +79,12 @@ public abstract class KnockbackSyncBase {
         PacketEvents.getAPI().init();
     }
 
+    // Currentlly does nothing on
     protected void registerCommonListeners() {
-//        PacketEvents.getAPI().getEventManager().registerListeners(
-//                new AttributeChangeListener(),
-//                new PingReceiveListener()
-//        );
+        PacketEvents.getAPI().getEventManager().registerListeners(
+                new AttributeChangeListener(),
+                new PingReceiveListener()
+        );
     }
 
     protected abstract void registerPlatformListeners();
