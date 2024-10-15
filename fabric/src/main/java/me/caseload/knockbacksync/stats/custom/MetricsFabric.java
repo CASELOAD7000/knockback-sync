@@ -17,7 +17,6 @@ package me.caseload.knockbacksync.stats.custom;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import me.caseload.knockbacksync.ConfigWrapper;
 import me.caseload.knockbacksync.KnockbackSyncBase;
 import me.caseload.knockbacksync.KnockbackSyncFabric;
 import me.caseload.knockbacksync.stats.CustomChart;
@@ -26,8 +25,6 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.server.MinecraftServer;
 
 import java.io.*;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
 
@@ -52,7 +49,7 @@ public class MetricsFabric implements Metrics {
      *     href="https://bstats.org/what-is-my-plugin-id">What is my plugin id?</a>
      */
     public MetricsFabric(int serviceId) {
-        this.server = KnockbackSyncFabric.server;
+        this.server = KnockbackSyncFabric.SERVER;
         // Get the config file
         File bStatsFolder = new File(FabricLoader.getInstance().getConfigDir().toString(), "bStats");
         File configFile = new File(bStatsFolder, "config.yml");

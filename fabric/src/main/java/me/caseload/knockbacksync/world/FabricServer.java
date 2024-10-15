@@ -10,14 +10,14 @@ import java.util.stream.Collectors;
 
 public class FabricServer implements PlatformServer {
     public Collection<PlatformPlayer> getOnlinePlayers() {
-        return KnockbackSyncFabric.server.getPlayerList().getPlayers().stream()
+        return KnockbackSyncFabric.SERVER.getPlayerList().getPlayers().stream()
                 .map(FabricPlayer::new)
                 .collect(Collectors.toList());
     }
 
     @Override
     public PlatformPlayer getPlayer(UUID uuid) {
-        return new FabricPlayer(KnockbackSyncFabric.server.getPlayerList().getPlayer(uuid));
+        return new FabricPlayer(KnockbackSyncFabric.SERVER.getPlayerList().getPlayer(uuid));
     }
 
 }

@@ -13,7 +13,7 @@ public class FabricSchedulerAdapter implements SchedulerAdapter {
     private final List<ScheduledTask> taskList;
 
     public FabricSchedulerAdapter() {
-        this.server = KnockbackSyncFabric.server;
+        this.server = KnockbackSyncFabric.SERVER;
         this.taskList = new ArrayList<>();
         ServerTickEvents.END_SERVER_TICK.register(this::handleTasks);
     }

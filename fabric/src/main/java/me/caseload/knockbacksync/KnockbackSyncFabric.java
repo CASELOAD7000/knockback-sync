@@ -27,7 +27,7 @@ import java.util.logging.Logger;
 
 public class KnockbackSyncFabric implements PreLaunchEntrypoint, ModInitializer {
 
-  public static MinecraftServer server;
+  public static MinecraftServer SERVER = (MinecraftServer) FabricLoader.getInstance().getGameInstance();
 
   private final KnockbackSyncBase core = new KnockbackSyncBase() {
 
@@ -125,13 +125,13 @@ public class KnockbackSyncFabric implements PreLaunchEntrypoint, ModInitializer 
   @Override
   public void onPreLaunch() {
     core.load();
+//    ServerLifecycleEvents.SERVER_STARTING.register((minecraftServer -> {
+//      SERVER = minecraftServer;
+//    }));
   }
 
   @Override
   public void onInitialize() {
-    ServerLifecycleEvents.SERVER_STARTING.register((minecraftServer -> {
-      server = minecraftServer;
-    }));
     core.enable();
   }
 }
