@@ -2,6 +2,7 @@ package me.caseload.knockbacksync.listener.bukkit;
 
 import me.caseload.knockbacksync.listener.PlayerJoinQuitListener;
 import me.caseload.knockbacksync.manager.PlayerData;
+import me.caseload.knockbacksync.player.BukkitPlayer;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -11,7 +12,7 @@ public class BukkitPlayerJoinQuitListener extends PlayerJoinQuitListener impleme
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
-        onPlayerJoin(new PlayerData(event.getPlayer().getUniqueId()));
+        onPlayerJoin(new PlayerData(new BukkitPlayer(event.getPlayer())));
     }
 
     @EventHandler

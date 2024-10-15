@@ -12,7 +12,7 @@ public class FabricPermissionChecker implements PermissionChecker {
     }
 
     @Override
-    public boolean hasPermission(PlatformPlayer platform, String s) {
-        return Permissions.check(((FabricPlayer) platform).fabricPlayer, s);
+    public boolean hasPermission(PlatformPlayer platformPlayer, String s) {
+        return Permissions.check(((FabricPlayer) platformPlayer).fabricPlayer, s);
     }
 }

@@ -2,6 +2,7 @@ package me.caseload.knockbacksync.util;
 
 import com.github.retrooper.packetevents.PacketEvents;
 import com.github.retrooper.packetevents.util.reflection.Reflection;
+import me.caseload.knockbacksync.KnockbackSyncBase;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -18,9 +19,18 @@ public class GeyserUtil {
     public static boolean isGeyserPlayer(UUID uuid) {
         if (!CHECKED_FOR_GEYSER) {
             try {
-                ClassLoader classLoader = PacketEvents.getAPI().getPlugin().getClass().getClassLoader();
-                GEYSER_CLASS = classLoader.loadClass("org.geysermc.api.Geyser");
-                GEYSER_PRESENT = true;
+                switch (KnockbackSyncBase.INSTANCE.platform) {
+                    case BUKKIT:
+                    case FOLIA:
+                        ClassLoader classLoader = PacketEvents.getAPI().getPlugin().getClass().getClassLoader();
+                        GEYSER_CLASS = classLoader.loadClass("org.geysermc.api.Geyser");
+                        break;
+                    case FABRIC:
+                        GEYSER_CLASS = Class.forName("org.geysermc.api.Geyser");
+                        GEYSER_PRESENT = true;
+                        break;
+                }
+
             } catch (ClassNotFoundException e) {
                 GEYSER_PRESENT = false;
             }
@@ -30,9 +40,17 @@ public class GeyserUtil {
         if (GEYSER_PRESENT) {
             if (GEYSER_API_CLASS == null) {
                 try {
-                    // TODO don't rely on getPlugin()
-                    ClassLoader classLoader = PacketEvents.getAPI().getPlugin().getClass().getClassLoader();
-                    GEYSER_API_CLASS = classLoader.loadClass("org.geysermc.api.GeyserApiBase");
+                    switch (KnockbackSyncBase.INSTANCE.platform) {
+                        case BUKKIT:
+                        case FOLIA:
+                            ClassLoader classLoader = PacketEvents.getAPI().getPlugin().getClass().getClassLoader();
+                            GEYSER_API_CLASS = classLoader.loadClass("org.geysermc.api.GeyserApiBase");
+                            break;
+                        case FABRIC:
+                            GEYSER_CLASS = Class.forName("org.geysermc.api.GeyserApiBase");
+                            GEYSER_PRESENT = true;
+                            break;
+                    }
                 }
                 catch (ClassNotFoundException e) {
                     e.printStackTrace();

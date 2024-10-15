@@ -35,8 +35,7 @@ import java.util.UUID;
 @Getter
 public class PlayerData {
 
-//    private final Player player;
-    private PlatformPlayer platformPlayer = null;
+    private final PlatformPlayer platformPlayer;
     private final UUID uuid;
 
     public final User user;
@@ -53,13 +52,16 @@ public class PlayerData {
     @Nullable
     private AbstractTaskHandle combatTask;
 
-    @Nullable @Setter
+    @Nullable
+    @Setter
     private Long ping, previousPing;
 
-    @Nullable @Setter
+    @Nullable
+    @Setter
     private Double verticalVelocity;
 
-    @Nullable @Setter
+    @Nullable
+    @Setter
     private Integer lastDamageTicks;
 
     @Setter
@@ -68,44 +70,44 @@ public class PlayerData {
     @Setter
     private double knockbackResistanceAttribute = 0.0;
 
-    public PlayerData(UUID uuid) {
-            this.uuid = platformPlayer.getUUID();
-            this.platformPlayer = KnockbackSyncBase.INSTANCE.platformServer.getPlayer(uuid);
+    public PlayerData(PlatformPlayer platformPlayer) {
+        this.uuid = platformPlayer.getUUID();
+        this.platformPlayer = platformPlayer;
 
-            User tempUser = null;
-            try {
-                PlayerManager playerManager = PacketEvents.getAPI().getPlayerManager();
-                Object player = null;
+        User tempUser = null;
+        try {
+            PlayerManager playerManager = PacketEvents.getAPI().getPlayerManager();
+            Object player = null;
 
-                switch (KnockbackSyncBase.INSTANCE.platform) {
-                    case BUKKIT:
-                    case FOLIA:
-                        Class<?> bukkitPlayerClass = Class.forName("me.caseload.knockbacksync.player.BukkitPlayer");
-                        Field bukkitPlayerField = bukkitPlayerClass.getDeclaredField("bukkitPlayer");
-                        bukkitPlayerField.setAccessible(true);
-                        player = bukkitPlayerField.get(platformPlayer);
-                        break;
-                    case FABRIC:
-                        Class<?> fabricPlayerClass = Class.forName("me.caseload.knockbacksync.player.FabricPlayer");
-                        Field fabricPlayerField = fabricPlayerClass.getDeclaredField("fabricPlayer");
-                        fabricPlayerField.setAccessible(true);
-                        player = fabricPlayerField.get(platformPlayer);
-                        break;
-                    default:
-                        throw new IllegalStateException("Unexpected platform: " + KnockbackSyncBase.INSTANCE.platform);
-                }
-
-                if (player != null) {
-                    tempUser = playerManager.getUser(player);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                // Handle the exception appropriately
+            switch (KnockbackSyncBase.INSTANCE.platform) {
+                case BUKKIT:
+                case FOLIA:
+                    Class<?> bukkitPlayerClass = Class.forName("me.caseload.knockbacksync.player.BukkitPlayer");
+                    Field bukkitPlayerField = bukkitPlayerClass.getDeclaredField("bukkitPlayer");
+                    bukkitPlayerField.setAccessible(true);
+                    player = bukkitPlayerField.get(platformPlayer);
+                    break;
+                case FABRIC:
+                    Class<?> fabricPlayerClass = Class.forName("me.caseload.knockbacksync.player.FabricPlayer");
+                    Field fabricPlayerField = fabricPlayerClass.getDeclaredField("fabricPlayer");
+                    fabricPlayerField.setAccessible(true);
+                    player = fabricPlayerField.get(platformPlayer);
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected platform: " + KnockbackSyncBase.INSTANCE.platform);
             }
 
-            this.user = tempUser;
-            this.PING_OFFSET = KnockbackSyncBase.INSTANCE.getConfigManager().getConfigWrapper().getInt("ping_offset", 25);
+            if (player != null) {
+                tempUser = playerManager.getUser(player);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            // Handle the exception appropriately
         }
+
+        this.user = tempUser;
+        PING_OFFSET = KnockbackSyncBase.INSTANCE.getConfigManager().getConfigWrapper().getInt("ping_offset", 25);
+    }
 
 //    public PlayerData(Player player) {
 //        this.uuid = player.getUniqueId();

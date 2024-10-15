@@ -89,7 +89,7 @@ public class ToggleSubCommand implements Command<CommandSourceStack> {
         if (hasPlayerData)
             PlayerDataManager.removePlayerData(uuid);
         else {
-            PlayerDataManager.addPlayerData(uuid, new PlayerData(uuid));
+            PlayerDataManager.addPlayerData(uuid, new PlayerData(KnockbackSyncBase.INSTANCE.platformServer.getPlayer(uuid)));
 //            switch (KnockbackSyncBase.INSTANCE.platform) {
 //                case BUKKIT:
 //                case FOLIA:
