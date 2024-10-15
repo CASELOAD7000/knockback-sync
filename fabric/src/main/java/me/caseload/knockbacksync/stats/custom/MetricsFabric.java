@@ -93,7 +93,7 @@ public class MetricsFabric implements Metrics {
                         // See https://github.com/Bastian/bstats-metrics/pull/126
                         // See https://github.com/Bastian/bstats-metrics/pull/126
                         MetricsBase(
-                        "bukkit",
+                        "fabric",
                         serverUUID,
                         serviceId,
                         enabled,
@@ -127,7 +127,7 @@ public class MetricsFabric implements Metrics {
         builder.appendField("playerAmount", getPlayerAmount());
         builder.appendField("onlineMode", KnockbackSyncFabric.getServer().usesAuthentication() ? 0 : 1);
         builder.appendField("bukkitVersion", "Fabric " + FabricLoader.getInstance().getModContainer("fabricloader").get().getMetadata().getVersion().getFriendlyString() + " (MC: " + KnockbackSyncFabric.getServer().getServerVersion() + ")");
-        builder.appendField("bukkitName", "fabric");
+        builder.appendField("bukkitName", "Fabric");
         builder.appendField("javaVersion", System.getProperty("java.version"));
         builder.appendField("osName", System.getProperty("os.name"));
         builder.appendField("osArch", System.getProperty("os.arch"));
