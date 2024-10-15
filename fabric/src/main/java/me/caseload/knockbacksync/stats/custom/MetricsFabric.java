@@ -37,10 +37,17 @@ public class MetricsFabric implements Metrics {
 
     private final MetricsBase metricsBase;
 
+    private static class Config {
+        public boolean enabled = true;
+        public String serverUuid;
+        public boolean logFailedRequests = false;
+        public boolean logSentData = false;
+        public boolean logResponseStatusText = false;
+    }
+
     /**
      * Creates a new Metrics instance.
      *
-     * @param server instance of MinecraftServer.
      * @param serviceId The id of the service. It can be found at <a
      *     href="https://bstats.org/what-is-my-plugin-id">What is my plugin id?</a>
      */
@@ -49,38 +56,40 @@ public class MetricsFabric implements Metrics {
         // Get the config file
         File bStatsFolder = new File(FabricLoader.getInstance().getConfigDir().toString(), "bStats");
         File configFile = new File(bStatsFolder, "config.yml");
-        Map<String, Object> configMap = new HashMap<>();
         ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+        Config config;
 
-        try (InputStream stream = new FileInputStream(configFile)) {
-            configMap = mapper.readValue(stream, Map.class);
-        } catch (IOException e) {
-            // Ignore, use defaults
-        }
+        try {
+            if (!configFile.exists()) {
+                bStatsFolder.mkdirs(); // Ensure the directory exists
 
-        ConfigWrapper config = new ConfigWrapper(configMap);
+                config = new Config();
+                config.serverUuid = UUID.randomUUID().toString();
 
-        if (!config.getBoolean("exists", false)) { // Check if the file has been created before
-            config.set("enabled", true);
-            config.set("serverUuid", UUID.randomUUID().toString());
-            config.set("logFailedRequests", false);
-            config.set("logSentData", false);
-            config.set("logResponseStatusText", false);
-            config.set("exists", true); // Mark the file as created
-
-            try (OutputStream stream = new FileOutputStream(configFile)) {
-                mapper.writeValue(stream, configMap);
-            } catch (IOException e) {
-                // Ignore
+                // Add header as a comment
+//                mapper.writeValue(configFile,
+//                        "# bStats (https://bStats.org) collects some basic information for plugin authors, like how\n"
+//                                + "# many people use their plugin and their total player count. It's recommended to keep bStats\n"
+//                                + "# enabled, but if you're not comfortable with this, you can turn this setting off. There is no\n"
+//                                + "# performance penalty associated with having metrics enabled, and data sent to bStats is fully\n"
+//                                + "# anonymous.\n");
+                mapper.writeValue(configFile, config); // Write the config object as YAML
+            } else {
+                config = mapper.readValue(configFile, Config.class);
             }
+        } catch (IOException ignored) {
+            // Handle the exception appropriately (e.g., log an error)
+            config = new Config(); // Fallback to default values
+            config.serverUuid = UUID.randomUUID().toString();
         }
 
         // Load the data
-        boolean enabled = config.getBoolean("enabled", true);
-        String serverUUID = config.getString("serverUuid", UUID.randomUUID().toString()); // Provide default if not found
-        boolean logErrors = config.getBoolean("logFailedRequests", false);
-        boolean logSentData = config.getBoolean("logSentData", false);
-        boolean logResponseStatusText = config.getBoolean("logResponseStatusText", false);
+        boolean enabled = config.enabled;
+        String serverUUID = config.serverUuid;
+        boolean logErrors = config.logFailedRequests;
+        boolean logSentData = config.logSentData;
+        boolean logResponseStatusText = config.logResponseStatusText;
+
         metricsBase =
                 new // See https://github.com/Bastian/bstats-metrics/pull/126
                         // See https://github.com/Bastian/bstats-metrics/pull/126
