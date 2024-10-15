@@ -30,8 +30,6 @@ import java.util.logging.Level;
 
 public class MetricsFabric implements Metrics {
 
-    private final MinecraftServer server;
-
     private final MetricsBase metricsBase;
 
     private static class Config {
@@ -49,7 +47,6 @@ public class MetricsFabric implements Metrics {
      *     href="https://bstats.org/what-is-my-plugin-id">What is my plugin id?</a>
      */
     public MetricsFabric(int serviceId) {
-        this.server = KnockbackSyncFabric.SERVER;
         // Get the config file
         File bStatsFolder = new File(FabricLoader.getInstance().getConfigDir().toString(), "bStats");
         File configFile = new File(bStatsFolder, "config.yml");
@@ -128,8 +125,8 @@ public class MetricsFabric implements Metrics {
 
     private void appendPlatformData(JsonObjectBuilder builder) {
         builder.appendField("playerAmount", getPlayerAmount());
-        builder.appendField("onlineMode", server.usesAuthentication() ? 0 : 1);
-        builder.appendField("bukkitVersion", "Fabric " + FabricLoader.getInstance().getModContainer("fabricloader").get().getMetadata().getVersion().getFriendlyString() + " (MC: " + server.getServerVersion() + ")");
+        builder.appendField("onlineMode", KnockbackSyncFabric.getServer().usesAuthentication() ? 0 : 1);
+        builder.appendField("bukkitVersion", "Fabric " + FabricLoader.getInstance().getModContainer("fabricloader").get().getMetadata().getVersion().getFriendlyString() + " (MC: " + KnockbackSyncFabric.getServer().getServerVersion() + ")");
         builder.appendField("bukkitName", "fabric");
         builder.appendField("javaVersion", System.getProperty("java.version"));
         builder.appendField("osName", System.getProperty("os.name"));
@@ -143,8 +140,8 @@ public class MetricsFabric implements Metrics {
     }
 
     private int getPlayerAmount() {
-        if (server != null && server.isRunning()) {
-            return server.getPlayerCount();
+        if (KnockbackSyncFabric.getServer().isRunning()) {
+            return KnockbackSyncFabric.getServer().getPlayerCount();
         } else {
             return 0;
         }

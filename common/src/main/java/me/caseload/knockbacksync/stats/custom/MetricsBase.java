@@ -165,6 +165,7 @@ public class MetricsBase {
     }
 
     private void submitData() {
+        System.out.println("Submitting Data");
         final JsonObjectBuilder baseJsonBuilder = new JsonObjectBuilder();
         appendPlatformDataConsumer.accept(baseJsonBuilder);
         final JsonObjectBuilder serviceJsonBuilder = new JsonObjectBuilder();

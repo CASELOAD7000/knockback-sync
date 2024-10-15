@@ -1,5 +1,6 @@
 package me.caseload.knockbacksync.scheduler;
 
+import me.caseload.knockbacksync.KnockbackSyncBase;
 import me.caseload.knockbacksync.KnockbackSyncFabric;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.server.MinecraftServer;
@@ -9,11 +10,11 @@ import java.util.Iterator;
 import java.util.List;
 
 public class FabricSchedulerAdapter implements SchedulerAdapter {
-    private final MinecraftServer server;
+//    private final MinecraftServer server;
     private final List<ScheduledTask> taskList;
 
     public FabricSchedulerAdapter() {
-        this.server = KnockbackSyncFabric.SERVER;
+//        this.server = KnockbackSyncFabric.SERVER;
         this.taskList = new ArrayList<>();
         ServerTickEvents.END_SERVER_TICK.register(this::handleTasks);
     }
@@ -35,7 +36,7 @@ public class FabricSchedulerAdapter implements SchedulerAdapter {
 
     @Override
     public AbstractTaskHandle runTask(Runnable task) {
-        ScheduledTask scheduledTask = new ScheduledTask(task, server.getTickCount(), 0, false);
+        ScheduledTask scheduledTask = new ScheduledTask(task, KnockbackSyncFabric.getServer().getTickCount(), 0, false);
         taskList.add(scheduledTask);
         return new FabricTaskHandle(() -> taskList.remove(scheduledTask));
     }
@@ -49,14 +50,14 @@ public class FabricSchedulerAdapter implements SchedulerAdapter {
 
     @Override
     public AbstractTaskHandle runTaskLater(Runnable task, long delayTicks) {
-        ScheduledTask scheduledTask = new ScheduledTask(task, server.getTickCount() + delayTicks, 0, false);
+        ScheduledTask scheduledTask = new ScheduledTask(task, KnockbackSyncFabric.getServer().getTickCount() + delayTicks, 0, false);
         taskList.add(scheduledTask);
         return new FabricTaskHandle(() -> taskList.remove(scheduledTask));
     }
 
     @Override
     public AbstractTaskHandle runTaskTimer(Runnable task, long delayTicks, long periodTicks) {
-        ScheduledTask scheduledTask = new ScheduledTask(task, server.getTickCount() + delayTicks, periodTicks, true);
+        ScheduledTask scheduledTask = new ScheduledTask(task, KnockbackSyncFabric.getServer().getTickCount() + delayTicks, periodTicks, true);
         taskList.add(scheduledTask);
         return new FabricTaskHandle(() -> taskList.remove(scheduledTask));
     }

@@ -21,7 +21,8 @@ public abstract class KnockbackSyncBase {
     public static Logger LOGGER;
     public static KnockbackSyncBase INSTANCE;
 
-    public SchedulerAdapter scheduler;
+    @Getter
+    protected SchedulerAdapter scheduler;
     public Platform platform;
     public StatsManager statsManager;
     public PlatformServer platformServer;
@@ -62,16 +63,12 @@ public abstract class KnockbackSyncBase {
     public abstract void load();
 
     public void enable() {
-        saveDefaultConfig();
         LOGGER = getLogger();
-        initializeScheduler();
+        saveDefaultConfig();
         initializePacketEvents();
-        configManager.loadConfig(false);
-        registerPlatformListeners();
         registerCommonListeners();
+        registerPlatformListeners();
         registerCommands();
-        statsManager.init();
-        checkForUpdates();
     }
 
     public abstract void initializeScheduler();
@@ -125,9 +122,6 @@ public abstract class KnockbackSyncBase {
 
     public abstract PermissionChecker getPermissionChecker();
 
-    public SchedulerAdapter getScheduler() {
-        return scheduler;
-    }
 }
 
 

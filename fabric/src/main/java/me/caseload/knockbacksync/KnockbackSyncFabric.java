@@ -10,11 +10,13 @@ import me.caseload.knockbacksync.permission.FabricPermissionChecker;
 import me.caseload.knockbacksync.permission.PermissionChecker;
 import me.caseload.knockbacksync.scheduler.FabricSchedulerAdapter;
 import me.caseload.knockbacksync.stats.custom.FabricStatsManager;
+import me.caseload.knockbacksync.stats.custom.PluginJarHashProvider;
 import me.caseload.knockbacksync.world.FabricServer;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.loader.api.FabricLoader;
+import net.fabricmc.loader.api.ModContainer;
 import net.fabricmc.loader.api.entrypoint.PreLaunchEntrypoint;
 import net.minecraft.commands.Commands;
 import net.minecraft.server.MinecraftServer;
@@ -22,18 +24,34 @@ import net.minecraft.server.MinecraftServer;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.file.Files;
+import java.security.MessageDigest;
+import java.util.Optional;
 import java.util.logging.Logger;
 
 public class KnockbackSyncFabric implements PreLaunchEntrypoint, ModInitializer {
 
-  public static MinecraftServer SERVER = (MinecraftServer) FabricLoader.getInstance().getGameInstance();
+//  private static MinecraftServer SERVER;
 
   private final KnockbackSyncBase core = new KnockbackSyncBase() {
 
     {
       statsManager = new FabricStatsManager();
       platformServer = new FabricServer();
+      URL jarUrl = null;
+      Optional<ModContainer> modContainer = FabricLoader.getInstance().getModContainer("knockbacksync");
+      if (modContainer.isPresent()) {
+        String jarPath = modContainer.get().getRootPath().getFileSystem().toString();
+        jarPath = jarPath.replaceAll("^jar:", "").replaceAll("!/$", "");
+          try {
+              jarUrl = new File(jarPath).toURI().toURL();
+          } catch (MalformedURLException e) {
+              throw new RuntimeException(e);
+          }
+      }
+      pluginJarHashProvider = new PluginJarHashProvider(jarUrl);
     }
 
     private final Logger logger = Logger.getLogger(KnockbackSyncFabric.class.getName());
@@ -127,11 +145,23 @@ public class KnockbackSyncFabric implements PreLaunchEntrypoint, ModInitializer 
     core.load();
 //    ServerLifecycleEvents.SERVER_STARTING.register((minecraftServer -> {
 //      SERVER = minecraftServer;
+//      core.initializeScheduler();
+//      core.configManager.loadConfig(false);
+//      core.statsManager.init();
+//      core.checkForUpdates();
 //    }));
   }
 
   @Override
   public void onInitialize() {
     core.enable();
+    core.initializeScheduler();
+    core.configManager.loadConfig(false);
+    core.statsManager.init();
+    core.checkForUpdates();
+  }
+
+  public static MinecraftServer getServer() {
+    return (MinecraftServer) FabricLoader.getInstance().getGameInstance();
   }
 }
