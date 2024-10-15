@@ -63,7 +63,7 @@ public class KnockbackSyncCommand implements Command<CommandSourceStack> {
                                     }
                                 }, false);
                             } else {
-                                context.getSource().sendFailure(net.minecraft.network.chat.Component.literal("This command can only be used by players."));
+                                context.getSource().sendFailure(Component.literal("This command can only be used by players."));
                             }
                             return 1;
                         })
