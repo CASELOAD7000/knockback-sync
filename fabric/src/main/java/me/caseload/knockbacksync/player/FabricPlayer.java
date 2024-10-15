@@ -3,12 +3,22 @@ package me.caseload.knockbacksync.player;
 import com.github.retrooper.packetevents.util.Vector3d;
 import me.caseload.knockbacksync.world.FabricWorld;
 import me.caseload.knockbacksync.world.PlatformWorld;
+import net.minecraft.core.Holder;
+import net.minecraft.core.Registry;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.data.registries.VanillaRegistries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Optional;
 import java.util.UUID;
 
 public class FabricPlayer implements PlatformPlayer {
@@ -97,18 +107,12 @@ public class FabricPlayer implements PlatformPlayer {
 
     @Override
     public int getMainHandKnockbackLevel() {
-        return 0;
-//        Optional<RegistryAccess.RegistryEntry<Enchantment>> entry = Registries.ENCHANTMENT;
-//        RegistryAccess.RegistryEntry<Enchantment> registryEntry1 = entry.orElseThrow();
-//        Holder<Enchantment> knockbackEnchantment = registryEntry1.value().getHolderOrThrow(Enchantments.KNOCKBACK);
-//        return EnchantmentHelper.getItemEnchantmentLevel(knockbackEnchantment, fabricPlayer.getMainHandItem());
-//        Registry<Enchantment> enchantmentRegistry = Registries.ENCHANTMENT;
-//        Holder<Enchantment> knockbackEnchantment = enchantmentRegistry.getHolderOrThrow(Enchantments.KNOCKBACK);
-//        return EnchantmentHelper.getItemEnchantmentLevel(knockbackEnchantment, fabricPlayer.getMainHandItem());
-        // TODO implement later
-//        Registry<Enchantment> enchantmentRegistry = fabricPlayer.level().registryAccess().registry(Registries.ENCHANTMENT);
-//        Holder<Enchantment> knockbackEnchantment = enchantmentRegistry.getHolderOrThrow(Enchantments.KNOCKBACK);
-//        return EnchantmentHelper.getItemEnchantmentLevel(knockbackEnchantment, fabricPlayer.getMainHandItem());
+        Optional<Holder.Reference<Enchantment>>
+                entry = VanillaRegistries.createLookup().asGetterLookup().get(
+                Registries.ENCHANTMENT, Enchantments.KNOCKBACK
+        );
+        Holder<Enchantment> registryEntry1 = entry.orElseThrow(); // Reference implements RegistryEntry, this is fine
+        return EnchantmentHelper.getItemEnchantmentLevel(registryEntry1, fabricPlayer.getMainHandItem());
     }
 
     @Override
