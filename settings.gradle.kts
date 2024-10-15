@@ -10,3 +10,7 @@ pluginManagement {
 include("common", "fabric", "bukkit")
 
 rootProject.name = "KnockbackSync"
+
+plugins {
+    id("org.gradle.toolchains.foojay-resolver-convention") version "0.8.0"
+}

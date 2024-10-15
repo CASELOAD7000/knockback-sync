@@ -10,11 +10,11 @@ dependencies {
     annotationProcessor("org.projectlombok:lombok:1.18.34")
 
     // Shadded in or bundled by platform-specific code
-    compileOnly("net.fabricmc:fabric-loader:${rootProject.property("loader_version")}")
-    compileOnly("com.github.retrooper:packetevents-api:2.5.0")
-    compileOnly("com.fasterxml.jackson.core:jackson-databind:2.17.2")
-    compileOnly("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.17.2")
-    compileOnly("org.kohsuke:github-api:1.326") {
+//    compileOnly("net.fabricmc:fabric-loader:${rootProject.property("loader_version")}")
+    implementation("com.github.retrooper:packetevents-api:2.5.0")
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.17.2")
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.17.2")
+    implementation("org.kohsuke:github-api:1.326") {
         exclude(group = "commons-io", module = "commons-io")
         exclude(group = "org.apache.commons", module = "commons-lang3")
     }

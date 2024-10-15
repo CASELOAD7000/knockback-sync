@@ -13,7 +13,7 @@ val shadeThisThing: Configuration by configurations.creating {
 }
 
 dependencies {
-    implementation(project(":common"))
+    shadeThisThing(implementation(project(":common"))!!)
 
     compileOnly("org.spigotmc:spigot-api:1.18.2-R0.1-SNAPSHOT")
     compileOnly("org.geysermc.floodgate:api:2.0-SNAPSHOT")
@@ -26,6 +26,7 @@ dependencies {
         exclude(group = "commons-io", module = "commons-io")
         exclude(group = "org.apache.commons", module = "commons-lang3")
     })
+
 
     shadeThisThing(implementation("com.fasterxml.jackson.core:jackson-databind:2.17.2")!!)
     shadeThisThing(implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.17.2")!!)
