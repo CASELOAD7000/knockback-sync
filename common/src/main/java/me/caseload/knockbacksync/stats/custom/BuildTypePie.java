@@ -25,7 +25,7 @@ public class BuildTypePie extends SimplePie {
     private static final String DEV_BUILDS_FILE = "dev-builds.txt";
     private static final File dataFolder = KnockbackSyncBase.INSTANCE.getDataFolder();
     private static String cachedBuildType = null;
-    public URL jarUrl;
+    public static URL jarUrl;
 
     public BuildTypePie() {
         super("build_type", BuildTypePie::determineBuildType);
@@ -92,15 +92,15 @@ public class BuildTypePie extends SimplePie {
             case BUKKIT:
             case FOLIA:
                 // Will give path to remapped jar on paper forks, actual jar on Spigot
-                jarUrl = Bukkit.getPluginManager().getPlugin("KnockbackSync").getClass().getProtectionDomain().getCodeSource().getLocation();
+//                jarUrl = Bukkit.getPluginManager().getPlugin("KnockbackSync").getClass().getProtectionDomain().getCodeSource().getLocation();
                 break;
             case FABRIC:
-                Optional<ModContainer> modContainer = FabricLoader.getInstance().getModContainer("knockbacksync");
-                if (modContainer.isPresent()) {
-                    String jarPath = modContainer.get().getRootPath().getFileSystem().toString();
-                    jarPath = jarPath.replaceAll("^jar:", "").replaceAll("!/$", "");
-                    jarUrl = new File(jarPath).toURI().toURL();
-                }
+//                Optional<ModContainer> modContainer = FabricLoader.getInstance().getModContainer("knockbacksync");
+//                if (modContainer.isPresent()) {
+//                    String jarPath = modContainer.get().getRootPath().getFileSystem().toString();
+//                    jarPath = jarPath.replaceAll("^jar:", "").replaceAll("!/$", "");
+//                    jarUrl = new File(jarPath).toURI().toURL();
+//                }
                 break;
         }
         MessageDigest digest = MessageDigest.getInstance("SHA-256");

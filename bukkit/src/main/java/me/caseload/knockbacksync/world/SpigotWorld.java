@@ -1,9 +1,9 @@
 package me.caseload.knockbacksync.world;
 
+import com.github.retrooper.packetevents.protocol.world.BlockFace;
 import com.github.retrooper.packetevents.protocol.world.states.WrappedBlockState;
 import com.github.retrooper.packetevents.util.Vector3d;
 import com.github.retrooper.packetevents.util.Vector3i;
-import me.caseload.knockbacksync.util.BlockFaceUtil;
 import me.caseload.knockbacksync.world.raytrace.FluidHandling;
 import me.caseload.knockbacksync.world.raytrace.RayTraceResult;
 import org.bukkit.FluidCollisionMode;
@@ -44,9 +44,28 @@ public class SpigotWorld implements PlatformWorld {
 
         return new RayTraceResult(
                 new Vector3d(result.getHitPosition().getX(), result.getHitPosition().getY(), result.getHitPosition().getZ()),
-                BlockFaceUtil.getFrom(result.getHitBlockFace()),
+                getBlockFaceFrom(result.getHitBlockFace()),
                 new Vector3i(result.getHitBlock().getX(),result.getHitBlock().getY(),result.getHitBlock().getZ()),
                 result.getHitBlock() != null ? WrappedBlockState.getByString(result.getHitBlock().getType().name()) : null
         );
+    }
+
+    private static BlockFace getBlockFaceFrom(org.bukkit.block.BlockFace direction) {
+        switch (direction) {
+            case NORTH:
+                return BlockFace.NORTH;
+            case SOUTH:
+                return BlockFace.SOUTH;
+            case EAST:
+                return BlockFace.EAST;
+            case WEST:
+                return BlockFace.WEST;
+            case UP:
+                return BlockFace.UP;
+            case DOWN:
+                return BlockFace.DOWN;
+            default:
+                return null;
+        }
     }
 }

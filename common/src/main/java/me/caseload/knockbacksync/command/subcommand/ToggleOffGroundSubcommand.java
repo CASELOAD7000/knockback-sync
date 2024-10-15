@@ -1,11 +1,11 @@
 package me.caseload.knockbacksync.command.subcommand;
 import me.caseload.knockbacksync.KnockbackSyncBase;
-import org.bukkit.ChatColor;
 
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import me.caseload.knockbacksync.permission.PermissionChecker;
+import me.caseload.knockbacksync.util.ChatUtil;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
@@ -19,7 +19,7 @@ public class ToggleOffGroundSubcommand implements Command<CommandSourceStack> {
         boolean toggledState = !KnockbackSyncBase.INSTANCE.getConfigManager().getConfigWrapper().getBoolean("enable_experimental_offground", false);
         KnockbackSyncBase.INSTANCE.getConfigManager().getConfigWrapper().set("enable_experimental_offground", toggledState);
         KnockbackSyncBase.INSTANCE.getConfigManager().saveConfig();
-        String message = ChatColor.translateAlternateColorCodes('&',
+        String message = ChatUtil.translateAlternateColorCodes('&',
                 toggledState ?
                         KnockbackSyncBase.INSTANCE.getConfigManager().getConfigWrapper().getString("enable_experimental_offground_message", "&aSuccessfully enabled offground experiment.") :
                         KnockbackSyncBase.INSTANCE.getConfigManager().getConfigWrapper().getString("disable_experimental_offground_message", "&cSuccessfully disabled offground experiment.")

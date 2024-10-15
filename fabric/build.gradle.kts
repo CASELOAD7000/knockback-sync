@@ -1,14 +1,30 @@
 plugins {
     id("fabric-loom")
+    id("com.gradleup.shadow") version "8.3.3"
 }
 
 base {
     archivesName.set("${rootProject.property("archives_base_name")}-fabric")
 }
 
+val shadeThisThing: Configuration by configurations.creating {
+    isCanBeConsumed = true
+    isTransitive = true
+}
+
+sourceSets {
+    main {
+        java {
+            srcDir(project(":common").file("src/main/java"))
+        }
+        resources {
+            srcDir(project(":common").file("src/main/resources"))
+        }
+    }
+}
 
 dependencies {
-    implementation(project(":common"))
+//    implementation(project(":common"))
 
     minecraft("com.mojang:minecraft:${rootProject.property("minecraft_version")}")
     mappings(loom.layered {
@@ -20,11 +36,31 @@ dependencies {
 
     include(modImplementation("me.lucko:fabric-permissions-api:0.3.1")!!)
     include(modImplementation("com.github.retrooper:packetevents-fabric:2.5.7-SNAPSHOT")!!)
-    include(implementation("com.fasterxml.jackson.core:jackson-databind:2.17.2")!!)
-    include(implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.17.2")!!)
 
+    shadeThisThing(implementation("com.fasterxml.jackson.core:jackson-databind:2.17.2")!!)
+    shadeThisThing(implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.17.2")!!)
+    shadeThisThing(implementation("org.kohsuke:github-api:1.326") {
+        exclude(group = "commons-io", module = "commons-io")
+        exclude(group = "org.apache.commons", module = "commons-lang3")
+    })
+
+    compileOnly("org.geysermc.floodgate:api:2.0-SNAPSHOT")
     compileOnly("org.projectlombok:lombok:1.18.34")
     annotationProcessor("org.projectlombok:lombok:1.18.34")
+}
+
+tasks.shadowJar {
+    archiveClassifier.set("dev")
+    configurations = listOf(shadeThisThing)
+    isEnableRelocation = true
+    relocationPrefix = "${project.property("maven_group")}.${project.property("archives_base_name")}.shaded"
+    finalizedBy(tasks.remapJar)
+}
+
+tasks.remapJar {
+    archiveClassifier.set(null as String?)
+    dependsOn(tasks.shadowJar)
+    inputFile = tasks.shadowJar.get().archiveFile
 }
 
 tasks.processResources {
