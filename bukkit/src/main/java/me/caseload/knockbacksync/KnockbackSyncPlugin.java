@@ -32,7 +32,7 @@ public final class KnockbackSyncPlugin extends JavaPlugin {
         {
             statsManager = new BukkitStatsManager();
             platformServer = new BukkitServer();
-            pluginJarHashProvider = new PluginJarHashProvider(Bukkit.getPluginManager().getPlugin("KnockbackSync").getClass().getProtectionDomain().getCodeSource().getLocation());
+            pluginJarHashProvider = new PluginJarHashProvider(this.getClass().getProtectionDomain().getCodeSource().getLocation());
         }
 
         private final PluginPermissionChecker permissionChecker = new PluginPermissionChecker();

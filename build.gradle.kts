@@ -6,7 +6,7 @@ plugins {
     id("fabric-loom") version "1.7.4" apply false
 }
 
-val fullVersion = "1.3.2"
+val fullVersion = "1.3.4"
 val snapshot = true
 
 allprojects {

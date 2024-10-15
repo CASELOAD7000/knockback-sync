@@ -7,4 +7,5 @@ public interface SchedulerAdapter {
     AbstractTaskHandle runTaskTimer(Runnable task, long delayTicks, long periodTicks);
     AbstractTaskHandle runTaskLaterAsynchronously(Runnable task, long delay);
     AbstractTaskHandle runTaskTimerAsynchronously(Runnable task, long delay, long period);
+    void shutdown();
 }

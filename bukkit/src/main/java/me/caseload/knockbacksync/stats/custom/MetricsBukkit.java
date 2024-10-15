@@ -107,6 +107,7 @@ public class MetricsBukkit implements Metrics {
     /**
      * Shuts down the underlying scheduler service.
      */
+    @Override
     public void shutdown() {
         metricsBase.shutdown();
     }

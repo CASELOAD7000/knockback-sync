@@ -53,4 +53,10 @@ public class FoliaSchedulerAdapter implements SchedulerAdapter {
     public AbstractTaskHandle runTaskTimerAsynchronously(Runnable task, long delay, long period) {
         return new FoliaTaskHandle(scheduler.runAtFixedRate(plugin, scheduledTask -> task.run(), delay, period));
     }
+
+    // Folia takes care of this
+    @Override
+    public void shutdown() {
+
+    }
 }

@@ -10,6 +10,7 @@ public class FabricStatsManager extends StatsManager {
             MetricsFabric metrics = new MetricsFabric(23568);
             metrics.addCustomChart(new PlayerVersionsPie());
             metrics.addCustomChart(new BuildTypePie());
+            super.metrics = metrics;
         });
     }
 }

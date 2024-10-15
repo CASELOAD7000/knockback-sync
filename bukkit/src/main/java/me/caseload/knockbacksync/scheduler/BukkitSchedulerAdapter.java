@@ -42,4 +42,10 @@ public class BukkitSchedulerAdapter implements SchedulerAdapter {
     public AbstractTaskHandle runTaskTimerAsynchronously(Runnable task, long delay, long period) {
         return new BukkitTaskHandle(scheduler.runTaskTimerAsynchronously(plugin, task, delay, period));
     }
+
+    // Bukkit should take care of this for us automatically
+    @Override
+    public void shutdown() {
+
+    }
 }

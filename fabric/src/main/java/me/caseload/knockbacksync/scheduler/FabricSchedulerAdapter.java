@@ -5,22 +5,19 @@ import me.caseload.knockbacksync.KnockbackSyncFabric;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.server.MinecraftServer;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 public class FabricSchedulerAdapter implements SchedulerAdapter {
 //    private final MinecraftServer server;
-    private final List<ScheduledTask> taskList;
+    private final Map<ScheduledTask, Runnable> taskMap = new HashMap<>();
+    private final Map<Thread, Runnable> asyncTasks = new HashMap<>();
 
     public FabricSchedulerAdapter() {
-//        this.server = KnockbackSyncFabric.SERVER;
-        this.taskList = new ArrayList<>();
         ServerTickEvents.END_SERVER_TICK.register(this::handleTasks);
     }
 
     private void handleTasks(MinecraftServer server) {
-        Iterator<ScheduledTask> iterator = taskList.iterator();
+        Iterator<ScheduledTask> iterator = taskMap.keySet().iterator();
         while (iterator.hasNext()) {
             ScheduledTask task = iterator.next();
             if (server.getTickCount() >= task.nextRunTick) {
@@ -37,29 +34,37 @@ public class FabricSchedulerAdapter implements SchedulerAdapter {
     @Override
     public AbstractTaskHandle runTask(Runnable task) {
         ScheduledTask scheduledTask = new ScheduledTask(task, KnockbackSyncFabric.getServer().getTickCount(), 0, false);
-        taskList.add(scheduledTask);
-        return new FabricTaskHandle(() -> taskList.remove(scheduledTask));
+        Runnable cancellationTask = () -> taskMap.remove(scheduledTask);
+        taskMap.put(scheduledTask, cancellationTask);
+        return new FabricTaskHandle(cancellationTask);
     }
 
     @Override
     public AbstractTaskHandle runTaskAsynchronously(Runnable task) {
         Thread thread = new Thread(task);
+        Runnable cancellationTask = () -> {
+            thread.interrupt();
+            asyncTasks.remove(thread);
+        };
+        asyncTasks.put(thread, cancellationTask);
         thread.start();
-        return new FabricTaskHandle(() -> thread.interrupt());
+        return new FabricTaskHandle(cancellationTask);
     }
 
     @Override
     public AbstractTaskHandle runTaskLater(Runnable task, long delayTicks) {
         ScheduledTask scheduledTask = new ScheduledTask(task, KnockbackSyncFabric.getServer().getTickCount() + delayTicks, 0, false);
-        taskList.add(scheduledTask);
-        return new FabricTaskHandle(() -> taskList.remove(scheduledTask));
+        Runnable cancellationTask = () -> taskMap.remove(scheduledTask);
+        taskMap.put(scheduledTask, cancellationTask);
+        return new FabricTaskHandle(cancellationTask);
     }
 
     @Override
     public AbstractTaskHandle runTaskTimer(Runnable task, long delayTicks, long periodTicks) {
         ScheduledTask scheduledTask = new ScheduledTask(task, KnockbackSyncFabric.getServer().getTickCount() + delayTicks, periodTicks, true);
-        taskList.add(scheduledTask);
-        return new FabricTaskHandle(() -> taskList.remove(scheduledTask));
+        Runnable cancellationTask = () -> taskMap.remove(scheduledTask);
+        taskMap.put(scheduledTask, cancellationTask);
+        return new FabricTaskHandle(cancellationTask);
     }
 
     @Override
@@ -72,8 +77,13 @@ public class FabricSchedulerAdapter implements SchedulerAdapter {
                 // Handle interruption
             }
         });
+        Runnable cancellationTask = () -> {
+            thread.interrupt();
+            asyncTasks.remove(thread);
+        };
+        asyncTasks.put(thread, cancellationTask);
         thread.start();
-        return new FabricTaskHandle(() -> thread.interrupt());
+        return new FabricTaskHandle(cancellationTask);
     }
 
     @Override
@@ -89,8 +99,34 @@ public class FabricSchedulerAdapter implements SchedulerAdapter {
                 // Handle interruption
             }
         });
+        Runnable cancellationTask = () -> {
+            thread.interrupt();
+            asyncTasks.remove(thread);
+        };
+        asyncTasks.put(thread, cancellationTask);
         thread.start();
-        return new FabricTaskHandle(() -> thread.interrupt());
+        return new FabricTaskHandle(cancellationTask);
+    }
+
+    @Override
+    public void shutdown() {
+        // Create a new list to store the tasks that need to be executed
+        List<Runnable> tasksToExecute = new ArrayList<>();
+
+        // Add the tasks from the taskMap to the tasksToExecute list
+        tasksToExecute.addAll(taskMap.values());
+
+        // Add the tasks from the asyncTasks to the tasksToExecute list
+        tasksToExecute.addAll(asyncTasks.values());
+
+        // Clear the taskMap and asyncTasks to avoid further modifications
+        taskMap.clear();
+        asyncTasks.clear();
+
+        // Execute the tasks in the tasksToExecute list
+        for (Runnable task : tasksToExecute) {
+            task.run();
+        }
     }
 
     private static class ScheduledTask {

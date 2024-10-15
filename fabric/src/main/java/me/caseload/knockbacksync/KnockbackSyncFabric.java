@@ -159,6 +159,10 @@ public class KnockbackSyncFabric implements PreLaunchEntrypoint, ModInitializer 
     core.configManager.loadConfig(false);
     core.statsManager.init();
     core.checkForUpdates();
+    ServerLifecycleEvents.SERVER_STOPPING.register((server) -> {
+      core.scheduler.shutdown();
+      core.statsManager.getMetrics().shutdown();
+    });
   }
 
   public static MinecraftServer getServer() {
