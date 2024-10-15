@@ -12,19 +12,8 @@ val shadeThisThing: Configuration by configurations.creating {
     isTransitive = true
 }
 
-sourceSets {
-    main {
-        java {
-            srcDir(project(":common").file("src/main/java"))
-        }
-        resources {
-            srcDir(project(":common").file("src/main/resources"))
-        }
-    }
-}
-
 dependencies {
-//    implementation(project(":common"))
+    implementation(project(":common"))
 
     compileOnly("org.spigotmc:spigot-api:1.18.2-R0.1-SNAPSHOT")
     compileOnly("org.geysermc.floodgate:api:2.0-SNAPSHOT")
@@ -47,7 +36,7 @@ dependencies {
 tasks.shadowJar {
 //    archiveClassifier.set("dev")
     configurations = listOf(shadeThisThing)
-    isEnableRelocation = true
+    isEnableRelocation = false
     relocationPrefix = "${project.property("maven_group")}.${project.property("archives_base_name")}.shaded"
 }
 

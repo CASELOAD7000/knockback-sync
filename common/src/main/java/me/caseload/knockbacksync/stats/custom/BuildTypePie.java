@@ -40,7 +40,7 @@ public class BuildTypePie extends SimplePie {
 
     private static String calculateBuildType() {
         try {
-            String currentHash = getPluginJarHash();
+            String currentHash = KnockbackSyncBase.INSTANCE.pluginJarHashProvider.getPluginJarHash();
             downloadBuildFiles();
 
             if (isHashInFile(currentHash, new File(dataFolder, RELEASES_FILE))) {
@@ -85,40 +85,6 @@ public class BuildTypePie extends SimplePie {
         }
         List<String> lines = Files.readAllLines(Paths.get(file.getPath()));
         return lines.contains(hash);
-    }
-
-    private static String getPluginJarHash() throws Exception {
-        switch (KnockbackSyncBase.INSTANCE.platform) {
-            case BUKKIT:
-            case FOLIA:
-                // Will give path to remapped jar on paper forks, actual jar on Spigot
-//                jarUrl = Bukkit.getPluginManager().getPlugin("KnockbackSync").getClass().getProtectionDomain().getCodeSource().getLocation();
-                break;
-            case FABRIC:
-//                Optional<ModContainer> modContainer = FabricLoader.getInstance().getModContainer("knockbacksync");
-//                if (modContainer.isPresent()) {
-//                    String jarPath = modContainer.get().getRootPath().getFileSystem().toString();
-//                    jarPath = jarPath.replaceAll("^jar:", "").replaceAll("!/$", "");
-//                    jarUrl = new File(jarPath).toURI().toURL();
-//                }
-                break;
-        }
-        MessageDigest digest = MessageDigest.getInstance("SHA-256");
-        try (InputStream is = jarUrl.openStream()) {
-            byte[] buffer = new byte[8192];
-            int read;
-            while ((read = is.read(buffer)) > 0) {
-                digest.update(buffer, 0, read);
-            }
-        }
-        byte[] hash = digest.digest();
-        StringBuilder hexString = new StringBuilder();
-        for (byte b : hash) {
-            String hex = Integer.toHexString(0xff & b);
-            if (hex.length() == 1) hexString.append('0');
-            hexString.append(hex);
-        }
-        return hexString.toString();
     }
 
     private static String readStringFromURL(String urlString) throws IOException {

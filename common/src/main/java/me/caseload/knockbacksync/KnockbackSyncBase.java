@@ -7,10 +7,10 @@ import me.caseload.knockbacksync.listener.packetevents.PingReceiveListener;
 import me.caseload.knockbacksync.manager.ConfigManager;
 import me.caseload.knockbacksync.permission.PermissionChecker;
 import me.caseload.knockbacksync.scheduler.SchedulerAdapter;
+import me.caseload.knockbacksync.stats.custom.PluginJarHashProvider;
 import me.caseload.knockbacksync.stats.custom.StatsManager;
 import me.caseload.knockbacksync.world.PlatformServer;
 import org.kohsuke.github.GitHub;
-//import org.kohsuke.github.GitHub;
 
 import java.io.File;
 import java.io.InputStream;
@@ -25,6 +25,7 @@ public abstract class KnockbackSyncBase {
     public Platform platform;
     public StatsManager statsManager;
     public PlatformServer platformServer;
+    public PluginJarHashProvider pluginJarHashProvider;
 
     @Getter
     protected ConfigManager configManager;

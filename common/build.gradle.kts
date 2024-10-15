@@ -2,11 +2,6 @@ plugins {
     id("net.neoforged.moddev") version "1.0.11"
 }
 
-val bukkitShadeThisThing: Configuration by configurations.creating {
-    isCanBeConsumed = true
-    isTransitive = true
-}
-
 dependencies {
     // True compileOnly deps
     compileOnly("org.spigotmc:spigot-api:1.18.2-R0.1-SNAPSHOT")

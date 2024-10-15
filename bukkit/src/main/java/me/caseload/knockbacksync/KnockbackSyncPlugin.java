@@ -13,14 +13,18 @@ import me.caseload.knockbacksync.permission.PluginPermissionChecker;
 import me.caseload.knockbacksync.scheduler.BukkitSchedulerAdapter;
 import me.caseload.knockbacksync.scheduler.FoliaSchedulerAdapter;
 import me.caseload.knockbacksync.stats.custom.BukkitStatsManager;
+import me.caseload.knockbacksync.stats.custom.PluginJarHashProvider;
 import me.caseload.knockbacksync.world.BukkitServer;
 import net.minecraft.commands.Commands;
+import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.InputStream;
+import java.net.URL;
+import java.security.MessageDigest;
 import java.util.logging.Logger;
 
 public final class KnockbackSyncPlugin extends JavaPlugin {
@@ -30,6 +34,35 @@ public final class KnockbackSyncPlugin extends JavaPlugin {
         {
             statsManager = new BukkitStatsManager();
             platformServer = new BukkitServer();
+            pluginJarHashProvider = new PluginJarHashProvider() {
+                @Override
+                public String getPluginJarHash() throws Exception {
+//                  Will give path to remapped jar on paper forks, actual jar on Spigot
+                    URL jarUrl = Bukkit.getPluginManager().getPlugin("KnockbackSync").getClass().getProtectionDomain().getCodeSource().getLocation();
+//                Optional<ModContainer> modContainer = FabricLoader.getInstance().getModContainer("knockbacksync");
+//                if (modContainer.isPresent()) {
+//                    String jarPath = modContainer.get().getRootPath().getFileSystem().toString();
+//                    jarPath = jarPath.replaceAll("^jar:", "").replaceAll("!/$", "");
+//                    jarUrl = new File(jarPath).toURI().toURL();
+//                }
+                    MessageDigest digest = MessageDigest.getInstance("SHA-256");
+                    try (InputStream is = jarUrl.openStream()) {
+                        byte[] buffer = new byte[8192];
+                        int read;
+                        while ((read = is.read(buffer)) > 0) {
+                            digest.update(buffer, 0, read);
+                        }
+                    }
+                    byte[] hash = digest.digest();
+                    StringBuilder hexString = new StringBuilder();
+                    for (byte b : hash) {
+                        String hex = Integer.toHexString(0xff & b);
+                        if (hex.length() == 1) hexString.append('0');
+                        hexString.append(hex);
+                    }
+                    return hexString.toString();
+                }
+            };
         }
 
         private final PluginPermissionChecker permissionChecker = new PluginPermissionChecker();
