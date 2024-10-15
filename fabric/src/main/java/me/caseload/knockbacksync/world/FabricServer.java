@@ -3,8 +3,6 @@ package me.caseload.knockbacksync.world;
 import me.caseload.knockbacksync.KnockbackSyncFabric;
 import me.caseload.knockbacksync.player.FabricPlayer;
 import me.caseload.knockbacksync.player.PlatformPlayer;
-import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.server.MinecraftServer;
 
 import java.util.Collection;
 import java.util.UUID;

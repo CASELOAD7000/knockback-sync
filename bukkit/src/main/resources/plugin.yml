@@ -1,5 +1,5 @@
 name: KnockbackSync
-version: '1.3.2'
+version: ${version}
 main: me.caseload.knockbacksync.KnockbackSyncPlugin
 api-version: '1.18'
 authors: [ Caseload ]

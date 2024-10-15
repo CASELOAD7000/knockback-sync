@@ -19,10 +19,9 @@ dependencies {
     modImplementation("net.fabricmc.fabric-api:fabric-api:${rootProject.property("fabric_version")}")
 
     include(modImplementation("me.lucko:fabric-permissions-api:0.3.1")!!)
-    include(modImplementation("com.github.retrooper:packetevents-fabric:2.5.6-SNAPSHOT")!!)
-
-    compileOnly("com.fasterxml.jackson.core:jackson-databind:2.17.2")
-    compileOnly("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.17.2")
+    include(modImplementation("com.github.retrooper:packetevents-fabric:2.5.7-SNAPSHOT")!!)
+    include(implementation("com.fasterxml.jackson.core:jackson-databind:2.17.2")!!)
+    include(implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.17.2")!!)
 
     compileOnly("org.projectlombok:lombok:1.18.34")
     annotationProcessor("org.projectlombok:lombok:1.18.34")

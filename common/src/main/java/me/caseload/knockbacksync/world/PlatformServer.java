@@ -1,13 +1,9 @@
 package me.caseload.knockbacksync.world;
 
-import me.caseload.knockbacksync.KnockbackSyncBase;
 import me.caseload.knockbacksync.player.PlatformPlayer;
-import net.fabricmc.loader.api.FabricLoader;
-import org.bukkit.Bukkit;
 
 import java.util.Collection;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 public interface PlatformServer {
     Collection<PlatformPlayer> getOnlinePlayers();

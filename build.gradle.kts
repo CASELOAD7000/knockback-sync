@@ -1,13 +1,34 @@
+import java.io.ByteArrayOutputStream
+
 plugins {
     id("java")
     id("com.gradleup.shadow") version "8.3.3" apply false
     id("fabric-loom") version "1.7.4" apply false
 }
 
+val fullVersion = "1.3.2"
+val snapshot = true
 
 allprojects {
-    group = "your.group.id"
-    version = "1.0.0"
+    fun getVersionMeta(includeHash: Boolean): String {
+        if (!snapshot) {
+            return ""
+        }
+        var commitHash = ""
+        if (includeHash && file(".git").isDirectory) {
+            val stdout = ByteArrayOutputStream()
+            exec {
+                commandLine("git", "rev-parse", "--short", "HEAD")
+                standardOutput = stdout
+            }
+            commitHash = "+${stdout.toString().trim()}"
+        }
+        return "$commitHash-SNAPSHOT"
+    }
+
+    group = "me.caseload.knockbacksync"
+    version = "$fullVersion${getVersionMeta(true)}"
+    ext["versionNoHash"] = "$fullVersion${getVersionMeta(false)}"
 
     repositories {
         mavenLocal()

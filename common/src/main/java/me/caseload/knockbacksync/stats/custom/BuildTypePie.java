@@ -4,9 +4,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import me.caseload.knockbacksync.KnockbackSyncBase;
 import me.caseload.knockbacksync.stats.SimplePie;
-import net.fabricmc.loader.api.FabricLoader;
-import net.fabricmc.loader.api.ModContainer;
-import org.bukkit.Bukkit;
 import org.kohsuke.github.GHAsset;
 import org.kohsuke.github.GHRelease;
 import org.kohsuke.github.GitHub;
@@ -21,7 +18,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.util.List;
-import java.util.Optional;
 
 public class BuildTypePie extends SimplePie {
 
@@ -29,6 +25,7 @@ public class BuildTypePie extends SimplePie {
     private static final String DEV_BUILDS_FILE = "dev-builds.txt";
     private static final File dataFolder = KnockbackSyncBase.INSTANCE.getDataFolder();
     private static String cachedBuildType = null;
+    public URL jarUrl;
 
     public BuildTypePie() {
         super("build_type", BuildTypePie::determineBuildType);
@@ -91,7 +88,6 @@ public class BuildTypePie extends SimplePie {
     }
 
     private static String getPluginJarHash() throws Exception {
-        URL jarUrl = null;
         switch (KnockbackSyncBase.INSTANCE.platform) {
             case BUKKIT:
             case FOLIA:
@@ -102,7 +98,7 @@ public class BuildTypePie extends SimplePie {
                 Optional<ModContainer> modContainer = FabricLoader.getInstance().getModContainer("knockbacksync");
                 if (modContainer.isPresent()) {
                     String jarPath = modContainer.get().getRootPath().getFileSystem().toString();
-//                    jarPath = jarPath.replaceAll("^jar:", "").replaceAll("!/$", "");
+                    jarPath = jarPath.replaceAll("^jar:", "").replaceAll("!/$", "");
                     jarUrl = new File(jarPath).toURI().toURL();
                 }
                 break;
