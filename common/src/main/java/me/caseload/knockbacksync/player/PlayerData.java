@@ -2,12 +2,18 @@ package me.caseload.knockbacksync.player;
 
 import com.github.retrooper.packetevents.PacketEvents;
 import com.github.retrooper.packetevents.manager.player.PlayerManager;
+import com.github.retrooper.packetevents.manager.server.ServerVersion;
+import com.github.retrooper.packetevents.netty.channel.ChannelHelper;
+import com.github.retrooper.packetevents.protocol.ConnectionState;
 import com.github.retrooper.packetevents.protocol.player.ClientVersion;
 import com.github.retrooper.packetevents.protocol.player.User;
 import com.github.retrooper.packetevents.protocol.world.states.WrappedBlockState;
 import com.github.retrooper.packetevents.protocol.world.states.type.StateTypes;
 import com.github.retrooper.packetevents.util.Vector3d;
+import com.github.retrooper.packetevents.wrapper.PacketWrapper;
+import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerKeepAlive;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerPing;
+import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerWindowConfirmation;
 import lombok.Getter;
 import lombok.Setter;
 import me.caseload.knockbacksync.KnockbackSyncBase;
@@ -63,8 +69,6 @@ public class PlayerData {
     private final AtomicInteger pingIdCounter = new AtomicInteger(0);
     private final PlatformPlayer platformPlayer;
     private final UUID uuid;
-    @NotNull
-    private final Map<Integer, Long> timeline = new HashMap<>();
     @NotNull
     private final Random random = new Random();
     @Getter
@@ -132,16 +136,25 @@ public class PlayerData {
         return PLUGIN_IDENTIFIER | (pingIdCounter.getAndIncrement() & ID_MASK);
     }
 
-    public boolean isPingIdOurs(int id) {
+    public boolean isKeepAliveIDOurs(long id) {
         return id < 0 && (id & 0xFFFF8000) == PLUGIN_IDENTIFIER;
     }
 
-    public void sendPing() {
-        if (user != null) {
-            int packetId = generatePingId();
-            timeline.put(packetId, System.currentTimeMillis());
-            WrapperPlayServerPing packet = new WrapperPlayServerPing(packetId);
-            user.sendPacket(packet);
+    public void sendPing(boolean async) {
+        if (user == null) {
+            return;
+        }
+
+        // don't send transactions outside PLAY phase
+        // Sending in non-play corrupts the pipeline, don't waste bandwidth
+        if (user.getEncoderState() != ConnectionState.PLAY) return;
+
+        if (async) {
+            ChannelHelper.runInEventLoop(user.getChannel(), () -> {
+                user.writePacket(new WrapperPlayServerKeepAlive(System.currentTimeMillis()));
+            });
+        } else {
+            user.writePacket(new WrapperPlayServerKeepAlive(System.currentTimeMillis()));
         }
     }
 
@@ -286,7 +299,6 @@ public class PlayerData {
 
         combatTask = null;
         CombatManager.removePlayer(uuid);
-        timeline.clear(); // failsafe for packet loss idk
     }
 
     @NotNull

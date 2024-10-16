@@ -7,20 +7,11 @@ import java.util.*;
 public class JitterCalculator {
     private final int SAMPLE_SIZE = 15;
     private final Queue<Long> pings = new LinkedList<>();
-    @Getter
-    private long sequenceNumber = 0;
-
-    public void addPing(long pingTime, long receivedSequence) {
+    public void addPing(long pingTime) {
         pings.offer(pingTime);
         if (pings.size() > SAMPLE_SIZE) {
             pings.poll();
         }
-
-        // Check for out-of-order packets
-        if (receivedSequence < sequenceNumber) {
-            // Handle out-of-order packet
-        }
-        sequenceNumber = receivedSequence;
     }
 
     public double calculateJitter() {

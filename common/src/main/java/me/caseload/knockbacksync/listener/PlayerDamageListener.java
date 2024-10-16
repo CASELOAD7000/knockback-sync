@@ -19,6 +19,6 @@ public abstract class PlayerDamageListener {
         playerData.updateCombat();
 
         if (!KnockbackSyncBase.INSTANCE.getConfigManager().isRunnableEnabled())
-            playerData.sendPing();
+            playerData.sendPing(false);
     }
 }
