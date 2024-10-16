@@ -5,10 +5,8 @@ import com.github.retrooper.packetevents.event.PacketReceiveEvent;
 import com.github.retrooper.packetevents.protocol.packettype.PacketType;
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPong;
 import me.caseload.knockbacksync.KnockbackSyncBase;
-import me.caseload.knockbacksync.manager.PlayerData;
+import me.caseload.knockbacksync.player.PlayerData;
 import me.caseload.knockbacksync.manager.PlayerDataManager;
-
-import java.util.UUID;
 
 public class PingReceiveListener extends PacketListenerAbstract {
 
@@ -31,6 +29,10 @@ public class PingReceiveListener extends PacketListenerAbstract {
                 long ping = System.currentTimeMillis() - sendTime;
                 playerData.setPreviousPing(playerData.getPing());
                 playerData.setPing(ping);
+
+                playerData.getJitterCalculator().addPing(ping, id);
+                double jitter = playerData.getJitterCalculator().calculateJitter();
+                playerData.setJitter(jitter);
             }
         }
     }

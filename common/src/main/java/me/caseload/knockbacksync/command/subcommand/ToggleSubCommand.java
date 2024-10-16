@@ -6,7 +6,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import me.caseload.knockbacksync.KnockbackSyncBase;
 import me.caseload.knockbacksync.manager.ConfigManager;
-import me.caseload.knockbacksync.manager.PlayerData;
+import me.caseload.knockbacksync.player.PlayerData;
 import me.caseload.knockbacksync.manager.PlayerDataManager;
 import me.caseload.knockbacksync.permission.PermissionChecker;
 import me.caseload.knockbacksync.util.ChatUtil;

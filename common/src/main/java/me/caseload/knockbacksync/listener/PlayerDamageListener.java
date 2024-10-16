@@ -1,7 +1,7 @@
 package me.caseload.knockbacksync.listener;
 
 import me.caseload.knockbacksync.KnockbackSyncBase;
-import me.caseload.knockbacksync.manager.PlayerData;
+import me.caseload.knockbacksync.player.PlayerData;
 import me.caseload.knockbacksync.manager.PlayerDataManager;
 import me.caseload.knockbacksync.player.PlatformPlayer;
 
