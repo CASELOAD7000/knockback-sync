@@ -1,5 +1,8 @@
 name: Build and Version Update
 
+permissions:
+  contents: write
+
 on:
   push:
     branches:
@@ -63,7 +66,7 @@ jobs:
           FULL_VERSION=$(grep 'val fullVersion =' build.gradle.kts | awk -F '"' '{print $2}')
           IFS='.' read -ra VERSION_PARTS <<< "$FULL_VERSION"
           PATCH=$((VERSION_PARTS[2] + 1))
-          NEW_VERSION="${VERSION_PARTS[0]}.${VERSION_PARTS[1]}.$PATCH-dev-axionize-b${{ steps.buildnumber.outputs.build_number }}"
+          NEW_VERSION="${VERSION_PARTS[0]}.${VERSION_PARTS[1]}.$PATCH-dev-b${{ steps.buildnumber.outputs.build_number }}"
           echo "NEW_VERSION=${NEW_VERSION}" >> $GITHUB_ENV
           
           # Update fullVersion in build.gradle
@@ -112,35 +115,53 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           # Download the current dev-builds.txt
-          curl -L -o dev-builds.txt https://github.com/Axionize/knockback-sync/releases/download/hashlist/dev-builds.txt
+          curl -L -o dev-builds.txt https://github.com/CASELOAD7000/knockback-sync/releases/latest/download/dev-builds.txt
           
-          # Ensure the file ends with a newline, then append new information
+          # Create a copy of the original file
+          cp dev-builds.txt dev-builds.txt.original
+          
+          # Ensure the file ends with a newline
           sed -i -e '$a\' dev-builds.txt
-          # echo "KnockBackSync-${{ env.NEW_VERSION }}.jar" >> dev-builds.txt
-          echo "${{ env.ORIGINAL_HASH }}" >> dev-builds.txt
-          # echo "KnockBackSync-${{ env.NEW_VERSION }}-remapped.jar" >> dev-builds.txt
-          echo "${{ env.REMAPPED_HASH }}" >> dev-builds.txt
           
-          echo "${{ env.FABRIC_HASH }}" >> dev-builds.txt
+          # Function to add hash if it doesn't exist
+          add_hash_if_new() {
+            if ! grep -q "$1" dev-builds.txt; then
+              echo "$1" >> dev-builds.txt
+            fi
+          }
           
-          # Get the release ID for the 'hashlist' release
-          RELEASE_ID=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
-            "https://api.github.com/repos/Axionize/knockback-sync/releases/tags/hashlist" | jq -r .id)
+          # Add new hashes if they don't exist
+          add_hash_if_new "${{ env.ORIGINAL_HASH }}"
+          add_hash_if_new "${{ env.REMAPPED_HASH }}"
+          add_hash_if_new "${{ env.FABRIC_HASH }}"
           
-          # Delete the old dev-builds.txt asset
-          ASSET_ID=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
-            "https://api.github.com/repos/Axionize/knockback-sync/releases/$RELEASE_ID/assets" | \
-            jq -r '.[] | select(.name == "dev-builds.txt") | .id')
-          if [ ! -z "$ASSET_ID" ]; then
-            curl -X DELETE -H "Authorization: token $GITHUB_TOKEN" \
-              "https://api.github.com/repos/Axionize/knockback-sync/releases/assets/$ASSET_ID"
+          # Check if the file has changed
+          if cmp -s dev-builds.txt dev-builds.txt.original; then
+            echo "No changes to dev-builds.txt, skipping upload."
+          else
+            echo "Changes detected in dev-builds.txt, uploading new version."
+          
+            # Get the latest release ID
+            RELEASE_ID=$(curl -s "https://api.github.com/repos/CASELOAD7000/knockback-sync/releases/latest" | jq -r .id)
+          
+            # Delete the old dev-builds.txt asset
+            ASSET_ID=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+              "https://api.github.com/repos/CASELOAD7000/knockback-sync/releases/$RELEASE_ID/assets" | \
+              jq -r '.[] | select(.name == "dev-builds.txt") | .id')
+            if [ ! -z "$ASSET_ID" ]; then
+              curl -X DELETE -H "Authorization: token $GITHUB_TOKEN" \
+                "https://api.github.com/repos/CASELOAD7000/knockback-sync/releases/assets/$ASSET_ID"
+            fi
+          
+            # Upload the new dev-builds.txt
+            curl -X POST -H "Authorization: token $GITHUB_TOKEN" \
+              -H "Content-Type: application/octet-stream" \
+              --data-binary @dev-builds.txt \
+              "https://uploads.github.com/repos/CASELOAD7000/knockback-sync/releases/$RELEASE_ID/assets?name=dev-builds.txt"
           fi
           
-          # Upload the new dev-builds.txt
-          curl -X POST -H "Authorization: token $GITHUB_TOKEN" \
-            -H "Content-Type: application/octet-stream" \
-            --data-binary @dev-builds.txt \
-            "https://uploads.github.com/repos/Axionize/knockback-sync/releases/$RELEASE_ID/assets?name=dev-builds.txt"
+          # Clean up
+          rm dev-builds.txt.original
 
       - name: Create artifacts directory
         run: mkdir -p artifacts
@@ -161,53 +182,53 @@ jobs:
           path: KnockbackSync-${{ env.NEW_VERSION }}.zip
           retention-days: 90
 
-      - uses: Kir-Antipov/mc-publish@v3.3
-        with:
-          modrinth-id: wGTbjSTq
-          modrinth-featured: true
-          modrinth-unfeature-mode: subset
-          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
-
-          files: |
-            bukkit/build/libs/knockbacksync-bukkit-${{ env.NEW_VERSION }}.jar
-
-          name: KnockbackSync-${{ env.NEW_VERSION }}
-          version: ${{ env.NEW_VERSION }}
-          version-type: beta
-
-          loaders: |
-            bukkit
-            spigot
-            paper
-            folia
-
-          game-versions: |
-            >=1.18.2
-
-          retry-attempts: 2
-          retry-delay: 10000
-          fail-mode: fail
-
-      - uses: Kir-Antipov/mc-publish@v3.3
-        with:
-          modrinth-id: wGTbjSTq
-          modrinth-featured: true
-          modrinth-unfeature-mode: subset
-          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
-
-          files: |
-            fabric/build/libs/knockbacksync-fabric-${{ env.NEW_VERSION }}.jar
-
-          name: KnockbackSync-${{ env.NEW_VERSION }}
-          version: ${{ env.NEW_VERSION }}
-          version-type: beta
-
-          loaders: |
-            fabric
-
-          game-versions: |
-            >=1.21
-
-          retry-attempts: 2
-          retry-delay: 10000
-          fail-mode: fail
+#      - uses: Kir-Antipov/mc-publish@v3.3
+#        with:
+#          modrinth-id: wGTbjSTq
+#          modrinth-featured: true
+#          modrinth-unfeature-mode: subset
+#          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
+#
+#          files: |
+#            bukkit/build/libs/knockbacksync-bukkit-${{ env.NEW_VERSION }}.jar
+#
+#          name: KnockbackSync-${{ env.NEW_VERSION }}
+#          version: ${{ env.NEW_VERSION }}
+#          version-type: beta
+#
+#          loaders: |
+#            bukkit
+#            spigot
+#            paper
+#            folia
+#
+#          game-versions: |
+#            >=1.18.2
+#
+#          retry-attempts: 2
+#          retry-delay: 10000
+#          fail-mode: fail
+#
+#      - uses: Kir-Antipov/mc-publish@v3.3
+#        with:
+#          modrinth-id: wGTbjSTq
+#          modrinth-featured: true
+#          modrinth-unfeature-mode: subset
+#          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
+#
+#          files: |
+#            fabric/build/libs/knockbacksync-fabric-${{ env.NEW_VERSION }}.jar
+#
+#          name: KnockbackSync-${{ env.NEW_VERSION }}
+#          version: ${{ env.NEW_VERSION }}
+#          version-type: beta
+#
+#          loaders: |
+#            fabric
+#
+#          game-versions: |
+#            >=1.21
+#
+#          retry-attempts: 2
+#          retry-delay: 10000
+#          fail-mode: fail

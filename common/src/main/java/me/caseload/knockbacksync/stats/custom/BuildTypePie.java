@@ -57,7 +57,7 @@ public class BuildTypePie extends SimplePie {
 
     private static void downloadBuildFiles() throws IOException {
         GitHub gitHub = GitHub.connectAnonymously();
-        GHRelease latestRelease = gitHub.getRepository("Axionize/knockback-sync")
+        GHRelease latestRelease = gitHub.getRepository("CASELOAD7000/knockback-sync")
                 .getLatestRelease();
         List<GHAsset> assets = latestRelease.listAssets().toList();
         for (GHAsset asset : assets) {

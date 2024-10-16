@@ -31,7 +31,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class PlayerData {
 
     // Please read the GitHub FAQ before adjusting.
-    public static long PING_OFFSET;
+    public static long PING_OFFSET = 25;
     private static final int PLUGIN_IDENTIFIER = 0x80000000; // Bit 31 set to 1 (negative)
     private static final int ID_MASK = 0x7FFF; // 15-bit mask
     public static float TICK_RATE = 20.0F;
