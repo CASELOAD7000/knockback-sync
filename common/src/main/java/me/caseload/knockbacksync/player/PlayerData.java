@@ -33,7 +33,7 @@ public class PlayerData {
     private static final int PLUGIN_IDENTIFIER = 0x80000000; // Bit 31 set to 1 (negative)
     private static final int ID_MASK = 0x7FFF; // 15-bit mask
     // Please read the GitHub FAQ before adjusting.
-    public static long PING_OFFSET = 25;
+    public static final long PING_OFFSET = 25;
     public final User user;
     private final AtomicInteger pingIdCounter = new AtomicInteger(0);
 
@@ -105,7 +105,6 @@ public class PlayerData {
         }
 
         this.user = tempUser;
-        PING_OFFSET = KnockbackSyncBase.INSTANCE.getConfigManager().getConfigWrapper().getInt("ping_offset", 25);
     }
 
     /**
