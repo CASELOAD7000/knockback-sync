@@ -15,7 +15,7 @@ val shadeThisThing: Configuration by configurations.creating {
 dependencies {
     shadeThisThing(implementation(project(":common"))!!)
 
-    compileOnly("org.spigotmc:spigot-api:1.18.2-R0.1-SNAPSHOT")
+    compileOnly("org.spigotmc:spigot-api:1.16.5-R0.1-SNAPSHOT")
     compileOnly("org.geysermc.floodgate:api:2.0-SNAPSHOT")
     compileOnly("dev.folia:folia-api:1.20.4-R0.1-SNAPSHOT")
 

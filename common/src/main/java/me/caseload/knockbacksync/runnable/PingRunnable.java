@@ -16,7 +16,7 @@ public class PingRunnable implements Runnable {
 
         for (UUID uuid : CombatManager.getPlayers()) {
             PlayerData playerData = PlayerDataManager.getPlayerData(uuid);
-            playerData.sendPing();
+            playerData.sendPing(true);
         }
     }
 }
