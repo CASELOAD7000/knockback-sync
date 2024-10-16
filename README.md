@@ -10,19 +10,16 @@ This plugin intercepts and adjusts knockback calculations to match what would oc
 ### Does this change put high ping players at a disadvantage?
 **It depends on the player.** Some may notice a difference if they're used to relying on high ping to reduce knockback. For others, it could actually be an advantage.
 
-### How does this change benefit high ping players?
-**Knockback control.** For example, it will be easier to escape crit chains and punish crit.
+### Why was the configurability of ping offset removed?
+**It promotes consistency across all servers.** Extensive testing with top players has shown that an offset of 25 provides a balanced experience for everyone.
 
-Then just type
-```
-/knockbacksync reload
-```
-or restart your server.
+### How do I change the ping offset?
+**You must run a modified build of KnockbackSync.** The variable can be changed inside of the [PlayerData](src/main/java/me/caseload/knockbacksync/manager/PlayerData.java) class.
 
 ## What servers are using this plugin?
 | IP               | Location                                 | Region | Ping Offset | spike_threshold |
 |------------------|------------------------------------------|--------|-------------|-----------------|
-| `pvparcade.club` | Ashburn, Virginia, United States         | NA     | 20          | 30              |
+| `pvparcade.club` | Ashburn, Virginia, United States         | NA     | 20          | 15              |
 | `stray.gg`       | San Francisco, California, United States | NA     | 25          | 20              |
 | `eu.stray.gg`    | Limburg an der Lahn, Hesse, Germany      | EU     | 25          | 20              |
 | `valed.gg`       | Frankfurt, Hesse, Germany                | EU     | 25          | 20              |
@@ -31,38 +28,132 @@ or restart your server.
 | `na.catpvp.xyz`  |                                          | NA     | 25          | 20              |
 | `hyperium.pl`    | Wrocław, Dolnośląskie, Poland            | EU     | 25          | 20              |
 
-## Documentation
-### Commands
-#### **`/knockbacksync ping <player>`**
-**Description:** Displays the last ping packet time for a specified player.  
-**Usage:** `/knockbacksync ping <player>`  
-**Permission:** `knockbacksync.ping`  
-**Example:** `/knockbacksync ping Notch`  
-Outputs: `Notch's last ping packet took <ping_time>ms.`
+## Commands
+---
+### /knockbacksync ping [target]
 
-#### **`/knockbacksync reload`**
-**Description:** Reloads the KnockbackSync configuration file.  
-**Usage:** `/knockbacksync reload`  
-**Permission:** `knockbacksync.reload`  
-**Example:** `/knockbacksync reload`  
-Outputs: `Successfully reloaded KnockbackSync config.` (or custom message from `reload_message` config)
+**Description:**
 
-#### **`/knockbacksync toggle`**
-**Description:** Toggles the KnockbackSync plugin on or off.  Optional argument to toggle off only for a specific player.
-**Usage:** `/knockbacksync toggle <playername>`  
-**Permission:** `knockbacksync.toggle`  
-**Example 1:** `/knockbacksync toggle`  
-Outputs:
-- Enabled: `Successfully enabled KnockbackSync.` (or custom message from `enable_message` config)
-- Disabled: `Successfully disabled KnockbackSync.` (or custom message from `disable_message` config)  
+This command allows you to check the ping of a player, including jitter. If no target is specified, it will check your own ping.
 
-**Example 2:** `/knockbacksync toggle Notch`  
-  Outputs:
-- Enabled: `Successfully enabled KnockbackSync for Notch` (or custom message from `enable_player_message` config)
-- Disabled: `Successfully disabled KnockbackSync for NOtch` (or custom message from `disable_player_message` config)
+**Permissions:**
 
-### Event Listeners
-- **`KnockbackSyncConfigReloadEvent`**: Updates messages in `reload` and `toggle` commands based on the latest configuration settings.
+* `knockbacksync.ping` (defaults to true for players)
+
+**Examples:**
+
+* `/knockbacksync ping`: Checks your own ping.
+* `/knockbacksync ping Steve`: Checks the ping of a player named Steve.
+
+**Output:**
+
+* If a pong packet has been received:  "Your last ping packet took [ping]ms. Jitter: [jitter]ms." or "[Player]'s last ping packet took [ping]ms. Jitter: [jitter]ms."
+* If a pong packet has not been received: "Pong not received. Your estimated ping is [estimated ping]ms." or "Pong not received. [Player]'s estimated ping is [estimated ping]ms."
+
+**Notes:**
+
+* The estimated ping is based on the player's platform reported ping.
+* Jitter represents the variation in ping over time.
+---
+### /knockbacksync status [target]
+
+**Description:**
+
+This command allows you to check the KnockbackSync status of a player or the server. If no target is specified, it will show both the global status and your own status.
+
+**Permissions:**
+
+* `knockbacksync.status.self` (defaults to true for players): Allows checking your own status.
+* `knockbacksync.status.other` (defaults to op only): Allows checking the status of other players.
+
+**Examples:**
+
+* `/knockbacksync status`: Shows the global status and your own status.
+* `/knockbacksync status Steve`: Shows the status of a player named Steve.
+
+**Output:**
+
+* **Global status:** "Global KnockbackSync status: [Enabled/Disabled]"
+* **Player status:** "[Player]'s KnockbackSync status: [Enabled/Disabled]" (or "Disabled (Global toggle is off)" if the global toggle is off)
+
+**Notes:**
+
+* The player status will be "Disabled" if the global toggle is off, even if the player has individually enabled KnockbackSync.
+* The messages displayed by this command are configurable in the `config.yml` file.
+---
+### /knockbacksync toggle [target]
+
+**Description:**
+
+This command allows you to toggle KnockbackSync for yourself, another player, or globally.
+
+**Permissions:**
+
+* `knockbacksync.toggle.self` (defaults to true for players): Allows toggling KnockbackSync for yourself.
+* `knockbacksync.toggle.other` (defaults to op only): Allows toggling KnockbackSync for other players.
+* `knockbacksync.toggle.global` (defaults to op only): Allows toggling KnockbackSync globally for the server.
+
+**Examples:**
+
+* `/knockbacksync toggle`: Toggles KnockbackSync globally (if you have permission) or for yourself.
+* `/knockbacksync toggle Steve`: Toggles KnockbackSync for a player named Steve.
+
+**Output:**
+
+* **Global toggle:** Sends a message indicating whether KnockbackSync has been enabled or disabled globally. The messages are configurable in the `config.yml` file.
+* **Player toggle:** Sends a message indicating whether KnockbackSync has been enabled or disabled for the specified player. The messages are configurable in the `config.yml` file.
+* **Ineligible player:** If a player is ineligible for KnockbackSync (e.g., due to permissions), a configurable message will be sent.
+* **KnockbackSync disabled:** If KnockbackSync is disabled globally and you try to toggle it for a player, a message will be sent indicating that KnockbackSync is disabled.
+
+**Notes:**
+
+* If KnockbackSync is disabled globally, toggling it for a player will have no effect until KnockbackSync is enabled globally.
+* Players can only toggle KnockbackSync for themselves if they have the `knockbacksync.toggle.self` permission.
+* Operators can toggle KnockbackSync for other players and globally.
+---
+### /knockbacksync reload
+
+**Description:**
+
+This command reloads the KnockbackSync plugin's configuration file.
+
+**Permissions:**
+
+* `knockbacksync.reload` (defaults to op only)
+
+**Examples:**
+* `/knockbacksync reload`
+
+**Output:**
+
+* Sends a message to the command sender indicating that the configuration has been reloaded. The message is configurable in the `config.yml` file.
+
+**Notes:**
+
+* This command is useful for applying changes made to the configuration file without restarting the server.
+---
+### /knockbacksync toggleoffground
+
+  **Description:**
+  
+  This command toggles the experimental off-ground knockback synchronization feature.
+  
+  **Permissions:**
+  
+  * `knockbacksync.toggleoffground` (defaults to op only)
+  
+  **Examples:**
+  
+  * `/knockbacksync toggleoffground`
+  
+  **Output:**
+  
+  * Sends a message indicating whether the experimental off-ground knockback synchronization has been enabled or disabled. The messages are configurable in the `config.yml` file.
+  
+  **Notes:**
+  
+  * **This command currently does not do anything as off-ground synchronization has yet to be implemented.**
+    * This feature is experimental and may not work as expected.
 
 ## License
 GNU General Public License v3.0 or later
