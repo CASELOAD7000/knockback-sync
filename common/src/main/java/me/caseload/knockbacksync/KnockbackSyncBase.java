@@ -103,19 +103,82 @@ public abstract class KnockbackSyncBase {
                         .getTagName();
 
                 String currentVersion = getVersion();
-                boolean updateAvailable = !currentVersion.equalsIgnoreCase(latestVersion);
 
-                if (updateAvailable) {
-                    LOGGER.warning("A new update is available for download at: https://github.com/CASELOAD7000/knockback-sync/releases/latest");
+                int comparisonResult = compareVersions(currentVersion, latestVersion);
+
+                if (comparisonResult < 0) {
+                    LOGGER.warning("You are running an older version. A new update is available for download at: https://github.com/CASELOAD7000/knockback-sync/releases/latest");
+                    configManager.setUpdateAvailable(true);
+                } else if (comparisonResult > 0) {
+                    if (currentVersion.contains("-dev")) {
+                        LOGGER.info("You are running a development build newer than the latest release.");
+                    } else {
+                        LOGGER.info("You are running a version newer than the latest release.");
+                    }
+                    configManager.setUpdateAvailable(false);
                 } else {
                     LOGGER.info("You are running the latest release.");
+                    configManager.setUpdateAvailable(false);
                 }
-
-                configManager.setUpdateAvailable(updateAvailable);
             } catch (Exception e) {
                 LOGGER.severe("Failed to check for updates: " + e.getMessage());
             }
         });
+    }
+
+    private int compareVersions(String version1, String version2) {
+        String[] v1Parts = version1.split("[-.]");
+        String[] v2Parts = version2.split("[-.]");
+
+        int length = Math.min(v1Parts.length, v2Parts.length);
+
+        for (int i = 0; i < length; i++) {
+            int comparison = compareVersionPart(v1Parts[i], v2Parts[i]);
+            if (comparison != 0) {
+                return comparison;
+            }
+        }
+
+        // If we're here, all compared parts are equal
+        if (v1Parts.length != v2Parts.length) {
+            return compareSpecialVersions(v1Parts, v2Parts);
+        }
+
+        return 0; // Versions are equal
+    }
+
+    private int compareVersionPart(String part1, String part2) {
+        try {
+            int v1 = Integer.parseInt(part1);
+            int v2 = Integer.parseInt(part2);
+            return Integer.compare(v1, v2);
+        } catch (NumberFormatException e) {
+            // If parts are not numbers, compare them based on dev < snapshot < release
+            return compareSpecialPart(part1, part2);
+        }
+    }
+
+    private int compareSpecialPart(String part1, String part2) {
+        if (part1.equals(part2)) return 0;
+        if (part1.startsWith("dev")) return part2.startsWith("dev") ? 0 : -1;
+        if (part2.startsWith("dev")) return 1;
+        if (part1.equals("SNAPSHOT")) return part2.equals("SNAPSHOT") ? 0 : -1;
+        if (part2.equals("SNAPSHOT")) return 1;
+        return part1.compareTo(part2);
+    }
+
+    private int compareSpecialVersions(String[] v1Parts, String[] v2Parts) {
+        if (v1Parts.length > v2Parts.length) {
+            String specialPart = v1Parts[v2Parts.length];
+            if (specialPart.startsWith("dev")) return -1;
+            if (specialPart.equals("SNAPSHOT")) return -1;
+            return 1; // Assume it's a release version part
+        } else {
+            String specialPart = v2Parts[v1Parts.length];
+            if (specialPart.startsWith("dev")) return 1;
+            if (specialPart.equals("SNAPSHOT")) return 1;
+            return -1; // Assume it's a release version part
+        }
     }
 
     public abstract void saveDefaultConfig();
