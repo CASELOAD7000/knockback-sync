@@ -13,11 +13,6 @@ This plugin intercepts and adjusts knockback calculations to match what would oc
 ### How does this change benefit high ping players?
 **Knockback control.** For example, it will be easier to escape crit chains and punish crit.
 
-### How do I change the ping offset?
-You can edit the ping offset in the `config.yml` for this plugin.
-```yml:
-ping_offset: 25 # Change to the offset your want
-```
 Then just type
 ```
 /knockbacksync reload
