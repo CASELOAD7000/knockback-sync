@@ -20,14 +20,12 @@ import java.util.logging.Logger;
 public abstract class KnockbackSyncBase {
     public static Logger LOGGER;
     public static KnockbackSyncBase INSTANCE;
-
-    @Getter
-    protected SchedulerAdapter scheduler;
     public Platform platform;
     public StatsManager statsManager;
     public PlatformServer platformServer;
     public PluginJarHashProvider pluginJarHashProvider;
-
+    @Getter
+    protected SchedulerAdapter scheduler;
     @Getter
     protected ConfigManager configManager;
 
@@ -41,23 +39,28 @@ public abstract class KnockbackSyncBase {
         try {
             Class.forName("io.papermc.paper.threadedregions.RegionizedServer");
             return Platform.FOLIA; // Paper (Folia) detected
-        } catch (ClassNotFoundException ignored1) {}
+        } catch (ClassNotFoundException ignored1) {
+        }
 
         try {
             Class.forName("org.bukkit.Bukkit");
             return Platform.BUKKIT; // Bukkit (Spigot/Paper without Folia) detected
-        } catch (ClassNotFoundException ignored2) {}
+        } catch (ClassNotFoundException ignored2) {
+        }
 
         try {
             Class.forName("net.fabricmc.loader.api.FabricLoader");
             return Platform.FABRIC; // Fabric detected
-        } catch (ClassNotFoundException ignored3) {}
+        } catch (ClassNotFoundException ignored3) {
+        }
 
         throw new IllegalStateException("Unknown platform!");
     }
 
     public abstract Logger getLogger();
+
     public abstract File getDataFolder();
+
     public abstract InputStream getResource(String filename);
 
     public abstract void load();
@@ -89,7 +92,9 @@ public abstract class KnockbackSyncBase {
     }
 
     protected abstract void registerPlatformListeners();
+
     protected abstract void registerCommands();
+
     protected abstract String getVersion();
 
     protected void checkForUpdates() {

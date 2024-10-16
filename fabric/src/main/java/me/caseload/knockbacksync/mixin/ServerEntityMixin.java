@@ -17,7 +17,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class ServerEntityMixin {
 
 
-    @Shadow @Final
+    @Shadow
+    @Final
     private Entity entity;
 
     @Inject(method = "sendChanges", at = @At(value = "FIELD", target = "Lnet/minecraft/world/entity/Entity;hurtMarked:Z", ordinal = 1))

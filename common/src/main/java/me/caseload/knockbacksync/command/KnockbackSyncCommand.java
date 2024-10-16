@@ -18,6 +18,16 @@ public class KnockbackSyncCommand implements Command<CommandSourceStack> {
 
     private static final PermissionChecker permissionChecker = KnockbackSyncBase.INSTANCE.getPermissionChecker();
 
+    public static LiteralArgumentBuilder<CommandSourceStack> build() {
+        return Commands.literal("knockbacksync")
+                .then(PingSubCommand.build())
+                .then(ReloadSubCommand.build())
+                .then(StatusSubCommand.build())
+                .then(ToggleSubCommand.build())
+                .then(ToggleOffGroundSubcommand.build())
+                .executes(new KnockbackSyncCommand());
+    }
+
     @Override
     public int run(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         // Use the builder pattern to create a styled message
@@ -36,15 +46,5 @@ public class KnockbackSyncCommand implements Command<CommandSourceStack> {
         // Send the styled message
         context.getSource().sendSuccess(() -> message, false);
         return 1;
-    }
-
-    public static LiteralArgumentBuilder<CommandSourceStack> build() {
-        return Commands.literal("knockbacksync")
-                .then(PingSubCommand.build())
-                .then(ReloadSubCommand.build())
-                .then(StatusSubCommand.build())
-                .then(ToggleSubCommand.build())
-                .then(ToggleOffGroundSubcommand.build())
-                .executes(new KnockbackSyncCommand());
     }
 }

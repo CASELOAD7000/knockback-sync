@@ -1,8 +1,8 @@
 package me.caseload.knockbacksync.listener.fabric;
 
 import me.caseload.knockbacksync.listener.PlayerJoinQuitListener;
-import me.caseload.knockbacksync.player.PlayerData;
 import me.caseload.knockbacksync.player.FabricPlayer;
+import me.caseload.knockbacksync.player.PlayerData;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 
 public class FabricPlayerJoinQuitListener extends PlayerJoinQuitListener {

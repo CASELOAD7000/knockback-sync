@@ -6,10 +6,7 @@ import me.caseload.knockbacksync.listener.PlayerKnockbackListener;
 import me.caseload.knockbacksync.player.FabricPlayer;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.damagesource.DamageSources;
 import net.minecraft.world.damagesource.DamageTypes;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.player.Player;
 
 public class FabricPlayerKnockbackListener extends PlayerKnockbackListener {
 

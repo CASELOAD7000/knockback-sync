@@ -5,7 +5,8 @@ import me.caseload.knockbacksync.util.FloodgateUtil;
 import me.caseload.knockbacksync.util.GeyserUtil;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class PlayerDataManager {

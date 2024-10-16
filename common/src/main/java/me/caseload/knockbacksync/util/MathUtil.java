@@ -6,12 +6,10 @@ public class MathUtil {
     private static final double MULTIPLIER = 0.98;
     private static final int MAX_TICKS = 20;
 
-    public static double calculateDistanceTraveled(double velocity, int time, double acceleration)
-    {
+    public static double calculateDistanceTraveled(double velocity, int time, double acceleration) {
         double totalDistance = 0;
 
-        for (int i = 0; i < time; i++)
-        {
+        for (int i = 0; i < time; i++) {
             totalDistance += velocity;
             velocity = ((velocity - acceleration) * MULTIPLIER);
             velocity = Math.min(velocity, TERMINAL_VELOCITY);

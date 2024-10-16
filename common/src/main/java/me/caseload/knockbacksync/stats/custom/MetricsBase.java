@@ -7,7 +7,9 @@ import javax.net.ssl.HttpsURLConnection;
 import java.io.*;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -18,7 +20,9 @@ import java.util.zip.GZIPOutputStream;
 
 public class MetricsBase {
 
-    /** The version of the Metrics class. */
+    /**
+     * The version of the Metrics class.
+     */
     public static final String METRICS_VERSION = "3.1.0";
 
     private static final String REPORT_URL = "https://bStats.org/api/v2/data/%s";
@@ -56,24 +60,24 @@ public class MetricsBase {
     /**
      * Creates a new MetricsBase class instance.
      *
-     * @param platform The platform of the service.
-     * @param serviceId The id of the service.
-     * @param serverUuid The server uuid.
-     * @param enabled Whether or not data sending is enabled.
-     * @param appendPlatformDataConsumer A consumer that receives a {@code JsonObjectBuilder} and
-     *     appends all platform-specific data.
-     * @param appendServiceDataConsumer A consumer that receives a {@code JsonObjectBuilder} and
-     *     appends all service-specific data.
-     * @param submitTaskConsumer A consumer that takes a runnable with the submit task. This can be
-     *     used to delegate the data collection to a another thread to prevent errors caused by
-     *     concurrency. Can be {@code null}.
+     * @param platform                    The platform of the service.
+     * @param serviceId                   The id of the service.
+     * @param serverUuid                  The server uuid.
+     * @param enabled                     Whether or not data sending is enabled.
+     * @param appendPlatformDataConsumer  A consumer that receives a {@code JsonObjectBuilder} and
+     *                                    appends all platform-specific data.
+     * @param appendServiceDataConsumer   A consumer that receives a {@code JsonObjectBuilder} and
+     *                                    appends all service-specific data.
+     * @param submitTaskConsumer          A consumer that takes a runnable with the submit task. This can be
+     *                                    used to delegate the data collection to a another thread to prevent errors caused by
+     *                                    concurrency. Can be {@code null}.
      * @param checkServiceEnabledSupplier A supplier to check if the service is still enabled.
-     * @param errorLogger A consumer that accepts log message and an error.
-     * @param infoLogger A consumer that accepts info log messages.
-     * @param logErrors Whether or not errors should be logged.
-     * @param logSentData Whether or not the sent data should be logged.
-     * @param logResponseStatusText Whether or not the response status text should be logged.
-     * @param skipRelocateCheck Whether or not the relocate check should be skipped.
+     * @param errorLogger                 A consumer that accepts log message and an error.
+     * @param infoLogger                  A consumer that accepts info log messages.
+     * @param logErrors                   Whether or not errors should be logged.
+     * @param logSentData                 Whether or not the sent data should be logged.
+     * @param logResponseStatusText       Whether or not the response status text should be logged.
+     * @param skipRelocateCheck           Whether or not the relocate check should be skipped.
      */
     public MetricsBase(
             String platform,
@@ -125,6 +129,23 @@ public class MetricsBase {
             // bStats
             startSubmitting();
         }
+    }
+
+    /**
+     * Gzips the given string.
+     *
+     * @param str The string to gzip.
+     * @return The gzipped string.
+     */
+    private static byte[] compress(final String str) throws IOException {
+        if (str == null) {
+            return null;
+        }
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        try (GZIPOutputStream gzip = new GZIPOutputStream(outputStream)) {
+            gzip.write(str.getBytes(StandardCharsets.UTF_8));
+        }
+        return outputStream.toByteArray();
     }
 
     public void addCustomChart(CustomChart chart) {
@@ -226,7 +247,9 @@ public class MetricsBase {
         }
     }
 
-    /** Checks that the class was properly relocated. */
+    /**
+     * Checks that the class was properly relocated.
+     */
     private void checkRelocation() {
         // You can use the property to disable the check in your test environment
         if (System.getProperty("bstats.relocatecheck") == null
@@ -234,9 +257,9 @@ public class MetricsBase {
             // Maven's Relocate is clever and changes strings, too. So we have to use this
             // little "trick" ... :D
             final String defaultPackage =
-                    new String(new byte[] {'o', 'r', 'g', '.', 'b', 's', 't', 'a', 't', 's'});
+                    new String(new byte[]{'o', 'r', 'g', '.', 'b', 's', 't', 'a', 't', 's'});
             final String examplePackage =
-                    new String(new byte[] {'y', 'o', 'u', 'r', '.', 'p', 'a', 'c', 'k', 'a', 'g', 'e'});
+                    new String(new byte[]{'y', 'o', 'u', 'r', '.', 'p', 'a', 'c', 'k', 'a', 'g', 'e'});
             // We want to make sure no one just copy & pastes the example and uses the wrong
             // package names
             if (MetricsBase.class.getPackage().getName().startsWith(defaultPackage)
@@ -244,22 +267,5 @@ public class MetricsBase {
                 throw new IllegalStateException("bStats Metrics class has not been relocated correctly!");
             }
         }
-    }
-
-    /**
-     * Gzips the given string.
-     *
-     * @param str The string to gzip.
-     * @return The gzipped string.
-     */
-    private static byte[] compress(final String str) throws IOException {
-        if (str == null) {
-            return null;
-        }
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        try (GZIPOutputStream gzip = new GZIPOutputStream(outputStream)) {
-            gzip.write(str.getBytes(StandardCharsets.UTF_8));
-        }
-        return outputStream.toByteArray();
     }
 }

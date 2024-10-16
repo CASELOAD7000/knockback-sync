@@ -23,7 +23,7 @@ public class PingSubCommand {
                             if (playerData.getPing() == null) {
                                 return Component.literal("Pong not received. Your estimated ping is " + playerData.getPlatformPlayer().getPing() + "ms.");
                             } else {
-                                return Component.literal("Your last ping packet took " + playerData.getPing() +  "ms. Jitter: " + playerData.getJitter() + "ms.");
+                                return Component.literal("Your last ping packet took " + playerData.getPing() + "ms. Jitter: " + playerData.getJitter() + "ms.");
                             }
                         }, false);
                     } else {

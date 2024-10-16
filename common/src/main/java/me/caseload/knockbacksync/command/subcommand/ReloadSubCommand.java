@@ -5,7 +5,6 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import me.caseload.knockbacksync.KnockbackSyncBase;
 import me.caseload.knockbacksync.manager.ConfigManager;
 import me.caseload.knockbacksync.util.ChatUtil;
-import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;

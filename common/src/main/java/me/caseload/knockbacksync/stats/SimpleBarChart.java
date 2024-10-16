@@ -10,7 +10,7 @@ public class SimpleBarChart extends CustomChart {
     /**
      * Class constructor.
      *
-     * @param chartId The id of the chart.
+     * @param chartId  The id of the chart.
      * @param callable The callable which is used to request the chart data.
      */
     public SimpleBarChart(String chartId, Callable<Map<String, Integer>> callable) {
@@ -27,7 +27,7 @@ public class SimpleBarChart extends CustomChart {
             return null;
         }
         for (Map.Entry<String, Integer> entry : map.entrySet()) {
-            valuesBuilder.appendField(entry.getKey(), new int[] {entry.getValue()});
+            valuesBuilder.appendField(entry.getKey(), new int[]{entry.getValue()});
         }
         return new JsonObjectBuilder().appendField("values", valuesBuilder.build()).build();
     }

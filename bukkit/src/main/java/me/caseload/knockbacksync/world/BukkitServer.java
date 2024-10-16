@@ -10,9 +10,9 @@ import java.util.stream.Collectors;
 
 public class BukkitServer implements PlatformServer {
     public Collection<PlatformPlayer> getOnlinePlayers() {
-                return Bukkit.getOnlinePlayers().stream()
-                        .map(BukkitPlayer::new)
-                        .collect(Collectors.toList());
+        return Bukkit.getOnlinePlayers().stream()
+                .map(BukkitPlayer::new)
+                .collect(Collectors.toList());
     }
 
     @Override
