@@ -1,6 +1,6 @@
 package me.caseload.knockbacksync.mixin;
 
-import me.caseload.knockbacksync.callback.PlayerVelocityCallback;
+import me.caseload.knockbacksync.callback.PlayerVelocityEvent;
 import net.minecraft.server.level.ServerEntity;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
@@ -27,7 +27,7 @@ public class ServerEntityMixin {
             ServerPlayer player = (ServerPlayer) this.entity;
             Vec3 velocity = player.getDeltaMovement();
 
-            InteractionResult result = PlayerVelocityCallback.EVENT.invoker().onVelocityChange(player, velocity);
+            InteractionResult result = PlayerVelocityEvent.EVENT.invoker().onVelocityChange(player, velocity);
 
             if (result == InteractionResult.FAIL) {
                 this.entity.hurtMarked = false;

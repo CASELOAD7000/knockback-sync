@@ -34,6 +34,7 @@ public class PlayerData {
     public static final long PING_OFFSET = 25;
     private static final int PLUGIN_IDENTIFIER = 0x80000000; // Bit 31 set to 1 (negative)
     private static final int ID_MASK = 0x7FFF; // 15-bit mask
+    public static float TICK_RATE = 20.0F;
     private static Field playerField;
 
     static {
@@ -185,7 +186,7 @@ public class PlayerData {
         if (tFall == -1)
             return false; // reached the max tick limit, not safe to predict
 
-        return getEstimatedPing() >= tMax + tFall / 20.0 * 1000 && gDist <= 1.3;
+        return getEstimatedPing() >= tMax + tFall / TICK_RATE * 1000 && gDist <= 1.3;
     }
 
     /**

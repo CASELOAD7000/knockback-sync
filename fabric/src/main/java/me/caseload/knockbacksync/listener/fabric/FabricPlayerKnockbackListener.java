@@ -1,7 +1,7 @@
 package me.caseload.knockbacksync.listener.fabric;
 
 import com.github.retrooper.packetevents.util.Vector3d;
-import me.caseload.knockbacksync.callback.PlayerVelocityCallback;
+import me.caseload.knockbacksync.callback.PlayerVelocityEvent;
 import me.caseload.knockbacksync.listener.PlayerKnockbackListener;
 import me.caseload.knockbacksync.player.FabricPlayer;
 import net.minecraft.world.InteractionResult;
@@ -11,7 +11,7 @@ import net.minecraft.world.damagesource.DamageTypes;
 public class FabricPlayerKnockbackListener extends PlayerKnockbackListener {
 
     public void register() {
-        PlayerVelocityCallback.EVENT.register((player, velocity) -> {
+        PlayerVelocityEvent.EVENT.register((player, velocity) -> {
             DamageSource lastDamageSource = player.getLastDamageSource();
             if (lastDamageSource == null)
                 return InteractionResult.PASS;
