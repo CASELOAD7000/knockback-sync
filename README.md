@@ -10,11 +10,14 @@ This plugin intercepts and adjusts knockback calculations to match what would oc
 ### Does this change put high ping players at a disadvantage?
 **It depends on the player.** Some may notice a difference if they're used to relying on high ping to reduce knockback. For others, it could actually be an advantage.
 
-### Why was the configurability of ping offset removed?
-**It promotes consistency across all servers.** Extensive testing with top players has shown that an offset of 25 provides a balanced experience for everyone.
-
 ### How do I change the ping offset?
-**You must run a modified build of KnockbackSync.** The variable can be changed inside of the [PlayerData](src/main/java/me/caseload/knockbacksync/manager/PlayerData.java) class.
+Open up `config.yml` and edit the line that says `ping_offset: 25`. Replace 25 with your desired ping offset.
+
+Then just type
+```
+/knockbacksync reload
+```
+or restart your server.
 
 ## What servers are using this plugin?
 | IP               | Location                                 | Region | Ping Offset | spike_threshold |
