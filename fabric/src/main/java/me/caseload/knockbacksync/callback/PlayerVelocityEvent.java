@@ -6,10 +6,10 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.phys.Vec3;
 
-public interface PlayerVelocityCallback {
-    Event<PlayerVelocityCallback> EVENT = EventFactory.createArrayBacked(PlayerVelocityCallback.class,
+public interface PlayerVelocityEvent {
+    Event<PlayerVelocityEvent> EVENT = EventFactory.createArrayBacked(PlayerVelocityEvent.class,
             (listeners) -> (player, velocity) -> {
-                for (PlayerVelocityCallback listener : listeners) {
+                for (PlayerVelocityEvent listener : listeners) {
                     InteractionResult result = listener.onVelocityChange(player, velocity);
 
                     if (result != InteractionResult.PASS) {

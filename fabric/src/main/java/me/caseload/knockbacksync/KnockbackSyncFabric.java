@@ -6,6 +6,7 @@ import me.caseload.knockbacksync.command.KnockbackSyncCommand;
 import me.caseload.knockbacksync.listener.fabric.FabricPlayerDamageListener;
 import me.caseload.knockbacksync.listener.fabric.FabricPlayerJoinQuitListener;
 import me.caseload.knockbacksync.listener.fabric.FabricPlayerKnockbackListener;
+import me.caseload.knockbacksync.listener.fabric.FabricTickRateChangeListener;
 import me.caseload.knockbacksync.permission.FabricPermissionChecker;
 import me.caseload.knockbacksync.permission.PermissionChecker;
 import me.caseload.knockbacksync.scheduler.FabricSchedulerAdapter;
@@ -87,6 +88,7 @@ public class KnockbackSyncFabric implements PreLaunchEntrypoint, ModInitializer 
             new FabricPlayerJoinQuitListener().register();
             new FabricPlayerDamageListener().register();
             new FabricPlayerKnockbackListener().register();
+            new FabricTickRateChangeListener().register();
         }
 
         @Override
