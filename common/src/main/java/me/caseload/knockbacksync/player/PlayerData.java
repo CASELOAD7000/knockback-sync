@@ -30,13 +30,36 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Getter
 public class PlayerData {
 
-    private static final int PLUGIN_IDENTIFIER = 0x80000000; // Bit 31 set to 1 (negative)
-    private static final int ID_MASK = 0x7FFF; // 15-bit mask
     // Please read the GitHub FAQ before adjusting.
     public static final long PING_OFFSET = 25;
+    private static final int PLUGIN_IDENTIFIER = 0x80000000; // Bit 31 set to 1 (negative)
+    private static final int ID_MASK = 0x7FFF; // 15-bit mask
+    private static Field playerField;
+
+    static {
+        try {
+            switch (KnockbackSyncBase.INSTANCE.platform) {
+                case BUKKIT:
+                case FOLIA:
+                    Class<?> bukkitPlayerClass = Class.forName("me.caseload.knockbacksync.player.BukkitPlayer");
+                    playerField = bukkitPlayerClass.getDeclaredField("bukkitPlayer");
+                    break;
+                case FABRIC:
+                    Class<?> fabricPlayerClass = Class.forName("me.caseload.knockbacksync.player.FabricPlayer");
+                    playerField = fabricPlayerClass.getDeclaredField("fabricPlayer");
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected platform: " + KnockbackSyncBase.INSTANCE.platform);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            // Handle the exception appropriately
+        }
+        playerField.setAccessible(true); // May not be needed since it's already public
+    }
+
     public final User user;
     private final AtomicInteger pingIdCounter = new AtomicInteger(0);
-
     private final PlatformPlayer platformPlayer;
     private final UUID uuid;
     @NotNull
@@ -50,22 +73,17 @@ public class PlayerData {
     private double jitter;
     @Nullable
     private AbstractTaskHandle combatTask;
-
     @Nullable
     @Setter
     private Long ping, previousPing;
-
     @Nullable
     @Setter
     private Double verticalVelocity;
-
     @Nullable
     @Setter
     private Integer lastDamageTicks;
-
     @Setter
     private double gravityAttribute = 0.08;
-
     @Setter
     private double knockbackResistanceAttribute = 0.0;
 
@@ -74,34 +92,17 @@ public class PlayerData {
         this.platformPlayer = platformPlayer;
 
         User tempUser = null;
+
+        PlayerManager playerManager = PacketEvents.getAPI().getPlayerManager();
+        Object player = null;
         try {
-            PlayerManager playerManager = PacketEvents.getAPI().getPlayerManager();
-            Object player;
+            player = playerField.get(platformPlayer);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
 
-            switch (KnockbackSyncBase.INSTANCE.platform) {
-                case BUKKIT:
-                case FOLIA:
-                    Class<?> bukkitPlayerClass = Class.forName("me.caseload.knockbacksync.player.BukkitPlayer");
-                    Field bukkitPlayerField = bukkitPlayerClass.getDeclaredField("bukkitPlayer");
-                    bukkitPlayerField.setAccessible(true);
-                    player = bukkitPlayerField.get(platformPlayer);
-                    break;
-                case FABRIC:
-                    Class<?> fabricPlayerClass = Class.forName("me.caseload.knockbacksync.player.FabricPlayer");
-                    Field fabricPlayerField = fabricPlayerClass.getDeclaredField("fabricPlayer");
-                    fabricPlayerField.setAccessible(true);
-                    player = fabricPlayerField.get(platformPlayer);
-                    break;
-                default:
-                    throw new IllegalStateException("Unexpected platform: " + KnockbackSyncBase.INSTANCE.platform);
-            }
-
-            if (player != null) {
-                tempUser = playerManager.getUser(player);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            // Handle the exception appropriately
+        if (player != null) {
+            tempUser = playerManager.getUser(player);
         }
 
         this.user = tempUser;
