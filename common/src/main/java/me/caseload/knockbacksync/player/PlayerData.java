@@ -28,9 +28,8 @@ import java.util.concurrent.atomic.AtomicLong;
 @Getter
 public class PlayerData {
 
-
     @Getter
-    private JitterCalculator jitterCalculator;
+    private JitterCalculator jitterCalculator = new JitterCalculator();
     @Getter @Setter
     private double jitter;
 
@@ -127,6 +126,10 @@ public class PlayerData {
         return Math.max(1, ping - PING_OFFSET);
     }
 
+    //    PLUGIN_IDENTIFIER is set to 0x80000000, which is the minimum negative integer in Java.
+    //    We use the lower 15 bits for the counter, giving us 32,767 unique negative IDs before wrapping.
+    //    The isPingIdOurs method checks if the ID is negative and if the upper 17 bits match our identifier.
+    //    This should avoid conflicts with GrimAC which uses negative short range and other plugins which are mostly positive ranged
     public int generatePingId() {
         return PLUGIN_IDENTIFIER | (pingIdCounter.getAndIncrement() & ID_MASK);
     }
@@ -135,18 +138,14 @@ public class PlayerData {
         return id < 0 && (id & 0xFFFF8000) == PLUGIN_IDENTIFIER;
     }
 
-//    PLUGIN_IDENTIFIER is set to 0x80000000, which is the minimum negative integer in Java.
-//    We use the lower 15 bits for the counter, giving us 32,767 unique negative IDs before wrapping.
-//    The isPingIdOurs method checks if the ID is negative and if the upper 17 bits match our identifier.
-//    This should avoid conflicts with GrimAC which uses negative short range and other plugins which are mostly positive ranged
-public void sendPing() {
-    if (user != null) {
-        int packetId = generatePingId();
-        timeline.put(packetId, System.currentTimeMillis());
-        WrapperPlayServerPing packet = new WrapperPlayServerPing(packetId);
-        user.sendPacket(packet);
+    public void sendPing() {
+        if (user != null) {
+            int packetId = generatePingId();
+            timeline.put(packetId, System.currentTimeMillis());
+            WrapperPlayServerPing packet = new WrapperPlayServerPing(packetId);
+            user.sendPacket(packet);
+        }
     }
-}
 
     /**
      * Determines if the Player is on the ground clientside, but not serverside
