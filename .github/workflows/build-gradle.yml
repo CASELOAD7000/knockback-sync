@@ -203,7 +203,7 @@ jobs:
             folia
 
           game-versions: |
-            >=1.18.2
+            >=1.16.5
 
           retry-attempts: 2
           retry-delay: 10000
