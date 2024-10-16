@@ -63,7 +63,7 @@ jobs:
           FULL_VERSION=$(grep 'val fullVersion =' build.gradle.kts | awk -F '"' '{print $2}')
           IFS='.' read -ra VERSION_PARTS <<< "$FULL_VERSION"
           PATCH=$((VERSION_PARTS[2] + 1))
-          NEW_VERSION="${VERSION_PARTS[0]}.${VERSION_PARTS[1]}.$PATCH-dev-axionize-b${{ steps.buildnumber.outputs.build_number }}"
+          NEW_VERSION="${VERSION_PARTS[0]}.${VERSION_PARTS[1]}.$PATCH-dev-b${{ steps.buildnumber.outputs.build_number }}"
           echo "NEW_VERSION=${NEW_VERSION}" >> $GITHUB_ENV
           
           # Update fullVersion in build.gradle
