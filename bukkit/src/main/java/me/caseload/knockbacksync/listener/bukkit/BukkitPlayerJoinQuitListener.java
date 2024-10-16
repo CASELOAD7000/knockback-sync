@@ -1,7 +1,7 @@
 package me.caseload.knockbacksync.listener.bukkit;
 
 import me.caseload.knockbacksync.listener.PlayerJoinQuitListener;
-import me.caseload.knockbacksync.manager.PlayerData;
+import me.caseload.knockbacksync.player.PlayerData;
 import me.caseload.knockbacksync.player.BukkitPlayer;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;

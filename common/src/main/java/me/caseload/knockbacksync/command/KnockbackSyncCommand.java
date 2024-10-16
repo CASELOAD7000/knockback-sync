@@ -9,7 +9,7 @@ import me.caseload.knockbacksync.command.subcommand.StatusSubCommand;
 import me.caseload.knockbacksync.command.subcommand.ToggleOffGroundSubcommand;
 import me.caseload.knockbacksync.command.subcommand.ToggleSubCommand;
 import me.caseload.knockbacksync.manager.ConfigManager;
-import me.caseload.knockbacksync.manager.PlayerData;
+import me.caseload.knockbacksync.player.PlayerData;
 import me.caseload.knockbacksync.manager.PlayerDataManager;
 import me.caseload.knockbacksync.permission.PermissionChecker;
 import me.caseload.knockbacksync.util.ChatUtil;
@@ -59,7 +59,7 @@ public class KnockbackSyncCommand implements Command<CommandSourceStack> {
                                     if (playerData.getPing() == null) {
                                         return Component.literal("Pong not received. Your estimated ping is " + playerData.getPlatformPlayer().getPing() + "ms.");
                                     } else {
-                                        return Component.literal("Your last ping packet took " + playerData.getPing() + "ms.");
+                                        return Component.literal("Your last ping packet took " + playerData.getPing() +  "ms. Jitter: " + playerData.getJitter() + "ms.");
                                     }
                                 }, false);
                             } else {
@@ -76,7 +76,7 @@ public class KnockbackSyncCommand implements Command<CommandSourceStack> {
                                         if (playerData.getPing() == null) {
                                             return Component.literal("Pong not received. " + target.getDisplayName().getString() + "’s estimated ping is " + playerData.getEstimatedPing() + "ms.");
                                         } else {
-                                            return Component.literal(target.getDisplayName().getString() + "’s last ping packet took " + playerData.getPing() + "ms.");
+                                            return Component.literal(target.getDisplayName().getString() + "’s last ping packet took " + playerData.getPing() + "ms. Jitter: " + playerData.getJitter() + "ms.");
                                         }
                                     }, false);
                                     return 1;

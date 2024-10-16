@@ -1,5 +1,6 @@
 package me.caseload.knockbacksync.manager;
 
+import me.caseload.knockbacksync.player.PlayerData;
 import me.caseload.knockbacksync.util.FloodgateUtil;
 import me.caseload.knockbacksync.util.GeyserUtil;
 import org.jetbrains.annotations.NotNull;

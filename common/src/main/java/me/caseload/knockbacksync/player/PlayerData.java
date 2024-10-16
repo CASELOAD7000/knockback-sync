@@ -1,4 +1,4 @@
-package me.caseload.knockbacksync.manager;
+package me.caseload.knockbacksync.player;
 
 import com.github.retrooper.packetevents.PacketEvents;
 import com.github.retrooper.packetevents.manager.player.PlayerManager;
@@ -8,13 +8,10 @@ import com.github.retrooper.packetevents.protocol.world.states.WrappedBlockState
 import com.github.retrooper.packetevents.protocol.world.states.type.StateTypes;
 import com.github.retrooper.packetevents.util.Vector3d;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerPing;
-import io.netty.channel.Channel;
 import lombok.Getter;
 import lombok.Setter;
 import me.caseload.knockbacksync.KnockbackSyncBase;
-//import me.caseload.knockbacksync.player.BukkitPlayer;
-//import me.caseload.knockbacksync.player.FabricPlayer;
-import me.caseload.knockbacksync.player.PlatformPlayer;
+import me.caseload.knockbacksync.manager.CombatManager;
 import me.caseload.knockbacksync.world.PlatformWorld;
 import me.caseload.knockbacksync.scheduler.AbstractTaskHandle;
 import me.caseload.knockbacksync.util.MathUtil;
@@ -24,14 +21,18 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Field;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 @Getter
 public class PlayerData {
+
+
+    @Getter
+    private JitterCalculator jitterCalculator;
+    @Getter @Setter
+    private double jitter;
 
     private static final int PLUGIN_IDENTIFIER = 0x80000000; // Bit 31 set to 1 (negative)
     private static final int ID_MASK = 0x7FFF; // 15-bit mask
@@ -111,24 +112,6 @@ public class PlayerData {
         PING_OFFSET = KnockbackSyncBase.INSTANCE.getConfigManager().getConfigWrapper().getInt("ping_offset", 25);
     }
 
-//    public PlayerData(Player player) {
-//        this.uuid = player.getUniqueId();
-//        this.user = PacketEvents.getAPI().getPlayerManager().getUser(player);
-//        this.platformPlayer = new BukkitPlayer(player);
-//        PING_OFFSET = KnockbackSyncBase.INSTANCE.getConfigManager().getConfigWrapper().getInt("ping_offset", 25);
-//    }
-
-//    public PlayerData(ServerPlayer player) {
-//        this.uuid = player.getUUID();
-        // ping listener doesn't work beause I can't get the user
-        // this exists temporarily until I fix packetevents
-//        Channel channel = (Channel) PacketEvents.getAPI().getProtocolManager().getChannel(uuid);
-//        this.user = PacketEvents.getAPI().getProtocolManager().getUser(channel);
-//        this.user = null; // PacketEvents.getAPI().getPlayerManager().getUser(player);
-//        this.platformPlayer = new FabricPlayer(player);
-//        PING_OFFSET = KnockbackSyncBase.INSTANCE.getConfigManager().getConfigWrapper().getInt("ping_offset", 25);
-//    }
-
     /**
      * Calculates the player's ping with compensation for lag spikes.
      * A hardcoded offset is applied for several reasons,
@@ -156,14 +139,14 @@ public class PlayerData {
 //    We use the lower 15 bits for the counter, giving us 32,767 unique negative IDs before wrapping.
 //    The isPingIdOurs method checks if the ID is negative and if the upper 17 bits match our identifier.
 //    This should avoid conflicts with GrimAC which uses negative short range and other plugins which are mostly positive ranged
-    public void sendPing() {
-        if (user != null) {
-            int packetId = generatePingId();
-            timeline.put(packetId, System.currentTimeMillis());
-            WrapperPlayServerPing packet = new WrapperPlayServerPing(packetId);
-            user.sendPacket(packet);
-        }
+public void sendPing() {
+    if (user != null) {
+        int packetId = generatePingId();
+        timeline.put(packetId, System.currentTimeMillis());
+        WrapperPlayServerPing packet = new WrapperPlayServerPing(packetId);
+        user.sendPacket(packet);
     }
+}
 
     /**
      * Determines if the Player is on the ground clientside, but not serverside

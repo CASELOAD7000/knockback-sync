@@ -7,6 +7,7 @@ import lombok.Setter;
 import me.caseload.knockbacksync.ConfigWrapper;
 import me.caseload.knockbacksync.KnockbackSyncBase;
 import me.caseload.knockbacksync.Platform;
+import me.caseload.knockbacksync.player.PlayerData;
 import me.caseload.knockbacksync.runnable.PingRunnable;
 import me.caseload.knockbacksync.scheduler.AbstractTaskHandle;
 

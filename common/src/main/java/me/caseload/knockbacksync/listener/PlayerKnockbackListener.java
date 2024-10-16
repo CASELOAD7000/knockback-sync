@@ -2,7 +2,7 @@ package me.caseload.knockbacksync.listener;
 
 import com.github.retrooper.packetevents.util.Vector3d;
 import me.caseload.knockbacksync.KnockbackSyncBase;
-import me.caseload.knockbacksync.manager.PlayerData;
+import me.caseload.knockbacksync.player.PlayerData;
 import me.caseload.knockbacksync.manager.PlayerDataManager;
 import me.caseload.knockbacksync.player.PlatformPlayer;
 
