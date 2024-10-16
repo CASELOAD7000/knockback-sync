@@ -20,25 +20,18 @@ public class PingReceiveListener extends PacketListenerAbstract {
         if (event.getPacketType() != PacketType.Play.Client.PONG)
             return;
 
-        UUID uuid = event.getUser().getUUID();
-        PlayerData playerData = PlayerDataManager.getPlayerData(uuid);
+        WrapperPlayClientPong pong = new WrapperPlayClientPong(event);
+        PlayerData playerData = PlayerDataManager.getPlayerData(event.getUser().getUUID());
+        if (playerData == null) return;
 
-        // If player is timed out by the server and removed from the map on the main thread
-        // The server can still receive ping packets from the disconnected client
-        // At which point the entry will no longer be in the map but this code will be processed!
-        if (playerData == null)
-            return;
-
-        int packetId = new WrapperPlayClientPong(event).getId();
-
-        Long sendTime = playerData.getTimeline().get(packetId);
-        if (sendTime == null)
-            return;
-
-        long ping = System.currentTimeMillis() - sendTime;
-
-        playerData.getTimeline().remove(packetId);
-        playerData.setPreviousPing(playerData.getPing() != null ? playerData.getPing() : ping);
-        playerData.setPing(ping);
+        int id = pong.getId();
+        if (playerData.isPingIdOurs(id)) {
+            Long sendTime = playerData.getTimeline().remove(id);
+            if (sendTime != null) {
+                long ping = System.currentTimeMillis() - sendTime;
+                playerData.setPreviousPing(playerData.getPing());
+                playerData.setPing(ping);
+            }
+        }
     }
 }

@@ -28,9 +28,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Getter
 public class PlayerData {
+
+    private static final int PLUGIN_IDENTIFIER = 0x80000000; // Bit 31 set to 1 (negative)
+    private static final int ID_MASK = 0x7FFF; // 15-bit mask
+    private final AtomicInteger pingIdCounter = new AtomicInteger(0);
 
     private final PlatformPlayer platformPlayer;
     private final UUID uuid;
@@ -139,12 +144,22 @@ public class PlayerData {
         return Math.max(1, ping - PING_OFFSET);
     }
 
+    public int generatePingId() {
+        return PLUGIN_IDENTIFIER | (pingIdCounter.getAndIncrement() & ID_MASK);
+    }
+
+    public boolean isPingIdOurs(int id) {
+        return id < 0 && (id & 0xFFFF8000) == PLUGIN_IDENTIFIER;
+    }
+
+//    PLUGIN_IDENTIFIER is set to 0x80000000, which is the minimum negative integer in Java.
+//    We use the lower 15 bits for the counter, giving us 32,767 unique negative IDs before wrapping.
+//    The isPingIdOurs method checks if the ID is negative and if the upper 17 bits match our identifier.
+//    This should avoid conflicts with GrimAC which uses negative short range and other plugins which are mostly positive ranged
     public void sendPing() {
         if (user != null) {
-            int packetId = random.nextInt(1, 10000);
-
+            int packetId = generatePingId();
             timeline.put(packetId, System.currentTimeMillis());
-
             WrapperPlayServerPing packet = new WrapperPlayServerPing(packetId);
             user.sendPacket(packet);
         }
