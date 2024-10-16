@@ -1,0 +1,18 @@
+name: KnockbackSync
+version: ${version}
+main: me.caseload.knockbacksync.KnockbackSyncPlugin
+api-version: '1.18'
+authors: [ Caseload ]
+description: Synchronizes player knockback for smoother gameplay.
+folia-supported: true
+permissions:
+  knockbacksync.update:
+    default: op
+  knockbacksync.toggle.global:
+    default: op
+  knockbacksync.toggle.other:
+    default: op
+  knockbacksync.toggle.self:
+    default: op
+  knockbacksync.ping:
+    default: op
