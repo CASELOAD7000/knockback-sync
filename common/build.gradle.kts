@@ -9,8 +9,7 @@ dependencies {
     compileOnly("org.projectlombok:lombok:1.18.34")
     annotationProcessor("org.projectlombok:lombok:1.18.34")
 
-    // Shadded in or bundled by platform-specific code
-//    compileOnly("net.fabricmc:fabric-loader:${rootProject.property("loader_version")}")
+    // Shaded in or bundled by platform-specific code
     implementation("com.github.retrooper:packetevents-api:2.5.0")
     implementation("com.fasterxml.jackson.core:jackson-databind:2.17.2")
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.17.2")
