@@ -182,53 +182,53 @@ jobs:
           path: KnockbackSync-${{ env.NEW_VERSION }}.zip
           retention-days: 90
 
-#      - uses: Kir-Antipov/mc-publish@v3.3
-#        with:
-#          modrinth-id: wGTbjSTq
-#          modrinth-featured: true
-#          modrinth-unfeature-mode: subset
-#          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
-#
-#          files: |
-#            bukkit/build/libs/knockbacksync-bukkit-${{ env.NEW_VERSION }}.jar
-#
-#          name: KnockbackSync-${{ env.NEW_VERSION }}
-#          version: ${{ env.NEW_VERSION }}
-#          version-type: beta
-#
-#          loaders: |
-#            bukkit
-#            spigot
-#            paper
-#            folia
-#
-#          game-versions: |
-#            >=1.18.2
-#
-#          retry-attempts: 2
-#          retry-delay: 10000
-#          fail-mode: fail
-#
-#      - uses: Kir-Antipov/mc-publish@v3.3
-#        with:
-#          modrinth-id: wGTbjSTq
-#          modrinth-featured: true
-#          modrinth-unfeature-mode: subset
-#          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
-#
-#          files: |
-#            fabric/build/libs/knockbacksync-fabric-${{ env.NEW_VERSION }}.jar
-#
-#          name: KnockbackSync-${{ env.NEW_VERSION }}
-#          version: ${{ env.NEW_VERSION }}
-#          version-type: beta
-#
-#          loaders: |
-#            fabric
-#
-#          game-versions: |
-#            >=1.21
-#
-#          retry-attempts: 2
-#          retry-delay: 10000
-#          fail-mode: fail
+      - uses: Kir-Antipov/mc-publish@v3.3
+        with:
+          modrinth-id: wGTbjSTq
+          modrinth-featured: true
+          modrinth-unfeature-mode: subset
+          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
+
+          files: |
+            bukkit/build/libs/knockbacksync-bukkit-${{ env.NEW_VERSION }}.jar
+
+          name: KnockbackSync-${{ env.NEW_VERSION }}
+          version: ${{ env.NEW_VERSION }}
+          version-type: beta
+
+          loaders: |
+            bukkit
+            spigot
+            paper
+            folia
+
+          game-versions: |
+            >=1.18.2
+
+          retry-attempts: 2
+          retry-delay: 10000
+          fail-mode: fail
+
+      - uses: Kir-Antipov/mc-publish@v3.3
+        with:
+          modrinth-id: wGTbjSTq
+          modrinth-featured: true
+          modrinth-unfeature-mode: subset
+          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
+
+          files: |
+            fabric/build/libs/knockbacksync-fabric-${{ env.NEW_VERSION }}.jar
+
+          name: KnockbackSync-${{ env.NEW_VERSION }}
+          version: ${{ env.NEW_VERSION }}
+          version-type: beta
+
+          loaders: |
+            fabric
+
+          game-versions: |
+            >=1.21
+
+          retry-attempts: 2
+          retry-delay: 10000
+          fail-mode: fail
