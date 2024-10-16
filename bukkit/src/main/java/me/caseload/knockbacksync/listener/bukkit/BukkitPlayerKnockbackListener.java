@@ -3,6 +3,7 @@ package me.caseload.knockbacksync.listener.bukkit;
 import com.github.retrooper.packetevents.util.Vector3d;
 import me.caseload.knockbacksync.listener.PlayerKnockbackListener;
 import me.caseload.knockbacksync.player.BukkitPlayer;
+import me.caseload.knockbacksync.util.MultiLibUtil;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -28,6 +29,9 @@ public class BukkitPlayerKnockbackListener extends PlayerKnockbackListener imple
 
         Entity attacker = ((EntityDamageByEntityEvent) entityDamageEvent).getDamager();
         if (!(attacker instanceof Player))
+            return;
+
+        if (MultiLibUtil.isExternalPlayer(victim))
             return;
 
         Vector vector = event.getVelocity();
