@@ -18,6 +18,25 @@ public class SpigotWorld implements PlatformWorld {
         this.world = world;
     }
 
+    private static BlockFace getBlockFaceFrom(org.bukkit.block.BlockFace direction) {
+        switch (direction) {
+            case NORTH:
+                return BlockFace.NORTH;
+            case SOUTH:
+                return BlockFace.SOUTH;
+            case EAST:
+                return BlockFace.EAST;
+            case WEST:
+                return BlockFace.WEST;
+            case UP:
+                return BlockFace.UP;
+            case DOWN:
+                return BlockFace.DOWN;
+            default:
+                return null;
+        }
+    }
+
     @Override
     public WrappedBlockState getBlockStateAt(int x, int y, int z) {
         Block block = world.getBlockAt(x, y, z);
@@ -45,27 +64,8 @@ public class SpigotWorld implements PlatformWorld {
         return new RayTraceResult(
                 new Vector3d(result.getHitPosition().getX(), result.getHitPosition().getY(), result.getHitPosition().getZ()),
                 getBlockFaceFrom(result.getHitBlockFace()),
-                new Vector3i(result.getHitBlock().getX(),result.getHitBlock().getY(),result.getHitBlock().getZ()),
+                new Vector3i(result.getHitBlock().getX(), result.getHitBlock().getY(), result.getHitBlock().getZ()),
                 result.getHitBlock() != null ? WrappedBlockState.getByString(result.getHitBlock().getType().name()) : null
         );
-    }
-
-    private static BlockFace getBlockFaceFrom(org.bukkit.block.BlockFace direction) {
-        switch (direction) {
-            case NORTH:
-                return BlockFace.NORTH;
-            case SOUTH:
-                return BlockFace.SOUTH;
-            case EAST:
-                return BlockFace.EAST;
-            case WEST:
-                return BlockFace.WEST;
-            case UP:
-                return BlockFace.UP;
-            case DOWN:
-                return BlockFace.DOWN;
-            default:
-                return null;
-        }
     }
 }

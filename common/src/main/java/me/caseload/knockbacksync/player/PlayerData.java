@@ -12,45 +12,42 @@ import lombok.Getter;
 import lombok.Setter;
 import me.caseload.knockbacksync.KnockbackSyncBase;
 import me.caseload.knockbacksync.manager.CombatManager;
-import me.caseload.knockbacksync.world.PlatformWorld;
 import me.caseload.knockbacksync.scheduler.AbstractTaskHandle;
 import me.caseload.knockbacksync.util.MathUtil;
+import me.caseload.knockbacksync.world.PlatformWorld;
 import me.caseload.knockbacksync.world.raytrace.FluidHandling;
 import me.caseload.knockbacksync.world.raytrace.RayTraceResult;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
 
 @Getter
 public class PlayerData {
 
-    @Getter
-    private JitterCalculator jitterCalculator = new JitterCalculator();
-    @Getter @Setter
-    private double jitter;
-
     private static final int PLUGIN_IDENTIFIER = 0x80000000; // Bit 31 set to 1 (negative)
     private static final int ID_MASK = 0x7FFF; // 15-bit mask
+    // Please read the GitHub FAQ before adjusting.
+    public static long PING_OFFSET = 25;
+    public final User user;
     private final AtomicInteger pingIdCounter = new AtomicInteger(0);
 
     private final PlatformPlayer platformPlayer;
     private final UUID uuid;
-
-    public final User user;
-
-    // Please read the GitHub FAQ before adjusting.
-    public static long PING_OFFSET = 25;
-
     @NotNull
     private final Map<Integer, Long> timeline = new HashMap<>();
-
     @NotNull
     private final Random random = new Random();
-
+    @Getter
+    private JitterCalculator jitterCalculator = new JitterCalculator();
+    @Getter
+    @Setter
+    private double jitter;
     @Nullable
     private AbstractTaskHandle combatTask;
 
@@ -79,7 +76,7 @@ public class PlayerData {
         User tempUser = null;
         try {
             PlayerManager playerManager = PacketEvents.getAPI().getPlayerManager();
-            Object player = null;
+            Object player;
 
             switch (KnockbackSyncBase.INSTANCE.platform) {
                 case BUKKIT:
@@ -225,11 +222,11 @@ public class PlayerData {
 //        double height = 1.8;  // typical player height
         double adjustment = 0.01;
 
-        return new Vector3d[] {
-                new Vector3d(playerPos.getX() - width/2 + adjustment, playerPos.getY(), playerPos.getZ() - width/2 + adjustment),
-                new Vector3d(playerPos.getX() - width/2 + adjustment, playerPos.getY(), playerPos.getZ() + width/2 - adjustment),
-                new Vector3d(playerPos.getX() + width/2 - adjustment, playerPos.getY(), playerPos.getZ() - width/2 + adjustment),
-                new Vector3d(playerPos.getX() + width/2 - adjustment, playerPos.getY(), playerPos.getZ() + width/2 - adjustment)
+        return new Vector3d[]{
+                new Vector3d(playerPos.getX() - width / 2 + adjustment, playerPos.getY(), playerPos.getZ() - width / 2 + adjustment),
+                new Vector3d(playerPos.getX() - width / 2 + adjustment, playerPos.getY(), playerPos.getZ() + width / 2 - adjustment),
+                new Vector3d(playerPos.getX() + width / 2 - adjustment, playerPos.getY(), playerPos.getZ() - width / 2 + adjustment),
+                new Vector3d(playerPos.getX() + width / 2 - adjustment, playerPos.getY(), playerPos.getZ() + width / 2 - adjustment)
         };
     }
 

@@ -51,8 +51,7 @@ public class GeyserUtil {
                             GEYSER_PRESENT = true;
                             break;
                     }
-                }
-                catch (ClassNotFoundException e) {
+                } catch (ClassNotFoundException e) {
                     e.printStackTrace();
                 }
             }

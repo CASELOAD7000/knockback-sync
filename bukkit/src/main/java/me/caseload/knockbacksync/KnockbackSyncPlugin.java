@@ -2,11 +2,13 @@ package me.caseload.knockbacksync;
 
 import com.github.retrooper.packetevents.PacketEvents;
 import com.mojang.brigadier.CommandDispatcher;
-import dev.jorel.commandapi.*;
+import dev.jorel.commandapi.Brigadier;
+import dev.jorel.commandapi.CommandAPI;
+import dev.jorel.commandapi.CommandAPIBukkitConfig;
 import io.github.retrooper.packetevents.factory.spigot.SpigotPacketEventsBuilder;
 import me.caseload.knockbacksync.command.KnockbackSyncCommand;
-import me.caseload.knockbacksync.listener.bukkit.BukkitPlayerJoinQuitListener;
 import me.caseload.knockbacksync.listener.bukkit.BukkitPlayerDamageListener;
+import me.caseload.knockbacksync.listener.bukkit.BukkitPlayerJoinQuitListener;
 import me.caseload.knockbacksync.listener.bukkit.BukkitPlayerKnockbackListener;
 import me.caseload.knockbacksync.permission.PermissionChecker;
 import me.caseload.knockbacksync.permission.PluginPermissionChecker;
@@ -16,7 +18,6 @@ import me.caseload.knockbacksync.stats.custom.BukkitStatsManager;
 import me.caseload.knockbacksync.stats.custom.PluginJarHashProvider;
 import me.caseload.knockbacksync.world.BukkitServer;
 import net.minecraft.commands.Commands;
-import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -29,13 +30,13 @@ public final class KnockbackSyncPlugin extends JavaPlugin {
 
     private final KnockbackSyncBase core = new KnockbackSyncBase() {
 
+        private final PluginPermissionChecker permissionChecker = new PluginPermissionChecker();
+
         {
             statsManager = new BukkitStatsManager();
             platformServer = new BukkitServer();
             pluginJarHashProvider = new PluginJarHashProvider(this.getClass().getProtectionDomain().getCodeSource().getLocation());
         }
-
-        private final PluginPermissionChecker permissionChecker = new PluginPermissionChecker();
 
         @Override
         public Logger getLogger() {

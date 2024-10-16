@@ -5,8 +5,8 @@ import com.github.retrooper.packetevents.event.PacketReceiveEvent;
 import com.github.retrooper.packetevents.protocol.packettype.PacketType;
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPong;
 import me.caseload.knockbacksync.KnockbackSyncBase;
-import me.caseload.knockbacksync.player.PlayerData;
 import me.caseload.knockbacksync.manager.PlayerDataManager;
+import me.caseload.knockbacksync.player.PlayerData;
 
 public class PingReceiveListener extends PacketListenerAbstract {
 

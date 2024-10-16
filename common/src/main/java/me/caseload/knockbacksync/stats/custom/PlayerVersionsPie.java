@@ -1,9 +1,9 @@
 package me.caseload.knockbacksync.stats.custom;
 
 import me.caseload.knockbacksync.KnockbackSyncBase;
-import me.caseload.knockbacksync.player.PlayerData;
 import me.caseload.knockbacksync.manager.PlayerDataManager;
 import me.caseload.knockbacksync.player.PlatformPlayer;
+import me.caseload.knockbacksync.player.PlayerData;
 import me.caseload.knockbacksync.stats.AdvancedPie;
 
 import java.util.HashMap;

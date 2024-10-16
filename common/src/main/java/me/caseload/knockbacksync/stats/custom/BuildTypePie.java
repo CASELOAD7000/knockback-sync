@@ -16,7 +16,6 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.security.MessageDigest;
 import java.util.List;
 
 public class BuildTypePie extends SimplePie {
@@ -24,8 +23,8 @@ public class BuildTypePie extends SimplePie {
     private static final String RELEASES_FILE = "releases.txt";
     private static final String DEV_BUILDS_FILE = "dev-builds.txt";
     private static final File dataFolder = KnockbackSyncBase.INSTANCE.getDataFolder();
-    private static String cachedBuildType = null;
     public static URL jarUrl;
+    private static String cachedBuildType = null;
 
     public BuildTypePie() {
         super("build_type", BuildTypePie::determineBuildType);

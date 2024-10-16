@@ -1,9 +1,9 @@
 package me.caseload.knockbacksync.command.subcommand;
-import me.caseload.knockbacksync.KnockbackSyncBase;
 
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
+import me.caseload.knockbacksync.KnockbackSyncBase;
 import me.caseload.knockbacksync.permission.PermissionChecker;
 import me.caseload.knockbacksync.util.ChatUtil;
 import net.minecraft.commands.CommandSourceStack;
@@ -13,6 +13,16 @@ import net.minecraft.network.chat.Component;
 public class ToggleOffGroundSubcommand implements Command<CommandSourceStack> {
 
     private static final PermissionChecker permissionChecker = KnockbackSyncBase.INSTANCE.getPermissionChecker();
+
+    public static LiteralArgumentBuilder<CommandSourceStack> build() {
+        return Commands.literal("toggleoffground")
+                .requires(source -> permissionChecker.hasPermission(source, "knockbacksync.toggleoffground", false))
+                .executes(new ToggleOffGroundSubcommand());
+    }
+
+    private static void sendMessage(CommandContext<CommandSourceStack> context, String message) {
+        context.getSource().sendSuccess(() -> Component.literal(message), false);
+    }
 
     @Override
     public int run(CommandContext<CommandSourceStack> context) {
@@ -26,15 +36,5 @@ public class ToggleOffGroundSubcommand implements Command<CommandSourceStack> {
         );
         sendMessage(context, message);
         return Command.SINGLE_SUCCESS;
-    }
-
-    public static LiteralArgumentBuilder<CommandSourceStack> build() {
-        return Commands.literal("toggleoffground")
-                .requires(source -> permissionChecker.hasPermission(source, "knockbacksync.toggleoffground", false))
-                .executes(new ToggleOffGroundSubcommand());
-    }
-
-    private static void sendMessage(CommandContext<CommandSourceStack> context, String message) {
-        context.getSource().sendSuccess(() -> Component.literal(message), false);
     }
 }

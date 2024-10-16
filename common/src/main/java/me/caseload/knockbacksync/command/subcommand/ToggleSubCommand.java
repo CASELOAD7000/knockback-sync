@@ -6,9 +6,9 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import me.caseload.knockbacksync.KnockbackSyncBase;
 import me.caseload.knockbacksync.manager.ConfigManager;
-import me.caseload.knockbacksync.player.PlayerData;
 import me.caseload.knockbacksync.manager.PlayerDataManager;
 import me.caseload.knockbacksync.permission.PermissionChecker;
+import me.caseload.knockbacksync.player.PlayerData;
 import me.caseload.knockbacksync.util.ChatUtil;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -23,21 +23,6 @@ public class ToggleSubCommand implements Command<CommandSourceStack> {
 
     private static final PermissionChecker permissionChecker = KnockbackSyncBase.INSTANCE.getPermissionChecker();
 
-    @Override
-    public int run(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
-        ConfigManager configManager = KnockbackSyncBase.INSTANCE.getConfigManager();
-        ServerPlayer sender = context.getSource().getPlayerOrException();
-
-        // Global toggle
-        if (permissionChecker.hasPermission(context.getSource(), "knockbacksync.toggle.global", false)) {
-            toggleGlobalKnockback(configManager, context);
-        } else {
-            sendMessage(context, ChatUtil.translateAlternateColorCodes('&', "&cYou don't have permission to toggle the global setting."));
-        }
-
-        return Command.SINGLE_SUCCESS;
-    }
-
     public static LiteralArgumentBuilder<CommandSourceStack> build() {
         return Commands.literal("toggle")
                 .requires(source -> permissionChecker.hasPermission(source, "knockbacksync.toggle.self", true)) // Requires at least self permission
@@ -51,7 +36,7 @@ public class ToggleSubCommand implements Command<CommandSourceStack> {
                             ServerPlayer sender = context.getSource().getPlayerOrException();
 
                             if (!configManager.isToggled()) {
-                                sendMessage(context, ChatUtil.translateAlternateColorCodes('&',"&cKnockbacksync is currently disabled on this server. Contact your server administrator for more information."));
+                                sendMessage(context, ChatUtil.translateAlternateColorCodes('&', "&cKnockbacksync is currently disabled on this server. Contact your server administrator for more information."));
                             } else {
                                 togglePlayerKnockback(target, configManager, context);
                             }
@@ -111,5 +96,20 @@ public class ToggleSubCommand implements Command<CommandSourceStack> {
 
     private static void sendMessage(CommandContext<CommandSourceStack> context, String message) {
         context.getSource().sendSuccess(() -> Component.literal(message), false);
+    }
+
+    @Override
+    public int run(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        ConfigManager configManager = KnockbackSyncBase.INSTANCE.getConfigManager();
+        ServerPlayer sender = context.getSource().getPlayerOrException();
+
+        // Global toggle
+        if (permissionChecker.hasPermission(context.getSource(), "knockbacksync.toggle.global", false)) {
+            toggleGlobalKnockback(configManager, context);
+        } else {
+            sendMessage(context, ChatUtil.translateAlternateColorCodes('&', "&cYou don't have permission to toggle the global setting."));
+        }
+
+        return Command.SINGLE_SUCCESS;
     }
 }

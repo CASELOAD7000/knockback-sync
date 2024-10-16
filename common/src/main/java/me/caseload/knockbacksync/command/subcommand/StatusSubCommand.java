@@ -22,26 +22,6 @@ public class StatusSubCommand implements Command<CommandSourceStack> {
 
     private static final PermissionChecker permissionChecker = KnockbackSyncBase.INSTANCE.getPermissionChecker();
 
-    @Override
-    public int run(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
-        ConfigManager configManager = KnockbackSyncBase.INSTANCE.getConfigManager();
-
-        // Show global status
-        boolean globalStatus = configManager.isToggled();
-        sendMessage(context, ChatUtil.translateAlternateColorCodes('&',
-                configManager.getConfigWrapper().getString("global_status_message", "&eGlobal KnockbackSync status: ")) +
-                (globalStatus
-                        ? ChatUtil.translateAlternateColorCodes('&',"&aEnabled")
-                        : ChatUtil.translateAlternateColorCodes('&', "&cDisabled")));
-
-        // Show player status for the sender (no target specified)
-        if (context.getSource().getEntity() instanceof ServerPlayer sender) {
-            showPlayerStatus(context, sender, sender, configManager);
-        }
-
-        return Command.SINGLE_SUCCESS;
-    }
-
     public static LiteralArgumentBuilder<CommandSourceStack> build() {
         return Commands.literal("status")
                 .requires(source -> permissionChecker.hasPermission(source, "knockbacksync.status.self", true)) // Requires at least self permission
@@ -74,12 +54,32 @@ public class StatusSubCommand implements Command<CommandSourceStack> {
                     configManager.getConfigWrapper().getString("player_status_message", "&e%player%'s KnockbackSync status: ")
                             .replace("%player%", target.getDisplayName().getString())) +
                     (playerStatus
-                            ? ChatUtil.translateAlternateColorCodes('&',  "&aEnabled")
+                            ? ChatUtil.translateAlternateColorCodes('&', "&aEnabled")
                             : ChatUtil.translateAlternateColorCodes('&', "&cDisabled")));
         }
     }
 
     private static void sendMessage(CommandContext<CommandSourceStack> context, String message) {
         context.getSource().sendSuccess(() -> Component.literal(message), false);
+    }
+
+    @Override
+    public int run(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        ConfigManager configManager = KnockbackSyncBase.INSTANCE.getConfigManager();
+
+        // Show global status
+        boolean globalStatus = configManager.isToggled();
+        sendMessage(context, ChatUtil.translateAlternateColorCodes('&',
+                configManager.getConfigWrapper().getString("global_status_message", "&eGlobal KnockbackSync status: ")) +
+                (globalStatus
+                        ? ChatUtil.translateAlternateColorCodes('&', "&aEnabled")
+                        : ChatUtil.translateAlternateColorCodes('&', "&cDisabled")));
+
+        // Show player status for the sender (no target specified)
+        if (context.getSource().getEntity() instanceof ServerPlayer sender) {
+            showPlayerStatus(context, sender, sender, configManager);
+        }
+
+        return Command.SINGLE_SUCCESS;
     }
 }

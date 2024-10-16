@@ -22,9 +22,9 @@ import me.caseload.knockbacksync.KnockbackSyncFabric;
 import me.caseload.knockbacksync.stats.CustomChart;
 import me.caseload.knockbacksync.stats.JsonObjectBuilder;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.server.MinecraftServer;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.util.UUID;
 import java.util.logging.Level;
 
@@ -32,19 +32,11 @@ public class MetricsFabric implements Metrics {
 
     private final MetricsBase metricsBase;
 
-    private static class Config {
-        public boolean enabled = true;
-        public String serverUuid;
-        public boolean logFailedRequests = false;
-        public boolean logSentData = false;
-        public boolean logResponseStatusText = false;
-    }
-
     /**
      * Creates a new Metrics instance.
      *
      * @param serviceId The id of the service. It can be found at <a
-     *     href="https://bstats.org/what-is-my-plugin-id">What is my plugin id?</a>
+     *                  href="https://bstats.org/what-is-my-plugin-id">What is my plugin id?</a>
      */
     public MetricsFabric(int serviceId) {
         // Get the config file
@@ -109,7 +101,9 @@ public class MetricsFabric implements Metrics {
                         false);
     }
 
-    /** Shuts down the underlying scheduler service. */
+    /**
+     * Shuts down the underlying scheduler service.
+     */
     public void shutdown() {
         metricsBase.shutdown();
     }
@@ -145,5 +139,13 @@ public class MetricsFabric implements Metrics {
         } else {
             return 0;
         }
+    }
+
+    private static class Config {
+        public boolean enabled = true;
+        public String serverUuid;
+        public boolean logFailedRequests = false;
+        public boolean logSentData = false;
+        public boolean logResponseStatusText = false;
     }
 }

@@ -15,13 +15,6 @@ package me.caseload.knockbacksync.stats.custom;
  * Violations will result in a ban of your plugin and account from bStats.
  */
 
-import java.io.File;
-import java.io.IOException;
-import java.lang.reflect.Method;
-import java.util.Collection;
-import java.util.UUID;
-import java.util.logging.Level;
-
 import me.caseload.knockbacksync.KnockbackSyncBase;
 import me.caseload.knockbacksync.KnockbackSyncPlugin;
 import me.caseload.knockbacksync.stats.CustomChart;
@@ -30,6 +23,13 @@ import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+
+import java.io.File;
+import java.io.IOException;
+import java.lang.reflect.Method;
+import java.util.Collection;
+import java.util.UUID;
+import java.util.logging.Level;
 
 public class MetricsBukkit implements Metrics {
 

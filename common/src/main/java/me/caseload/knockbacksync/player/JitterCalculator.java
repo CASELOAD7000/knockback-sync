@@ -3,7 +3,6 @@ package me.caseload.knockbacksync.player;
 import lombok.Getter;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class JitterCalculator {
     private final int SAMPLE_SIZE = 15;

@@ -1,6 +1,5 @@
 package me.caseload.knockbacksync.scheduler;
 
-import me.caseload.knockbacksync.KnockbackSyncBase;
 import me.caseload.knockbacksync.KnockbackSyncFabric;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.server.MinecraftServer;
@@ -8,7 +7,7 @@ import net.minecraft.server.MinecraftServer;
 import java.util.*;
 
 public class FabricSchedulerAdapter implements SchedulerAdapter {
-//    private final MinecraftServer server;
+    //    private final MinecraftServer server;
     private final Map<ScheduledTask, Runnable> taskMap = new HashMap<>();
     private final Map<Thread, Runnable> asyncTasks = new HashMap<>();
 
@@ -131,9 +130,9 @@ public class FabricSchedulerAdapter implements SchedulerAdapter {
 
     private static class ScheduledTask {
         final Runnable task;
-        long nextRunTick;
         final long period;
         final boolean isPeriodic;
+        long nextRunTick;
 
         ScheduledTask(Runnable task, long nextRunTick, long period, boolean isPeriodic) {
             this.task = task;
