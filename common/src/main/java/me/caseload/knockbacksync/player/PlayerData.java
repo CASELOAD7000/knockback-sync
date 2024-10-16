@@ -107,7 +107,6 @@ public class PlayerData {
         }
 
         this.user = tempUser;
-        PING_OFFSET = KnockbackSyncBase.INSTANCE.getConfigManager().getConfigWrapper().getInt("ping_offset", 25);
     }
 
     /**
