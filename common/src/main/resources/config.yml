@@ -36,3 +36,6 @@ player_status_message: "&e%player%'s KnockbackSync status: "
 player_disabled_global_message: "&cDisabled (Global toggle is off)"
 enable_experimental_offground_message: "&aSuccessfully enabled offground experiment."
 disable_experimental_offground_message: "&cSuccessfully disabled offground experiment."
+
+# Read FAQ!
+ping_offset: 25

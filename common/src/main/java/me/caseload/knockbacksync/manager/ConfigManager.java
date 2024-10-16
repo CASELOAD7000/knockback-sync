@@ -117,5 +117,6 @@ public class ConfigManager {
         playerDisableMessage = config.getString("player_disable_message", "&cSuccessfully disabled KnockbackSync for %player%.");
         playerIneligibleMessage = config.getString("player_ineligible_message", "&c%player% is ineligible for KnockbackSync. If you believe this is an error, please open an issue on the github page.");
         reloadMessage = config.getString("reload_message", "&aSuccessfully reloaded KnockbackSync.");
+        PlayerData.PING_OFFSET = config.getInt("ping_offset", 25);
     }
 }
