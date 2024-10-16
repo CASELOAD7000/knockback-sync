@@ -1,4 +1,3 @@
-// FoliaSchedulerAdapter.java
 package me.caseload.knockbacksync.scheduler;
 
 import io.papermc.paper.threadedregions.scheduler.GlobalRegionScheduler;
@@ -25,7 +24,6 @@ public class FoliaSchedulerAdapter implements SchedulerAdapter {
 
     @Override
     public AbstractTaskHandle runTask(Runnable task) {
-//        scheduler.execute(plugin, task);
         return new FoliaTaskHandle(scheduler.run(plugin, scheduledTask -> task.run()));
     }
 
