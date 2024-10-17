@@ -95,7 +95,7 @@ public class ToggleSubCommand implements Command<CommandSourceStack> {
     }
 
     private static void sendMessage(CommandContext<CommandSourceStack> context, String message) {
-        context.getSource().sendSuccess(() -> Component.literal(message), false);
+        context.getSource().sendSuccess(Component.literal(message), false);
     }
 
     @Override

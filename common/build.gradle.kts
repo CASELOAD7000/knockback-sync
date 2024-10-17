@@ -1,8 +1,14 @@
 plugins {
-    id("net.neoforged.moddev") version "1.0.11"
+    id("fabric-loom")
 }
 
 dependencies {
+    minecraft("com.mojang:minecraft:1.19.4")
+    mappings(loom.layered {
+        officialMojangMappings()
+        parchment("org.parchmentmc.data:parchment-1.19.4:2023.06.26")
+    })
+
     // True compileOnly deps
     compileOnly("org.geysermc.floodgate:api:2.0-SNAPSHOT")
     compileOnly("org.projectlombok:lombok:1.18.34")
@@ -23,9 +29,9 @@ repositories {
 }
 
 // Using neoforge in vanilla mode so common code compiles
-neoForge {
+//neoForge {
     // Look for versions on https://projects.neoforged.net/neoforged/neoform
-    neoFormVersion.set("1.21-20240613.152323")
+//    neoFormVersion.set("1.21-20240613.152323")
 
 //    runs {
 //        create("client") {
@@ -38,4 +44,4 @@ neoForge {
 //            data()
 //        }
 //    }
-}
+//}

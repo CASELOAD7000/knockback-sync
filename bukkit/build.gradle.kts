@@ -1,7 +1,10 @@
 plugins {
     id("com.gradleup.shadow")
-    id("net.neoforged.moddev") version "1.0.11"
+    id("io.papermc.paperweight.userdev") version "1.7.3"
+//    id("net.neoforged.moddev") version "1.0.11"
 }
+
+paperweight.reobfArtifactConfiguration = io.papermc.paperweight.userdev.ReobfArtifactConfiguration.REOBF_PRODUCTION
 
 base {
     archivesName.set("${rootProject.property("archives_base_name")}-bukkit")
@@ -15,7 +18,9 @@ val shadeThisThing: Configuration by configurations.creating {
 dependencies {
     shadeThisThing(implementation(project(":common"))!!)
 
-    compileOnly("org.spigotmc:spigot-api:1.16.5-R0.1-SNAPSHOT")
+    paperweight.paperDevBundle("1.19.4-R0.1-SNAPSHOT")
+//    compileOnly("com.mojang:brigadier:1.0.18")
+//    compileOnly("org.spigotmc:spigot-api:1.16.5-R0.1-SNAPSHOT")
     compileOnly("org.geysermc.floodgate:api:2.0-SNAPSHOT")
     compileOnly("dev.folia:folia-api:1.20.4-R0.1-SNAPSHOT")
 
@@ -42,7 +47,8 @@ tasks.shadowJar {
 }
 
 tasks.build {
-    dependsOn(tasks.shadowJar)
+//    dependsOn(tasks.shadowJar)
+    dependsOn(tasks.reobfJar)
 }
 
 tasks.processResources {
@@ -56,7 +62,7 @@ tasks.processResources {
     }
 }
 
-neoForge {
+//neoForge {
     // Look for versions on https://projects.neoforged.net/neoforged/neoform
-    neoFormVersion.set("1.21-20240613.152323")
-}
+//    neoFormVersion.set("1.21-20240613.152323")
+//}
