@@ -63,10 +63,12 @@ dependencies {
     compileOnly("org.projectlombok:lombok:1.18.34")
     annotationProcessor("org.projectlombok:lombok:1.18.34")
 
-    shadeThisThing(implementation("org.kohsuke:github-api:1.326") {
-        exclude(group = "commons-io", module = "commons-io")
-        exclude(group = "org.apache.commons", module = "commons-lang3")
-    })
+    shadeThisThing(implementation("org.kohsuke:github-api:1.326")!!)
+
+//    shadeThisThing(implementation("org.kohsuke:github-api:1.326") {
+//        exclude(group = "commons-io", module = "commons-io")
+//        exclude(group = "org.apache.commons", module = "commons-lang3")
+//    })
 
 
     shadeThisThing(implementation("com.fasterxml.jackson.core:jackson-databind:2.17.2")!!)
@@ -78,15 +80,12 @@ dependencies {
 
 tasks.withType<ShadowJar> {
     // Exclude Java 21 specific classes
-    exclude("META-INF/**")
+//    exclude("META-INF/**")
 
 //    archiveClassifier.set("-all")
     configurations = listOf(shadeThisThing)
     isEnableRelocation = true
     relocationPrefix = "${project.property("maven_group")}.${project.property("archives_base_name")}.shaded"
-
-    // Exclude Java 21 specific classes
-    exclude("META-INF/**")
 }
 
 //tasks.named("reobfJar") {
