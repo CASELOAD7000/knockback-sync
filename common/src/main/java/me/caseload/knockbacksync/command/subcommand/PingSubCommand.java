@@ -4,6 +4,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import me.caseload.knockbacksync.KnockbackSyncBase;
 import me.caseload.knockbacksync.manager.PlayerDataManager;
 import me.caseload.knockbacksync.player.PlayerData;
+import me.caseload.knockbacksync.util.ChatUtil;
 import me.caseload.knockbacksync.util.CommandUtil;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -36,9 +37,9 @@ public class PingSubCommand {
     public static String getPingMessage(ServerPlayer player) {
         PlayerData playerData = PlayerDataManager.getPlayerData(player.getUUID());
         if (playerData.getPing() == null) {
-            return "Pong not received. Your estimated ping is " + playerData.getPlatformPlayer().getPing() + "ms.";
+            return "Pong not received. Your estimated ping is " + ChatUtil.translateAlternateColorCodes('&', "&b" + playerData.getPlatformPlayer().getPing() + "&rms.");
         } else {
-            return "Your last ping packet took " + String.format("%.3f", playerData.getPing()) + "ms. Jitter: " + String.format("%.3f", playerData.getJitter()) + "ms.";
+            return "Your last ping packet took &b" + ChatUtil.translateAlternateColorCodes('&', String.format("%.3f", playerData.getPing()) + "&rms. Jitter: &b" + String.format("%.3f", playerData.getJitter()) + "&rms.");
         }
     }
 }
