@@ -20,7 +20,7 @@ Official Discord: https://discord.gg/nnpqpAtyVW
 
 ### How do I change the ping offset?
 Open up `config.yml` and edit the line that says `ping_offset: 25`. Replace 25 with your desired ping offset.
-
+;
 Then just type
 ```
 /knockbacksync reload
@@ -28,16 +28,16 @@ Then just type
 or restart your server.
 
 ## What servers are using this plugin?
-| IP               | Location                                 | Region | Ping Offset | spike_threshold |
-|------------------|------------------------------------------|--------|-------------|-----------------|
-| `pvparcade.club` | Ashburn, Virginia, United States         | NA     | 20          | 15              |
-| `stray.gg`       | San Francisco, California, United States | NA     | 25          | 20              |
-| `eu.stray.gg`    | Limburg an der Lahn, Hesse, Germany      | EU     | 25          | 20              |
-| `valed.gg`       | Frankfurt, Hesse, Germany                | EU     | 25          | 20              |
-| `eu.catpvp.xyz`  |                                          | EU     | 25          | 20              |
-| `as.catpvp.xyz`  |                                          | AS     | 25          | 20              |
-| `na.catpvp.xyz`  |                                          | NA     | 25          | 20              |
-| `hyperium.pl`    | Wrocław, Dolnośląskie, Poland            | EU     | 25          | 20              |
+| IP               | Location                          | Region | Ping Offset | spike_threshold |
+|------------------|-----------------------------------|--------|-------------|-----------------|
+| `pvparcade.club` | Ashburn, Virginia, United States  | NA     | 20          | 15              |
+| `stray.gg`       | Ashburn, Virginia, United States  | NA     | 25          | 20              |
+| `eu.stray.gg`    | Frankfurt, Hesse, Germany         | EU     | 25          | 20              |
+| `valed.gg`       | Frankfurt, Hesse, Germany         | EU     | 25          | 20              |
+| `eu.catpvp.xyz`  | Frankfurt, Hesse, Germany         | EU     | 25          | 20              |
+| `as.catpvp.xyz`  | Singapore                         | AS     | 25          | 20              |
+| `na.catpvp.xyz`  | New York, New York, United States | NA     | 25          | 20              |
+| `hyperium.pl`    | Wrocław, Dolnośląskie, Poland     | EU     | 25          | 20              |
 
 ## Commands
 ---
