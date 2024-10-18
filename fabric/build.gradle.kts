@@ -80,7 +80,7 @@ dependencies {
 tasks.shadowJar {
     archiveClassifier.set("dev")
     configurations = listOf(shadeThisThing)
-    isEnableRelocation = false
+    isEnableRelocation = true
     relocationPrefix = "${project.property("maven_group")}.${project.property("archives_base_name")}.shaded"
     finalizedBy(tasks.remapJar)
 }

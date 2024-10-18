@@ -77,7 +77,7 @@ tasks.withType<ShadowJar> {
 
 //    archiveClassifier.set("-all")
     configurations = listOf(shadeThisThing)
-    isEnableRelocation = false
+    isEnableRelocation = true
     relocationPrefix = "${project.property("maven_group")}.${project.property("archives_base_name")}.shaded"
 
     // Exclude Java 21 specific classes
