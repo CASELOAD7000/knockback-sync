@@ -1,3 +1,5 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+
 plugins {
     id("com.gradleup.shadow")
     id("io.papermc.paperweight.userdev") version "1.7.3"
@@ -15,8 +17,36 @@ val shadeThisThing: Configuration by configurations.creating {
     isTransitive = true
 }
 
+sourceSets {
+    main {
+        java {
+            srcDir(project(":common").sourceSets.main.get().java.srcDirs)
+        }
+        resources {
+            srcDir(project(":common").sourceSets.main.get().resources.srcDirs)
+        }
+    }
+}
+
+// TODO migrate to only including sourceset for compile, test and javadoc tasks
+//tasks.withType<JavaCompile>().configureEach {
+//    source(project(":common").sourceSets.main.get().allSource)
+//    options.annotationProcessorPath = configurations["annotationProcessor"] + configurations["compileClasspath"]
+//}
+
+//tasks.withType<Javadoc>().configureEach {
+//    source(project(":common").sourceSets.main.get().allJava)
+//}
+
+// Dirty hack exists so the build process will finish running
+//tasks.withType<Test>().configureEach {
+//    classpath += project(":common").sourceSets["main"].output + configurations["compileClasspath"] + configurations["runtimeClasspath"]
+//}
+
+
 dependencies {
-    shadeThisThing(implementation(project(":common"))!!)
+//    shadeThisThing(implementation(project(":common"))!!)
+//    implementation(project(":common"))
 
     paperweight.paperDevBundle("1.19.4-R0.1-SNAPSHOT")
 //    compileOnly("com.mojang:brigadier:1.0.18")
@@ -35,21 +65,32 @@ dependencies {
 
     shadeThisThing(implementation("com.fasterxml.jackson.core:jackson-databind:2.17.2")!!)
     shadeThisThing(implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.17.2")!!)
+
     shadeThisThing(implementation("com.github.retrooper:packetevents-spigot:2.5.0")!!)
     shadeThisThing(implementation("dev.jorel:commandapi-bukkit-shade:9.5.3")!!)
 }
 
-tasks.shadowJar {
-//    archiveClassifier.set("dev")
+tasks.withType<ShadowJar> {
+    // Exclude Java 21 specific classes
+    exclude("META-INF/**")
+
+//    archiveClassifier.set("-all")
     configurations = listOf(shadeThisThing)
     isEnableRelocation = false
     relocationPrefix = "${project.property("maven_group")}.${project.property("archives_base_name")}.shaded"
+
+    // Exclude Java 21 specific classes
+    exclude("META-INF/**")
+}
+
+tasks.named("reobfJar") {
+    dependsOn(tasks.named("shadowJar"))
 }
 
 tasks.build {
-//    dependsOn(tasks.shadowJar)
-    dependsOn(tasks.reobfJar)
+    dependsOn(tasks.named("reobfJar"))
 }
+
 
 tasks.processResources {
     inputs.property("version", project.version)
@@ -66,3 +107,9 @@ tasks.processResources {
     // Look for versions on https://projects.neoforged.net/neoforged/neoform
 //    neoFormVersion.set("1.21-20240613.152323")
 //}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+    toolchain.languageVersion.set(JavaLanguageVersion.of(17))
+}

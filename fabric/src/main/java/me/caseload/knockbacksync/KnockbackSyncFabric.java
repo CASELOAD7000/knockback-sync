@@ -2,6 +2,7 @@ package me.caseload.knockbacksync;
 
 import com.github.retrooper.packetevents.PacketEvents;
 import io.github.retrooper.packetevents.factory.fabric.FabricPacketEventsBuilder;
+import me.caseload.knockbacksync.command.FabricCommandOperations;
 import me.caseload.knockbacksync.command.KnockbackSyncCommand;
 import me.caseload.knockbacksync.listener.fabric.FabricPlayerDamageListener;
 import me.caseload.knockbacksync.listener.fabric.FabricPlayerJoinQuitListener;
@@ -12,6 +13,7 @@ import me.caseload.knockbacksync.permission.PermissionChecker;
 import me.caseload.knockbacksync.scheduler.FabricSchedulerAdapter;
 import me.caseload.knockbacksync.stats.custom.FabricStatsManager;
 import me.caseload.knockbacksync.stats.custom.PluginJarHashProvider;
+import me.caseload.knockbacksync.util.CommandUtil;
 import me.caseload.knockbacksync.world.FabricServer;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
@@ -159,6 +161,7 @@ public class KnockbackSyncFabric implements PreLaunchEntrypoint, ModInitializer 
 
     @Override
     public void onInitialize() {
+        CommandUtil.setOperations(new FabricCommandOperations());
         core.enable();
         core.initializeScheduler();
         core.configManager.loadConfig(false);

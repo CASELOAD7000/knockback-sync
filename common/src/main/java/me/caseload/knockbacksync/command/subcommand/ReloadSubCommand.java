@@ -5,9 +5,12 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import me.caseload.knockbacksync.KnockbackSyncBase;
 import me.caseload.knockbacksync.manager.ConfigManager;
 import me.caseload.knockbacksync.util.ChatUtil;
+import me.caseload.knockbacksync.util.CommandUtil;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
+
+import static me.caseload.knockbacksync.util.CommandUtil.sendSuccessMessage;
 
 public class ReloadSubCommand {
     public static LiteralArgumentBuilder<CommandSourceStack> build() {
@@ -21,10 +24,7 @@ public class ReloadSubCommand {
                     String reloadMessage = ChatUtil.translateAlternateColorCodes('&', rawReloadMessage);
 
                     // Send the message to the command source (the player or console that executed the command)
-                    context.getSource().sendSuccess(() ->
-                                    Component.literal(reloadMessage),
-                            false
-                    );
+                    CommandUtil.sendSuccessMessage(context, reloadMessage);
 
                     return Command.SINGLE_SUCCESS;
                 });

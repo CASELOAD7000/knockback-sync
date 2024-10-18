@@ -1,5 +1,6 @@
 package me.caseload.knockbacksync.player;
 
+import com.fasterxml.jackson.databind.deser.std.CollectionDeserializer;
 import com.github.retrooper.packetevents.PacketEvents;
 import com.github.retrooper.packetevents.manager.player.PlayerManager;
 import com.github.retrooper.packetevents.manager.server.ServerVersion;
@@ -20,6 +21,7 @@ import me.caseload.knockbacksync.KnockbackSyncBase;
 import me.caseload.knockbacksync.manager.CombatManager;
 import me.caseload.knockbacksync.scheduler.AbstractTaskHandle;
 import me.caseload.knockbacksync.util.MathUtil;
+import me.caseload.knockbacksync.util.data.Pair;
 import me.caseload.knockbacksync.world.PlatformWorld;
 import me.caseload.knockbacksync.world.raytrace.FluidHandling;
 import me.caseload.knockbacksync.world.raytrace.RayTraceResult;
@@ -27,10 +29,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Field;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Getter
@@ -38,8 +37,6 @@ public class PlayerData {
 
     // Please read the GitHub FAQ before adjusting.
     public static long PING_OFFSET;
-    private static final int PLUGIN_IDENTIFIER = 0x80000000; // Bit 31 set to 1 (negative)
-    private static final int ID_MASK = 0x7FFF; // 15-bit mask
     public static float TICK_RATE = 20.0F;
     private static Field playerField;
 
@@ -60,17 +57,16 @@ public class PlayerData {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            // Handle the exception appropriately
         }
         playerField.setAccessible(true); // May not be needed since it's already public
     }
 
     public final User user;
-    private final AtomicInteger pingIdCounter = new AtomicInteger(0);
     private final PlatformPlayer platformPlayer;
     private final UUID uuid;
     @NotNull
     private final Random random = new Random();
+    public Queue<Pair<Long, Long>> keepaliveMap = new LinkedList<>();
     @Getter
     private JitterCalculator jitterCalculator = new JitterCalculator();
     @Getter
@@ -80,7 +76,7 @@ public class PlayerData {
     private AbstractTaskHandle combatTask;
     @Nullable
     @Setter
-    private Long ping, previousPing;
+    private Double ping, previousPing;
     @Nullable
     @Setter
     private Double verticalVelocity;
@@ -91,6 +87,8 @@ public class PlayerData {
     private double gravityAttribute = 0.08;
     @Setter
     private double knockbackResistanceAttribute = 0.0;
+
+    public long lastKeepAliveID = 0;
 
     public PlayerData(PlatformPlayer platformPlayer) {
         this.uuid = platformPlayer.getUUID();
@@ -120,41 +118,33 @@ public class PlayerData {
      *
      * @return The compensated ping, with a minimum of 1.
      */
-    public long getEstimatedPing() {
-        long currentPing = (ping != null) ? ping : platformPlayer.getPing();
-        long lastPing = (previousPing != null) ? previousPing : platformPlayer.getPing();
-        long ping = (currentPing - lastPing > KnockbackSyncBase.INSTANCE.getConfigManager().getSpikeThreshold()) ? lastPing : currentPing;
+    public double getEstimatedPing() {
+        double currentPing = (ping != null) ? ping : platformPlayer.getPing();
+        double lastPing = (previousPing != null) ? previousPing : platformPlayer.getPing();
+        double ping = (currentPing - lastPing > KnockbackSyncBase.INSTANCE.getConfigManager().getSpikeThreshold()) ? lastPing : currentPing;
 
         return Math.max(1, ping - PING_OFFSET);
     }
 
-    //    PLUGIN_IDENTIFIER is set to 0x80000000, which is the minimum negative integer in Java.
-    //    We use the lower 15 bits for the counter, giving us 32,767 unique negative IDs before wrapping.
-    //    The isPingIdOurs method checks if the ID is negative and if the upper 17 bits match our identifier.
-    //    This should avoid conflicts with GrimAC which uses negative short range and other plugins which are mostly positive ranged
-    public int generatePingId() {
-        return PLUGIN_IDENTIFIER | (pingIdCounter.getAndIncrement() & ID_MASK);
-    }
-
     public boolean isKeepAliveIDOurs(long id) {
-        return id < 0 && (id & 0xFFFF8000) == PLUGIN_IDENTIFIER;
+        return id == lastKeepAliveID;
     }
 
+    // Doesn't actually send a ping, sends a keepalive, more accurate and processed faster
     public void sendPing(boolean async) {
-        if (user == null) {
-            return;
-        }
-
-        // don't send transactions outside PLAY phase
-        // Sending in non-play corrupts the pipeline, don't waste bandwidth
-        if (user.getEncoderState() != ConnectionState.PLAY) return;
+        if (user == null || user.getEncoderState() != ConnectionState.PLAY) return;
 
         if (async) {
             ChannelHelper.runInEventLoop(user.getChannel(), () -> {
-                user.writePacket(new WrapperPlayServerKeepAlive(System.currentTimeMillis()));
+                // We call sendPacket instead of writePacket because it flushes immediately
+                // Making our time measurement more accurate since we don't call, System.nanoTime(), wait until flush
+                // And then actually send packet
+                user.sendPacket(new WrapperPlayServerKeepAlive(lastKeepAliveID = System.nanoTime()));
+                System.out.println("Sent keepalive async with ID: " + lastKeepAliveID);
             });
         } else {
-            user.writePacket(new WrapperPlayServerKeepAlive(System.currentTimeMillis()));
+            user.sendPacket(new WrapperPlayServerKeepAlive(lastKeepAliveID = System.nanoTime()));
+            System.out.println("Sending keepalive with ID: " + lastKeepAliveID);
         }
     }
 
@@ -316,5 +306,9 @@ public class PlayerData {
             return ClientVersion.getById(PacketEvents.getAPI().getServerManager().getVersion().getProtocolVersion());
         }
         return ver;
+    }
+
+    public long getKeepAliveSendTime() {
+        return lastKeepAliveID;
     }
 }

@@ -9,6 +9,7 @@ import me.caseload.knockbacksync.manager.ConfigManager;
 import me.caseload.knockbacksync.manager.PlayerDataManager;
 import me.caseload.knockbacksync.permission.PermissionChecker;
 import me.caseload.knockbacksync.util.ChatUtil;
+import me.caseload.knockbacksync.util.CommandUtil;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
@@ -32,8 +33,8 @@ public class StatusSubCommand implements Command<CommandSourceStack> {
                             ConfigManager configManager = KnockbackSyncBase.INSTANCE.getConfigManager();
                             EntitySelector selector = context.getArgument("target", EntitySelector.class);
                             ServerPlayer target = selector.findSinglePlayer(context.getSource());
-                            ServerPlayer sender = context.getSource().getPlayer();
-                            showPlayerStatus(context, sender, target, configManager);
+//                            ServerPlayer sender = context.getSource().getPlayer();
+                            showPlayerStatus(context, null, target, configManager);
                             return Command.SINGLE_SUCCESS;
                         }));
     }
@@ -44,13 +45,13 @@ public class StatusSubCommand implements Command<CommandSourceStack> {
         boolean playerStatus = PlayerDataManager.containsPlayerData(uuid);
 
         if (!globalStatus) {
-            sendMessage(context, ChatUtil.translateAlternateColorCodes('&',
+            CommandUtil.sendSuccessMessage(context, ChatUtil.translateAlternateColorCodes('&',
                     configManager.getConfigWrapper().getString("player_status_message", "&e%player%'s KnockbackSync status: ")
                             .replace("%player%", target.getDisplayName().getString())) +
                     ChatUtil.translateAlternateColorCodes('&',
                             configManager.getConfigWrapper().getString("player_disabled_global_message", "&cDisabled (Global toggle is off)")));
         } else {
-            sendMessage(context, ChatUtil.translateAlternateColorCodes('&',
+            CommandUtil.sendSuccessMessage(context, ChatUtil.translateAlternateColorCodes('&',
                     configManager.getConfigWrapper().getString("player_status_message", "&e%player%'s KnockbackSync status: ")
                             .replace("%player%", target.getDisplayName().getString())) +
                     (playerStatus
@@ -59,17 +60,13 @@ public class StatusSubCommand implements Command<CommandSourceStack> {
         }
     }
 
-    private static void sendMessage(CommandContext<CommandSourceStack> context, String message) {
-        context.getSource().sendSuccess(Component.literal(message), false);
-    }
-
     @Override
     public int run(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         ConfigManager configManager = KnockbackSyncBase.INSTANCE.getConfigManager();
 
         // Show global status
         boolean globalStatus = configManager.isToggled();
-        sendMessage(context, ChatUtil.translateAlternateColorCodes('&',
+        CommandUtil.sendSuccessMessage(context, ChatUtil.translateAlternateColorCodes('&',
                 configManager.getConfigWrapper().getString("global_status_message", "&eGlobal KnockbackSync status: ")) +
                 (globalStatus
                         ? ChatUtil.translateAlternateColorCodes('&', "&aEnabled")

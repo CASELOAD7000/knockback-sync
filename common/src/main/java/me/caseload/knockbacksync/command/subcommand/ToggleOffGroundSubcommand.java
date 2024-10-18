@@ -10,6 +10,8 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 
+import static me.caseload.knockbacksync.util.CommandUtil.sendSuccessMessage;
+
 public class ToggleOffGroundSubcommand implements Command<CommandSourceStack> {
 
     private static final PermissionChecker permissionChecker = KnockbackSyncBase.INSTANCE.getPermissionChecker();
@@ -18,10 +20,6 @@ public class ToggleOffGroundSubcommand implements Command<CommandSourceStack> {
         return Commands.literal("toggleoffground")
                 .requires(source -> permissionChecker.hasPermission(source, "knockbacksync.toggleoffground", false))
                 .executes(new ToggleOffGroundSubcommand());
-    }
-
-    private static void sendMessage(CommandContext<CommandSourceStack> context, String message) {
-        context.getSource().sendSuccess(() -> Component.literal(message), false);
     }
 
     @Override
@@ -34,7 +32,7 @@ public class ToggleOffGroundSubcommand implements Command<CommandSourceStack> {
                         KnockbackSyncBase.INSTANCE.getConfigManager().getConfigWrapper().getString("enable_experimental_offground_message", "&aSuccessfully enabled offground experiment.") :
                         KnockbackSyncBase.INSTANCE.getConfigManager().getConfigWrapper().getString("disable_experimental_offground_message", "&cSuccessfully disabled offground experiment.")
         );
-        sendMessage(context, message);
+        sendSuccessMessage(context, message);
         return Command.SINGLE_SUCCESS;
     }
 }

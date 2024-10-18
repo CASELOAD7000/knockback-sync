@@ -19,6 +19,8 @@ import net.minecraft.server.level.ServerPlayer;
 
 import java.util.UUID;
 
+import static me.caseload.knockbacksync.util.CommandUtil.sendSuccessMessage;
+
 public class ToggleSubCommand implements Command<CommandSourceStack> {
 
     private static final PermissionChecker permissionChecker = KnockbackSyncBase.INSTANCE.getPermissionChecker();
@@ -36,7 +38,7 @@ public class ToggleSubCommand implements Command<CommandSourceStack> {
                             ServerPlayer sender = context.getSource().getPlayerOrException();
 
                             if (!configManager.isToggled()) {
-                                sendMessage(context, ChatUtil.translateAlternateColorCodes('&', "&cKnockbacksync is currently disabled on this server. Contact your server administrator for more information."));
+                                sendSuccessMessage(context, ChatUtil.translateAlternateColorCodes('&', "&cKnockbacksync is currently disabled on this server. Contact your server administrator for more information."));
                             } else {
                                 togglePlayerKnockback(target, configManager, context);
                             }
@@ -55,7 +57,7 @@ public class ToggleSubCommand implements Command<CommandSourceStack> {
         String message = ChatUtil.translateAlternateColorCodes('&',
                 toggledState ? configManager.getEnableMessage() : configManager.getDisableMessage()
         );
-        sendMessage(context, message);
+        sendSuccessMessage(context, message);
     }
 
     private static void togglePlayerKnockback(ServerPlayer target, ConfigManager configManager, CommandContext<CommandSourceStack> context) {
@@ -66,7 +68,7 @@ public class ToggleSubCommand implements Command<CommandSourceStack> {
                     configManager.getPlayerIneligibleMessage()
             ).replace("%player%", target.getDisplayName().getString());
 
-            sendMessage(context, message);
+            sendSuccessMessage(context, message);
             return;
         }
 
@@ -91,11 +93,7 @@ public class ToggleSubCommand implements Command<CommandSourceStack> {
                         getPlayerEnableMessage()
         ).replace("%player%", target.getDisplayName().getString());
 
-        sendMessage(context, message);
-    }
-
-    private static void sendMessage(CommandContext<CommandSourceStack> context, String message) {
-        context.getSource().sendSuccess(Component.literal(message), false);
+        sendSuccessMessage(context, message);
     }
 
     @Override
@@ -107,7 +105,7 @@ public class ToggleSubCommand implements Command<CommandSourceStack> {
         if (permissionChecker.hasPermission(context.getSource(), "knockbacksync.toggle.global", false)) {
             toggleGlobalKnockback(configManager, context);
         } else {
-            sendMessage(context, ChatUtil.translateAlternateColorCodes('&', "&cYou don't have permission to toggle the global setting."));
+            sendSuccessMessage(context, ChatUtil.translateAlternateColorCodes('&', "&cYou don't have permission to toggle the global setting."));
         }
 
         return Command.SINGLE_SUCCESS;

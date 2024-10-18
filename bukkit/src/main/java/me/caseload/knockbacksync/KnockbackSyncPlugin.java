@@ -6,6 +6,8 @@ import dev.jorel.commandapi.Brigadier;
 import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandAPIBukkitConfig;
 import io.github.retrooper.packetevents.factory.spigot.SpigotPacketEventsBuilder;
+import io.netty.util.internal.ReflectionUtil;
+import me.caseload.knockbacksync.command.BukkitCommandOperations;
 import me.caseload.knockbacksync.command.KnockbackSyncCommand;
 import me.caseload.knockbacksync.listener.bukkit.BukkitPlayerDamageListener;
 import me.caseload.knockbacksync.listener.bukkit.BukkitPlayerJoinQuitListener;
@@ -16,6 +18,7 @@ import me.caseload.knockbacksync.scheduler.BukkitSchedulerAdapter;
 import me.caseload.knockbacksync.scheduler.FoliaSchedulerAdapter;
 import me.caseload.knockbacksync.stats.custom.BukkitStatsManager;
 import me.caseload.knockbacksync.stats.custom.PluginJarHashProvider;
+import me.caseload.knockbacksync.util.CommandUtil;
 import me.caseload.knockbacksync.world.BukkitServer;
 import net.minecraft.commands.Commands;
 import org.bukkit.event.Listener;
@@ -123,6 +126,7 @@ public final class KnockbackSyncPlugin extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        CommandUtil.setOperations(new BukkitCommandOperations());
         CommandAPI.onEnable();
         core.enable();
     }

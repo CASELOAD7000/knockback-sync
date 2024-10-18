@@ -1,12 +1,13 @@
 plugins {
     id("fabric-loom")
+//    id("net.neoforged.moddev") version "1.0.11"
 }
 
 dependencies {
-    minecraft("com.mojang:minecraft:1.19.4")
+    minecraft("com.mojang:minecraft:1.18.2")
     mappings(loom.layered {
         officialMojangMappings()
-        parchment("org.parchmentmc.data:parchment-1.19.4:2023.06.26")
+        parchment("org.parchmentmc.data:parchment-1.18.2:2022.11.06")
     })
 
     // True compileOnly deps
@@ -22,15 +23,20 @@ dependencies {
         exclude(group = "commons-io", module = "commons-io")
         exclude(group = "org.apache.commons", module = "commons-lang3")
     }
+    implementation("dev.jorel:commandapi-bukkit-shade:9.5.3")
 }
 
 repositories {
     maven("https://maven.neoforged.net/releases")
 }
 
+tasks.named("remapJar").configure {
+    enabled = false
+}
+
 // Using neoforge in vanilla mode so common code compiles
 //neoForge {
-    // Look for versions on https://projects.neoforged.net/neoforged/neoform
+//     Look for versions on https://projects.neoforged.net/neoforged/neoform
 //    neoFormVersion.set("1.21-20240613.152323")
 
 //    runs {

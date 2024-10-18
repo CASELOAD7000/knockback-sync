@@ -95,6 +95,7 @@ public class ConfigManager {
         }
 
         runnableEnabled = newRunnableEnabled;
+        runnableInterval = config.getLong("runnable.interval", 5L);
 
         if (runnableEnabled) {
             long initialDelay = 0L;
@@ -108,7 +109,6 @@ public class ConfigManager {
         }
 
         notifyUpdate = config.getBoolean("notify_updates", true);
-        runnableInterval = config.getLong("runnable.interval", 5L);
         combatTimer = config.getLong("runnable.timer", 30L);
         spikeThreshold = config.getLong("spike_threshold", 20L);
         enableMessage = config.getString("enable_message", "&aSuccessfully enabled KnockbackSync.");
