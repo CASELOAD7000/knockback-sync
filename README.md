@@ -18,6 +18,7 @@ Official Discord: https://discord.gg/nnpqpAtyVW
 ### How does this change benefit high ping players?
 **Knockback control.** For example, it will be easier to escape crit chains and punish crit.
 
+<<<<<<< Updated upstream
 ### How do I change the ping offset?
 Open up `config.yml` and edit the line that says `ping_offset: 25`. Replace 25 with your desired ping offset.
 ;
@@ -26,6 +27,14 @@ Then just type
 /knockbacksync reload
 ```
 or restart your server.
+=======
+### Why was the configurability of ping offset removed?
+**It promotes consistency across all servers.** Extensive testing with top players has shown that an offset of 25 provides a balanced experience for everyone.
+
+### How do I change the ping offset?
+**You must run a modified build of KnockbackSync.** The variable can be changed inside of the [PlayerData](src/main/java/me/caseload/knockbacksync/manager/PlayerData.java) class.
+
+>>>>>>> Stashed changes
 
 ## What servers are using this plugin?
 | IP               | Location                          | Region | Ping Offset | spike_threshold |

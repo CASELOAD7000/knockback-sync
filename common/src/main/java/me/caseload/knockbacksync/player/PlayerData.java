@@ -33,7 +33,7 @@ import java.util.UUID;
 public class PlayerData {
 
     // Please read the GitHub FAQ before adjusting.
-    public static long PING_OFFSET;
+    public static final long PING_OFFSET = 25;
     public static float TICK_RATE = 20.0F;
     private static Field playerField;
 
