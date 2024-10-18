@@ -190,7 +190,7 @@ jobs:
           modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
 
           files: |
-            bukkit/build/libs/knockbacksync-bukkit-${{ env.NEW_VERSION }}-all.jar
+            bukkit/build/libs/knockbacksync-bukkit-${{ env.NEW_VERSION }}.jar
 
           name: KnockbackSync-${{ env.NEW_VERSION }}
           version: ${{ env.NEW_VERSION }}
