@@ -115,53 +115,35 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           # Download the current dev-builds.txt
-          curl -L -o dev-builds.txt https://github.com/CASELOAD7000/knockback-sync/releases/latest/download/dev-builds.txt
+          curl -L -o dev-builds.txt https://github.com/Axionize/knockback-sync/releases/download/hashlist/dev-builds.txt
           
-          # Create a copy of the original file
-          cp dev-builds.txt dev-builds.txt.original
-          
-          # Ensure the file ends with a newline
+          # Ensure the file ends with a newline, then append new information
           sed -i -e '$a\' dev-builds.txt
+          # echo "KnockBackSync-${{ env.NEW_VERSION }}.jar" >> dev-builds.txt
+          echo "${{ env.ORIGINAL_HASH }}" >> dev-builds.txt
+          # echo "KnockBackSync-${{ env.NEW_VERSION }}-remapped.jar" >> dev-builds.txt
+          echo "${{ env.REMAPPED_HASH }}" >> dev-builds.txt
           
-          # Function to add hash if it doesn't exist
-          add_hash_if_new() {
-            if ! grep -q "$1" dev-builds.txt; then
-              echo "$1" >> dev-builds.txt
-            fi
-          }
+          echo "${{ env.FABRIC_HASH }}" >> dev-builds.txt
           
-          # Add new hashes if they don't exist
-          add_hash_if_new "${{ env.ORIGINAL_HASH }}"
-          add_hash_if_new "${{ env.REMAPPED_HASH }}"
-          add_hash_if_new "${{ env.FABRIC_HASH }}"
+          # Get the release ID for the 'hashlist' release
+          RELEASE_ID=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+            "https://api.github.com/repos/Axionize/knockback-sync/releases/tags/hashlist" | jq -r .id)
           
-          # Check if the file has changed
-          if cmp -s dev-builds.txt dev-builds.txt.original; then
-            echo "No changes to dev-builds.txt, skipping upload."
-          else
-            echo "Changes detected in dev-builds.txt, uploading new version."
-          
-            # Get the latest release ID
-            RELEASE_ID=$(curl -s "https://api.github.com/repos/CASELOAD7000/knockback-sync/releases/latest" | jq -r .id)
-          
-            # Delete the old dev-builds.txt asset
-            ASSET_ID=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
-              "https://api.github.com/repos/CASELOAD7000/knockback-sync/releases/$RELEASE_ID/assets" | \
-              jq -r '.[] | select(.name == "dev-builds.txt") | .id')
-            if [ ! -z "$ASSET_ID" ]; then
-              curl -X DELETE -H "Authorization: token $GITHUB_TOKEN" \
-                "https://api.github.com/repos/CASELOAD7000/knockback-sync/releases/assets/$ASSET_ID"
-            fi
-          
-            # Upload the new dev-builds.txt
-            curl -X POST -H "Authorization: token $GITHUB_TOKEN" \
-              -H "Content-Type: application/octet-stream" \
-              --data-binary @dev-builds.txt \
-              "https://uploads.github.com/repos/CASELOAD7000/knockback-sync/releases/$RELEASE_ID/assets?name=dev-builds.txt"
+          # Delete the old dev-builds.txt asset
+          ASSET_ID=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+            "https://api.github.com/repos/Axionize/knockback-sync/releases/$RELEASE_ID/assets" | \
+            jq -r '.[] | select(.name == "dev-builds.txt") | .id')
+          if [ ! -z "$ASSET_ID" ]; then
+            curl -X DELETE -H "Authorization: token $GITHUB_TOKEN" \
+              "https://api.github.com/repos/Axionize/knockback-sync/releases/assets/$ASSET_ID"
           fi
           
-          # Clean up
-          rm dev-builds.txt.original
+          # Upload the new dev-builds.txt
+          curl -X POST -H "Authorization: token $GITHUB_TOKEN" \
+            -H "Content-Type: application/octet-stream" \
+            --data-binary @dev-builds.txt \
+            "https://uploads.github.com/repos/Axionize/knockback-sync/releases/$RELEASE_ID/assets?name=dev-builds.txt"
 
       - name: Create artifacts directory
         run: mkdir -p artifacts
