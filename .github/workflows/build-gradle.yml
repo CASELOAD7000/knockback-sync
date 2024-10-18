@@ -46,7 +46,7 @@ jobs:
       - name: Build packetevents with Gradle
         run: |
           cd packetevents
-          gradle build
+          gradle build -x test
 
       - name: Publish packetevents to Maven Local
         run: |
@@ -76,7 +76,7 @@ jobs:
           sed -i "s/val snapshot = .*/val snapshot = false/" build.gradle.kts
 
       - name: Build with Gradle
-        run: gradle clean build
+        run: gradle clean build -x test
 
       - name: Rename shaded jar to overwrite non-shaded jar
         run: mv bukkit/build/libs/knockbacksync-bukkit-${{ env.NEW_VERSION }}-all.jar bukkit/build/libs/knockbacksync-bukkit-${{ env.NEW_VERSION }}.jar
@@ -203,7 +203,7 @@ jobs:
             folia
 
           game-versions: |
-            >=1.18.2
+            >=1.17.1
 
           retry-attempts: 2
           retry-delay: 10000

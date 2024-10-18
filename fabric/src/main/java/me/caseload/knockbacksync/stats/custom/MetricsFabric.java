@@ -18,7 +18,7 @@ package me.caseload.knockbacksync.stats.custom;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import me.caseload.knockbacksync.KnockbackSyncBase;
-import me.caseload.knockbacksync.KnockbackSyncFabric;
+import me.caseload.knockbacksync.KBSyncFabricLoaderMod;
 import me.caseload.knockbacksync.stats.CustomChart;
 import me.caseload.knockbacksync.stats.JsonObjectBuilder;
 import net.fabricmc.loader.api.FabricLoader;
@@ -119,8 +119,8 @@ public class MetricsFabric implements Metrics {
 
     private void appendPlatformData(JsonObjectBuilder builder) {
         builder.appendField("playerAmount", getPlayerAmount());
-        builder.appendField("onlineMode", KnockbackSyncFabric.getServer().usesAuthentication() ? 0 : 1);
-        builder.appendField("bukkitVersion", "Fabric " + FabricLoader.getInstance().getModContainer("fabricloader").get().getMetadata().getVersion().getFriendlyString() + " (MC: " + KnockbackSyncFabric.getServer().getServerVersion() + ")");
+        builder.appendField("onlineMode", KBSyncFabricLoaderMod.getServer().usesAuthentication() ? 0 : 1);
+        builder.appendField("bukkitVersion", "Fabric " + FabricLoader.getInstance().getModContainer("fabricloader").get().getMetadata().getVersion().getFriendlyString() + " (MC: " + KBSyncFabricLoaderMod.getServer().getServerVersion() + ")");
         builder.appendField("bukkitName", "Fabric");
         builder.appendField("javaVersion", System.getProperty("java.version"));
         builder.appendField("osName", System.getProperty("os.name"));
@@ -134,8 +134,8 @@ public class MetricsFabric implements Metrics {
     }
 
     private int getPlayerAmount() {
-        if (KnockbackSyncFabric.getServer().isRunning()) {
-            return KnockbackSyncFabric.getServer().getPlayerCount();
+        if (KBSyncFabricLoaderMod.getServer().isRunning()) {
+            return KBSyncFabricLoaderMod.getServer().getPlayerCount();
         } else {
             return 0;
         }

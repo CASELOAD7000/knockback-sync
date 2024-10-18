@@ -2,6 +2,7 @@ package me.caseload.knockbacksync.command.subcommand;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import me.caseload.knockbacksync.KnockbackSyncBase;
+import me.caseload.knockbacksync.command.FabricSenderFactory;
 import me.caseload.knockbacksync.manager.PlayerDataManager;
 import me.caseload.knockbacksync.player.PlayerData;
 import me.caseload.knockbacksync.util.ChatUtil;
@@ -15,7 +16,9 @@ import net.minecraft.server.level.ServerPlayer;
 public class PingSubCommand {
     public static LiteralArgumentBuilder<CommandSourceStack> build() {
         return Commands.literal("ping")
-                .requires(source -> KnockbackSyncBase.INSTANCE.getPermissionChecker().hasPermission(source, "knockbacksync.ping", true))
+                .requires(source -> KnockbackSyncBase.INSTANCE.getPermissionChecker().hasPermission(
+                        KnockbackSyncBase.INSTANCE.getSenderFactory(),
+                        "knockbacksync.ping", true))
                 .executes(context -> { // Added .executes() here to handle no target
                     if (context.getSource().getEntity() instanceof ServerPlayer sender) {
                         CommandUtil.sendSuccessMessage(context, getPingMessage(sender));

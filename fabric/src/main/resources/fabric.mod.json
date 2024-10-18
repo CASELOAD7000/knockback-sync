@@ -11,7 +11,7 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-      "me.caseload.knockbacksync.KnockbackSyncFabric"
+      "me.caseload.knockbacksync.KBSyncFabricLoaderMod"
     ]
   },
   "mixins": [

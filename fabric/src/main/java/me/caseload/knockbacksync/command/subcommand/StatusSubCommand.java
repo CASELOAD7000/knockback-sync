@@ -5,6 +5,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import me.caseload.knockbacksync.KnockbackSyncBase;
+import me.caseload.knockbacksync.command.PlatformSender;
 import me.caseload.knockbacksync.manager.ConfigManager;
 import me.caseload.knockbacksync.manager.PlayerDataManager;
 import me.caseload.knockbacksync.permission.PermissionChecker;
@@ -32,7 +33,7 @@ public class StatusSubCommand implements Command<CommandSourceStack> {
                             ConfigManager configManager = KnockbackSyncBase.INSTANCE.getConfigManager();
                             EntitySelector selector = context.getArgument("target", EntitySelector.class);
                             ServerPlayer target = selector.findSinglePlayer(context.getSource());
-//                            ServerPlayer sender = context.getSource().getPlayer();
+                            ServerPlayer sender = context.getSource().getPlayer();
                             showPlayerStatus(context, null, target, configManager);
                             return Command.SINGLE_SUCCESS;
                         }));

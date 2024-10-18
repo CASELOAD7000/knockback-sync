@@ -4,10 +4,10 @@ plugins {
 }
 
 dependencies {
-    minecraft("com.mojang:minecraft:1.18.2")
+    minecraft("com.mojang:minecraft:1.16.5")
     mappings(loom.layered {
         officialMojangMappings()
-        parchment("org.parchmentmc.data:parchment-1.18.2:2022.11.06")
+        parchment("org.parchmentmc.data:parchment-1.16.5:2022.03.06")
     })
 
     // True compileOnly deps

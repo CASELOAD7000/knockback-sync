@@ -15,7 +15,7 @@ public class KnockbackSyncCommand implements Command<CommandSourceStack> {
     public static LiteralArgumentBuilder<CommandSourceStack> build() {
         return Commands.literal("knockbacksync")
                 .then(PingSubCommand.build())
-                .then(ReloadSubCommand.build())
+//                .then(ReloadSubCommand.build())
                 .then(StatusSubCommand.build())
                 .then(ToggleSubCommand.build())
                 .then(ToggleOffGroundSubcommand.build())

@@ -1,7 +1,7 @@
 name: KnockbackSync
 version: ${version}
 main: me.caseload.knockbacksync.KnockbackSyncPlugin
-api-version: '1.18'
+api-version: '1.16'
 authors: [ Caseload ]
 description: Synchronizes player knockback for smoother gameplay.
 folia-supported: true
