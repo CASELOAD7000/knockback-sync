@@ -30,7 +30,7 @@ public abstract class KnockbackSyncBase {
     protected SchedulerAdapter scheduler;
     @Getter
     protected ConfigManager configManager;
-    
+
     @Setter
     @Getter
     private SenderFactory<? extends KnockbackSyncBase, ?> senderFactory;

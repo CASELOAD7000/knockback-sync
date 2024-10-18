@@ -23,8 +23,7 @@ public class ServerEntityMixin {
 
     @Inject(method = "sendChanges", at = @At(value = "FIELD", target = "Lnet/minecraft/world/entity/Entity;hurtMarked:Z", ordinal = 1))
     private void onSendChanges(CallbackInfo ci) {
-        if (this.entity.hurtMarked && this.entity instanceof ServerPlayer) {
-            ServerPlayer player = (ServerPlayer) this.entity;
+        if (this.entity.hurtMarked && this.entity instanceof ServerPlayer player) {
             Vec3 velocity = player.getDeltaMovement();
 
             InteractionResult result = PlayerVelocityEvent.EVENT.invoker().onVelocityChange(player, velocity);

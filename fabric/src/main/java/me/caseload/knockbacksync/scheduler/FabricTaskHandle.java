@@ -1,7 +1,7 @@
 package me.caseload.knockbacksync.scheduler;
 
 public class FabricTaskHandle implements AbstractTaskHandle {
-    private Runnable cancellationTask;
+    private final Runnable cancellationTask;
     private boolean cancelled = false;
 
     public FabricTaskHandle(Runnable cancellationTask) {

@@ -1,16 +1,10 @@
 package me.caseload.knockbacksync;
 
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import me.caseload.knockbacksync.command.FabricCommandSource;
-import me.caseload.knockbacksync.command.FabricSenderFactory;
-import me.caseload.knockbacksync.command.SenderFactory;
-import me.caseload.knockbacksync.command.subcommand.ReloadSubCommand;
 import me.caseload.knockbacksync.world.KBSyncFabricBase;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.entrypoint.PreLaunchEntrypoint;
-import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.server.MinecraftServer;
 
 public class KBSyncFabricLoaderMod implements PreLaunchEntrypoint, ModInitializer {

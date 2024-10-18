@@ -1,12 +1,11 @@
 package me.caseload.knockbacksync.player;
 
-import lombok.Getter;
-
 import java.util.*;
 
 public class JitterCalculator {
     private final int SAMPLE_SIZE = 15;
     private final Queue<Long> pings = new LinkedList<>();
+
     public void addPing(long pingTime) {
         pings.offer(pingTime);
         if (pings.size() > SAMPLE_SIZE) {

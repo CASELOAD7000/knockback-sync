@@ -5,7 +5,7 @@ import org.jetbrains.annotations.Nullable;
 public class NumberConversions {
     public static long toLong(@Nullable Object object, long defaultValue) {
         if (object instanceof Number) {
-            return ((Number)object).longValue();
+            return ((Number) object).longValue();
         } else {
             try {
                 return Long.parseLong(object.toString());
@@ -19,7 +19,7 @@ public class NumberConversions {
 
     public static int toInt(@Nullable Object object, int def) {
         if (object instanceof Number) {
-            return ((Number)object).intValue();
+            return ((Number) object).intValue();
         } else {
             try {
                 return Integer.parseInt(object.toString());

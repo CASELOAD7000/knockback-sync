@@ -6,7 +6,6 @@ import me.caseload.knockbacksync.KBSyncFabricLoaderMod;
 import me.caseload.knockbacksync.KnockbackSyncBase;
 import me.caseload.knockbacksync.command.FabricSenderFactory;
 import me.caseload.knockbacksync.command.KnockbackSyncCommand;
-import me.caseload.knockbacksync.command.SenderFactory;
 import me.caseload.knockbacksync.listener.fabric.FabricPlayerDamageListener;
 import me.caseload.knockbacksync.listener.fabric.FabricPlayerJoinQuitListener;
 import me.caseload.knockbacksync.listener.fabric.FabricPlayerKnockbackListener;
@@ -19,9 +18,7 @@ import me.caseload.knockbacksync.stats.custom.PluginJarHashProvider;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
-import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.minecraft.server.level.ServerPlayer;
 
 import java.io.File;
 import java.io.IOException;

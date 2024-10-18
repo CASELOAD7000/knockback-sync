@@ -1,9 +1,7 @@
 package me.caseload.knockbacksync.player;
 
-import com.fasterxml.jackson.databind.deser.std.CollectionDeserializer;
 import com.github.retrooper.packetevents.PacketEvents;
 import com.github.retrooper.packetevents.manager.player.PlayerManager;
-import com.github.retrooper.packetevents.manager.server.ServerVersion;
 import com.github.retrooper.packetevents.netty.channel.ChannelHelper;
 import com.github.retrooper.packetevents.protocol.ConnectionState;
 import com.github.retrooper.packetevents.protocol.player.ClientVersion;
@@ -11,10 +9,7 @@ import com.github.retrooper.packetevents.protocol.player.User;
 import com.github.retrooper.packetevents.protocol.world.states.WrappedBlockState;
 import com.github.retrooper.packetevents.protocol.world.states.type.StateTypes;
 import com.github.retrooper.packetevents.util.Vector3d;
-import com.github.retrooper.packetevents.wrapper.PacketWrapper;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerKeepAlive;
-import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerPing;
-import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerWindowConfirmation;
 import lombok.Getter;
 import lombok.Setter;
 import me.caseload.knockbacksync.KnockbackSyncBase;
@@ -29,8 +24,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Field;
-import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.Random;
+import java.util.UUID;
 
 @Getter
 public class PlayerData {
@@ -67,6 +64,7 @@ public class PlayerData {
     @NotNull
     private final Random random = new Random();
     public Queue<Pair<Long, Long>> keepaliveMap = new LinkedList<>();
+    public long lastKeepAliveID = 0;
     @Getter
     private JitterCalculator jitterCalculator = new JitterCalculator();
     @Getter
@@ -87,8 +85,6 @@ public class PlayerData {
     private double gravityAttribute = 0.08;
     @Setter
     private double knockbackResistanceAttribute = 0.0;
-
-    public long lastKeepAliveID = 0;
 
     public PlayerData(PlatformPlayer platformPlayer) {
         this.uuid = platformPlayer.getUUID();

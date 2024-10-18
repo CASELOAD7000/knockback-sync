@@ -1,10 +1,10 @@
 package me.caseload.knockbacksync.util;
 
-import java.util.function.Supplier;
-
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
+
+import java.util.function.Supplier;
 
 public class CommandUtil {
 

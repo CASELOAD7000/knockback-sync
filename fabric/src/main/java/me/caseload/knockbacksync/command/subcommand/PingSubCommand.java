@@ -2,7 +2,6 @@ package me.caseload.knockbacksync.command.subcommand;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import me.caseload.knockbacksync.KnockbackSyncBase;
-import me.caseload.knockbacksync.command.FabricSenderFactory;
 import me.caseload.knockbacksync.manager.PlayerDataManager;
 import me.caseload.knockbacksync.player.PlayerData;
 import me.caseload.knockbacksync.util.ChatUtil;
@@ -23,7 +22,7 @@ public class PingSubCommand {
                     if (context.getSource().getEntity() instanceof ServerPlayer sender) {
                         CommandUtil.sendSuccessMessage(context, getPingMessage(sender));
                     } else {
-                        CommandUtil.sendFailureMessage(context,"This command can only be used by players.");
+                        CommandUtil.sendFailureMessage(context, "This command can only be used by players.");
                     }
                     return 1;
                 })

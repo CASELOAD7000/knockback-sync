@@ -106,7 +106,7 @@ tasks.processResources {
 }
 
 //neoForge {
-    // Look for versions on https://projects.neoforged.net/neoforged/neoform
+// Look for versions on https://projects.neoforged.net/neoforged/neoform
 //    neoFormVersion.set("1.21-20240613.152323")
 //}
 

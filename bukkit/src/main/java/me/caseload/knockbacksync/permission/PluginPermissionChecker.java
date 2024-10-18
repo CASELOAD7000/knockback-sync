@@ -1,12 +1,8 @@
 package me.caseload.knockbacksync.permission;
 
-import lombok.SneakyThrows;
 import me.caseload.knockbacksync.command.PlatformSender;
 import me.caseload.knockbacksync.player.BukkitPlayer;
 import me.caseload.knockbacksync.player.PlatformPlayer;
-import org.bukkit.command.CommandSender;
-
-import java.lang.reflect.Method;
 
 public class PluginPermissionChecker implements PermissionChecker {
 

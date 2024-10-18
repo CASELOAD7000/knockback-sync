@@ -17,8 +17,8 @@ package me.caseload.knockbacksync.stats.custom;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import me.caseload.knockbacksync.KnockbackSyncBase;
 import me.caseload.knockbacksync.KBSyncFabricLoaderMod;
+import me.caseload.knockbacksync.KnockbackSyncBase;
 import me.caseload.knockbacksync.stats.CustomChart;
 import me.caseload.knockbacksync.stats.JsonObjectBuilder;
 import net.fabricmc.loader.api.FabricLoader;

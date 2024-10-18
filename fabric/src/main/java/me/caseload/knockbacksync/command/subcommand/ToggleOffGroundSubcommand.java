@@ -10,8 +10,6 @@ import me.caseload.knockbacksync.util.CommandUtil;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 
-import static me.caseload.knockbacksync.util.CommandUtil.sendSuccessMessage;
-
 public class ToggleOffGroundSubcommand implements Command<CommandSourceStack> {
 
     private static final PermissionChecker permissionChecker = KnockbackSyncBase.INSTANCE.getPermissionChecker();

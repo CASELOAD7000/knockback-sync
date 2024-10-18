@@ -9,7 +9,6 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.rcon.RconConsoleSource;
 
-
 import java.util.UUID;
 
 public class FabricSenderFactory extends SenderFactory<KBSyncFabricBase, CommandSourceStack> {
