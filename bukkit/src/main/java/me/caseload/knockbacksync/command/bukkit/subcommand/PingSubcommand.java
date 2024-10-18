@@ -22,14 +22,14 @@ public class PingSubcommand {
                     if (target == null) {
                         if (sender instanceof ConsoleCommandSender) {
                             sender.sendMessage(ChatColor.RED + "You must specify a player to use this command from the console.");
-                        } else if (sender instanceof Player playerSender) {
-                            sender.sendMessage(ChatUtil.getPingMessage(playerSender.getUniqueId(), null));
+                        } else if (sender instanceof Player) {
+                            sender.sendMessage(ChatUtil.getPingMessage(((Player) sender).getUniqueId(), null));
                         }
                     } else {
                         if (sender instanceof ConsoleCommandSender) {
                             sender.sendMessage(ChatUtil.getPingMessage(PlatformSender.CONSOLE_UUID, target.getUniqueId()));
-                        } else if (sender instanceof Player playerSender) {
-                            sender.sendMessage(ChatUtil.getPingMessage(playerSender.getUniqueId(), target.getUniqueId()));
+                        } else if (sender instanceof Player) {
+                            sender.sendMessage(ChatUtil.getPingMessage(((Player) sender).getUniqueId(), target.getUniqueId()));
                         }
                     }
                 });
