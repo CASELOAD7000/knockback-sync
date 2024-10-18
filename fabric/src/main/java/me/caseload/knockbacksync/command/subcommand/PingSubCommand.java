@@ -2,6 +2,7 @@ package me.caseload.knockbacksync.command.subcommand;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import me.caseload.knockbacksync.KnockbackSyncBase;
+import me.caseload.knockbacksync.command.PlatformSender;
 import me.caseload.knockbacksync.manager.PlayerDataManager;
 import me.caseload.knockbacksync.player.PlayerData;
 import me.caseload.knockbacksync.util.ChatUtil;
@@ -10,19 +11,20 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.arguments.selector.EntitySelector;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+
+import static me.caseload.knockbacksync.util.ChatUtil.getPingMessage;
 
 public class PingSubCommand {
     public static LiteralArgumentBuilder<CommandSourceStack> build() {
         return Commands.literal("ping")
-                .requires(source -> KnockbackSyncBase.INSTANCE.getPermissionChecker().hasPermission(
-                        KnockbackSyncBase.INSTANCE.getSenderFactory(),
-                        "knockbacksync.ping", true))
+                .requires(source -> true)
                 .executes(context -> { // Added .executes() here to handle no target
                     if (context.getSource().getEntity() instanceof ServerPlayer sender) {
-                        CommandUtil.sendSuccessMessage(context, getPingMessage(sender));
+                        CommandUtil.sendSuccessMessage(context, () -> Component.literal(getPingMessage(sender.getUUID(), null)));
                     } else {
-                        CommandUtil.sendFailureMessage(context, "This command can only be used by players.");
+                        CommandUtil.sendFailureMessage(context, "You must specify a player to use this command from the console.");
                     }
                     return 1;
                 })
@@ -30,18 +32,13 @@ public class PingSubCommand {
                         .executes(context -> {
                             EntitySelector selector = context.getArgument("target", EntitySelector.class);
                             ServerPlayer target = selector.findSinglePlayer(context.getSource());
-                            CommandUtil.sendSuccessMessage(context, getPingMessage(target));
+                            if (context.getSource().getEntity() instanceof ServerPlayer sender) {
+                                CommandUtil.sendSuccessMessage(context, getPingMessage(sender.getUUID(), target.getUUID()));
+                            } else {
+                                CommandUtil.sendSuccessMessage(context, getPingMessage(PlatformSender.CONSOLE_UUID, target.getUUID()));
+                            }
                             return 1;
                         })
                 );
-    }
-
-    public static String getPingMessage(ServerPlayer player) {
-        PlayerData playerData = PlayerDataManager.getPlayerData(player.getUUID());
-        if (playerData.getPing() == null) {
-            return "Pong not received. Your estimated ping is " + ChatUtil.translateAlternateColorCodes('&', "&b" + playerData.getPlatformPlayer().getPing() + "&rms.");
-        } else {
-            return "Your last ping packet took &b" + ChatUtil.translateAlternateColorCodes('&', String.format("%.3f", playerData.getPing()) + "&rms. Jitter: &b" + String.format("%.3f", playerData.getJitter()) + "&rms.");
-        }
     }
 }

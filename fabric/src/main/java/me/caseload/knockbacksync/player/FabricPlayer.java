@@ -32,7 +32,7 @@ public class FabricPlayer implements PlatformPlayer {
 
     @Override
     public String getName() {
-        return fabricPlayer.getName().toString();
+        return fabricPlayer.getName().getString();
     }
 
     @Override

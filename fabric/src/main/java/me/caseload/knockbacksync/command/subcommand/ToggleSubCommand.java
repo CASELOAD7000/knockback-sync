@@ -10,6 +10,7 @@ import me.caseload.knockbacksync.manager.PlayerDataManager;
 import me.caseload.knockbacksync.permission.PermissionChecker;
 import me.caseload.knockbacksync.player.PlayerData;
 import me.caseload.knockbacksync.util.ChatUtil;
+import me.caseload.knockbacksync.util.CommandUtil;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
@@ -18,6 +19,7 @@ import net.minecraft.server.level.ServerPlayer;
 
 import java.util.UUID;
 
+import static me.caseload.knockbacksync.util.CommandUtil.sendFailureMessage;
 import static me.caseload.knockbacksync.util.CommandUtil.sendSuccessMessage;
 
 public class ToggleSubCommand implements Command<CommandSourceStack> {
@@ -29,12 +31,16 @@ public class ToggleSubCommand implements Command<CommandSourceStack> {
                 .requires(source -> permissionChecker.hasPermission(source, "knockbacksync.toggle.self", true)) // Requires at least self permission
                 .executes(new ToggleSubCommand()) // Execute for self toggle
                 .then(Commands.argument("target", EntityArgument.player())
-                        .requires(source -> permissionChecker.hasPermission(source, "knockbacksync.toggle.other", true)) // Requires other permission for target
+//                        .requires(source -> permissionChecker.hasPermission(source, "knockbacksync.toggle.other", true)) // Requires other permission for target
                         .executes(context -> {
                             ConfigManager configManager = KnockbackSyncBase.INSTANCE.getConfigManager();
                             EntitySelector selector = context.getArgument("target", EntitySelector.class);
                             ServerPlayer target = selector.findSinglePlayer(context.getSource());
                             ServerPlayer sender = context.getSource().getPlayerOrException();
+                            if (!target.equals(sender) && permissionChecker.hasPermission(context.getSource(), "knockbacksync.toggle.self", true)) {
+                                CommandUtil.sendFailureMessage(context, "You do not have permission to toggle the knockback of other player's.");
+                                return 0;
+                            }
 
                             if (!configManager.isToggled()) {
                                 sendSuccessMessage(context, ChatUtil.translateAlternateColorCodes('&', "&cKnockbacksync is currently disabled on this server. Contact your server administrator for more information."));
