@@ -33,6 +33,10 @@ tasks.withType<Javadoc>().configureEach {
     source(project(":common").sourceSets.main.get().allJava)
 }
 
+tasks.named<JavaCompile>("compileTestJava") {
+    exclude("**/*")
+}
+
 //tasks.withType<Test>().configureEach {
 //    classpath += project(":common").sourceSets["main"].output + configurations["testRuntimeClasspath"]
 //}
@@ -41,9 +45,10 @@ tasks.withType<Javadoc>().configureEach {
 //    from(project(":common").sourceSets.main.get().allSource)
 //}
 
-//tasks.jar {
+tasks.jar {
 //    from(project(":common").sourceSets.named("main").get().output)
-//}
+//    from(project(":common").sourceSets.main.get().resources)
+}
 
 dependencies {
     implementation(project(":common"))
@@ -91,6 +96,8 @@ tasks.remapJar {
 }
 
 tasks.processResources {
+    from(project(":common").sourceSets.main.get().resources)
+
     inputs.property("version", project.version)
     inputs.property("minecraft_version", rootProject.property("minecraft_version"))
     inputs.property("loader_version", rootProject.property("loader_version"))

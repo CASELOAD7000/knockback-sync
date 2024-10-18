@@ -31,12 +31,17 @@ val shadeThisThing: Configuration by configurations.creating {
 // TODO migrate to only including sourceset for compile, test and javadoc tasks
 // Currently must build with gradle build -x test to skip test
 tasks.withType<JavaCompile>().configureEach {
-    source(project(":common").sourceSets.main.get().allSource)
+    source(project(":common").sourceSets.main.get().java.srcDirs)
+    source(project(":common").sourceSets.main.get().resources.srcDirs())
     options.annotationProcessorPath = configurations["annotationProcessor"] + configurations["compileClasspath"]
 }
 
 tasks.withType<Javadoc>().configureEach {
     source(project(":common").sourceSets.main.get().allJava)
+}
+
+tasks.named<JavaCompile>("compileTestJava") {
+    exclude("**/*")
 }
 
 // Dirty hack exists so the build process will finish running
@@ -95,6 +100,7 @@ tasks.build {
 
 
 tasks.processResources {
+    from(project(":common").sourceSets.main.get().resources)
     inputs.property("version", project.version)
     filteringCharset = "UTF-8"
 
