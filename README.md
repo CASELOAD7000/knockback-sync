@@ -5,10 +5,18 @@ Tired of inconsistent knockback ruining your PvP experience? Our plugin recalcul
 Minecraft doesn’t factor in network latency when determining a player's actions on the server. This causes the server to receive outdated information that doesn’t reflect the player's clientside position, leading to varying knockback effects based on connection quality.
 
 This plugin intercepts and adjusts knockback calculations to match what would occur clientside, effectively mitigating the disadvantages caused by high latency. By synchronizing knockback handling, we ensure that players experience consistent and fair knockback, providing a balanced and competitive environment for all."
+
+Showcase: https://www.youtube.com/watch?v=SVokpr3v-TA
+
+Official Discord: https://discord.gg/nnpqpAtyVW
+
 ## Frequently Asked Questions (FAQ)
 
 ### Does this change put high ping players at a disadvantage?
 **It depends on the player.** Some may notice a difference if they're used to relying on high ping to reduce knockback. For others, it could actually be an advantage.
+
+### How does this change benefit high ping players?
+**Knockback control.** For example, it will be easier to escape crit chains and punish crit.
 
 ### How do I change the ping offset?
 Open up `config.yml` and edit the line that says `ping_offset: 25`. Replace 25 with your desired ping offset.
