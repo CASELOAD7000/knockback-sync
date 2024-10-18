@@ -8,9 +8,6 @@ import me.caseload.knockbacksync.util.ChatUtil;
 import me.caseload.knockbacksync.util.CommandUtil;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.minecraft.network.chat.Component;
-
-import static me.caseload.knockbacksync.util.CommandUtil.sendSuccessMessage;
 
 public class ReloadSubCommand {
     public static LiteralArgumentBuilder<CommandSourceStack> build() {

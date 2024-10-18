@@ -6,9 +6,9 @@ import com.mojang.brigadier.context.CommandContext;
 import me.caseload.knockbacksync.KnockbackSyncBase;
 import me.caseload.knockbacksync.permission.PermissionChecker;
 import me.caseload.knockbacksync.util.ChatUtil;
+import me.caseload.knockbacksync.util.CommandUtil;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.minecraft.network.chat.Component;
 
 import static me.caseload.knockbacksync.util.CommandUtil.sendSuccessMessage;
 
@@ -32,7 +32,7 @@ public class ToggleOffGroundSubcommand implements Command<CommandSourceStack> {
                         KnockbackSyncBase.INSTANCE.getConfigManager().getConfigWrapper().getString("enable_experimental_offground_message", "&aSuccessfully enabled offground experiment.") :
                         KnockbackSyncBase.INSTANCE.getConfigManager().getConfigWrapper().getString("disable_experimental_offground_message", "&cSuccessfully disabled offground experiment.")
         );
-        sendSuccessMessage(context, message);
+        CommandUtil.sendSuccessMessage(context, message);
         return Command.SINGLE_SUCCESS;
     }
 }

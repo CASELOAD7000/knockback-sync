@@ -17,26 +17,27 @@ val shadeThisThing: Configuration by configurations.creating {
     isTransitive = true
 }
 
-sourceSets {
-    main {
-        java {
-            srcDir(project(":common").sourceSets.main.get().java.srcDirs)
-        }
-        resources {
-            srcDir(project(":common").sourceSets.main.get().resources.srcDirs)
-        }
-    }
-}
+//sourceSets {
+//    main {
+//        java {
+//            srcDir(project(":common").sourceSets.main.get().java.srcDirs)
+//        }
+//        resources {
+//            srcDir(project(":common").sourceSets.main.get().resources.srcDirs)
+//        }
+//    }
+//}
 
 // TODO migrate to only including sourceset for compile, test and javadoc tasks
-//tasks.withType<JavaCompile>().configureEach {
-//    source(project(":common").sourceSets.main.get().allSource)
-//    options.annotationProcessorPath = configurations["annotationProcessor"] + configurations["compileClasspath"]
-//}
+// Currently must build with gradle build -x test to skip test
+tasks.withType<JavaCompile>().configureEach {
+    source(project(":common").sourceSets.main.get().allSource)
+    options.annotationProcessorPath = configurations["annotationProcessor"] + configurations["compileClasspath"]
+}
 
-//tasks.withType<Javadoc>().configureEach {
-//    source(project(":common").sourceSets.main.get().allJava)
-//}
+tasks.withType<Javadoc>().configureEach {
+    source(project(":common").sourceSets.main.get().allJava)
+}
 
 // Dirty hack exists so the build process will finish running
 //tasks.withType<Test>().configureEach {
@@ -46,7 +47,7 @@ sourceSets {
 
 dependencies {
 //    shadeThisThing(implementation(project(":common"))!!)
-//    implementation(project(":common"))
+    implementation(project(":common"))
 
     paperweight.paperDevBundle("1.19.4-R0.1-SNAPSHOT")
 //    compileOnly("com.mojang:brigadier:1.0.18")
