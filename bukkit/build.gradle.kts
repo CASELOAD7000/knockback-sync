@@ -58,7 +58,7 @@ dependencies {
 //    compileOnly("com.mojang:brigadier:1.0.18")
     compileOnly("org.spigotmc:spigot-api:1.16.5-R0.1-SNAPSHOT")
     compileOnly("org.geysermc.floodgate:api:2.0-SNAPSHOT")
-    compileOnly("dev.folia:folia-api:1.20.4-R0.1-SNAPSHOT")
+//    compileOnly("dev.folia:folia-api:1.20.4-R0.1-SNAPSHOT")
 
     compileOnly("org.projectlombok:lombok:1.18.34")
     annotationProcessor("org.projectlombok:lombok:1.18.34")

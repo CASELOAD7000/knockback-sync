@@ -1,6 +1,6 @@
 package me.caseload.knockbacksync.scheduler;
 
-import io.papermc.paper.threadedregions.scheduler.GlobalRegionScheduler;
+import io.github.retrooper.packetevents.util.folia.GlobalRegionScheduler;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 
