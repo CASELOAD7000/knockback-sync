@@ -6,3 +6,10 @@ dependency-reduced-pom.xml
 
 # Ignore maven build files
 target/
+
+
+.gradle/
+gradle/
+build/
+
+run/

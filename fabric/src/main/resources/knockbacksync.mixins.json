@@ -1,0 +1,15 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "me.caseload.knockbacksync.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "CommandStackSourceAccessor",
+    "PlayerMixin",
+    "ServerEntityMixin",
+    "TickRateManagerMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
