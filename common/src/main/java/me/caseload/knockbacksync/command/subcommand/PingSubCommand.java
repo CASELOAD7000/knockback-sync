@@ -9,10 +9,7 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.arguments.selector.EntitySelector;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
-
-import java.util.concurrent.Callable;
 
 public class PingSubCommand {
     public static LiteralArgumentBuilder<CommandSourceStack> build() {
@@ -20,7 +17,7 @@ public class PingSubCommand {
                 .requires(source -> KnockbackSyncBase.INSTANCE.getPermissionChecker().hasPermission(source, "knockbacksync.ping", true))
                 .executes(context -> { // Added .executes() here to handle no target
                     if (context.getSource().getEntity() instanceof ServerPlayer sender) {
-                        CommandUtil.sendSuccessMessage(context, getComponent(sender));
+                        CommandUtil.sendSuccessMessage(context, getPingMessage(sender));
                     } else {
                         CommandUtil.sendFailureMessage(context,"This command can only be used by players.");
                     }
@@ -30,18 +27,18 @@ public class PingSubCommand {
                         .executes(context -> {
                             EntitySelector selector = context.getArgument("target", EntitySelector.class);
                             ServerPlayer target = selector.findSinglePlayer(context.getSource());
-                            CommandUtil.sendSuccessMessage(context, getComponent(target));
+                            CommandUtil.sendSuccessMessage(context, getPingMessage(target));
                             return 1;
                         })
                 );
     }
 
-    public static String getComponent(ServerPlayer player) {
+    public static String getPingMessage(ServerPlayer player) {
         PlayerData playerData = PlayerDataManager.getPlayerData(player.getUUID());
         if (playerData.getPing() == null) {
             return "Pong not received. Your estimated ping is " + playerData.getPlatformPlayer().getPing() + "ms.";
         } else {
-            return "Your last ping packet took " + playerData.getPing() + "ms. Jitter: " + playerData.getJitter() + "ms.";
+            return "Your last ping packet took " + String.format("%.3f", playerData.getPing()) + "ms. Jitter: " + String.format("%.3f", playerData.getJitter()) + "ms.";
         }
     }
 }

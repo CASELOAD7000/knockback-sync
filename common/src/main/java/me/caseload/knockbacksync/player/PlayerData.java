@@ -140,11 +140,9 @@ public class PlayerData {
                 // Making our time measurement more accurate since we don't call, System.nanoTime(), wait until flush
                 // And then actually send packet
                 user.sendPacket(new WrapperPlayServerKeepAlive(lastKeepAliveID = System.nanoTime()));
-                System.out.println("Sent keepalive async with ID: " + lastKeepAliveID);
             });
         } else {
             user.sendPacket(new WrapperPlayServerKeepAlive(lastKeepAliveID = System.nanoTime()));
-            System.out.println("Sending keepalive with ID: " + lastKeepAliveID);
         }
     }
 

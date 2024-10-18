@@ -28,30 +28,22 @@ public class PingReceiveListener extends PacketListenerAbstract {
         if (playerData == null) return;
 
         long receivedId = keepAlive.getId();
-        System.out.println("Received keepalive with ID: " + receivedId);
-        System.out.println("Last sent keepalive ID: " + playerData.getLastKeepAliveID());
 
         if (playerData.isKeepAliveIDOurs(receivedId)) {
-            long ping = (System.nanoTime() - receivedId);
-            long diffMillis = ping / 1_000_000;
+            long pingNanos = (System.nanoTime() - receivedId);
             // Calculate the remainder nanoseconds for fractional milliseconds
-            long remainderNano = ping % 1_000_000;
-            System.out.printf("Difference: %d.%03d milliseconds%n", diffMillis, remainderNano / 1_000);
-            double diffMillisDouble = ping / 1_000_000.0;
-            System.out.printf("Difference: %.3f milliseconds%n", diffMillisDouble);
-            System.out.println("Calculated ping: " + ping);
+            double diffMillisDouble = pingNanos / 1_000_000.0;
+
             playerData.setPreviousPing(playerData.getPing());
             playerData.setPing(diffMillisDouble);
 
-            playerData.getJitterCalculator().addPing(ping);
+            playerData.getJitterCalculator().addPing(pingNanos);
             double jitter = playerData.getJitterCalculator().calculateJitter();
             playerData.setJitter(jitter);
             // Minecraft kicks players that send invalid keepAliveID packets
             // Since Minecraft doesn't know we just sent a keepalive, we gotta cancel it
             // To stop MC from processing it and kicking the player
             event.setCancelled(true);
-        } else {
-            System.out.println("Received unexpected keepalive ID");
         }
     }
 }

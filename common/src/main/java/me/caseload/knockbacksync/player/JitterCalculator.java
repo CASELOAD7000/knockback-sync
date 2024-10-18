@@ -53,6 +53,6 @@ public class JitterCalculator {
         meanJitter /= (filteredPings.size() - 1);
 
         // You can return different jitter metrics based on your needs
-        return stdDev; // or meanJitter, or both
+        return stdDev / 1_000_000.0; // or meanJitter, or both
     }
 }
