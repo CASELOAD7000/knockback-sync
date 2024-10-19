@@ -1,10 +1,9 @@
-package me.caseload.knockbacksync.world;
+package me.caseload.knockbacksync;
 
 import com.github.retrooper.packetevents.PacketEvents;
 import io.github.retrooper.packetevents.factory.fabric.FabricPacketEventsBuilder;
-import me.caseload.knockbacksync.KBSyncFabricLoaderMod;
-import me.caseload.knockbacksync.KnockbackSyncBase;
-import me.caseload.knockbacksync.command.FabricSenderFactory;
+import lombok.Getter;
+import me.caseload.knockbacksync.sender.FabricSenderFactory;
 import me.caseload.knockbacksync.command.KnockbackSyncCommand;
 import me.caseload.knockbacksync.listener.fabric.FabricPlayerDamageListener;
 import me.caseload.knockbacksync.listener.fabric.FabricPlayerJoinQuitListener;
@@ -15,6 +14,7 @@ import me.caseload.knockbacksync.permission.PermissionChecker;
 import me.caseload.knockbacksync.scheduler.FabricSchedulerAdapter;
 import me.caseload.knockbacksync.stats.custom.FabricStatsManager;
 import me.caseload.knockbacksync.stats.custom.PluginJarHashProvider;
+import me.caseload.knockbacksync.world.FabricServer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
@@ -33,6 +33,7 @@ public class KBSyncFabricBase extends KnockbackSyncBase {
 
     private final Logger logger = Logger.getLogger(KBSyncFabricLoaderMod.class.getName());
     private final FabricPermissionChecker permissionChecker = new FabricPermissionChecker();
+    @Getter private final FabricSenderFactory fabricSenderFactory = new FabricSenderFactory(this);
 
     public KBSyncFabricBase() {
         statsManager = new FabricStatsManager();
@@ -49,7 +50,6 @@ public class KBSyncFabricBase extends KnockbackSyncBase {
             }
         }
         pluginJarHashProvider = new PluginJarHashProvider(jarUrl);
-        super.setSenderFactory(new FabricSenderFactory(this));
     }
 
     @Override

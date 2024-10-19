@@ -1,11 +1,7 @@
 package me.caseload.knockbacksync.command.subcommand;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import me.caseload.knockbacksync.KnockbackSyncBase;
-import me.caseload.knockbacksync.command.PlatformSender;
-import me.caseload.knockbacksync.manager.PlayerDataManager;
-import me.caseload.knockbacksync.player.PlayerData;
-import me.caseload.knockbacksync.util.ChatUtil;
+import me.caseload.knockbacksync.sender.Sender;
 import me.caseload.knockbacksync.util.CommandUtil;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -35,7 +31,7 @@ public class PingSubCommand {
                             if (context.getSource().getEntity() instanceof ServerPlayer sender) {
                                 CommandUtil.sendSuccessMessage(context, getPingMessage(sender.getUUID(), target.getUUID()));
                             } else {
-                                CommandUtil.sendSuccessMessage(context, getPingMessage(PlatformSender.CONSOLE_UUID, target.getUUID()));
+                                CommandUtil.sendSuccessMessage(context, getPingMessage(Sender.CONSOLE_UUID, target.getUUID()));
                             }
                             return 1;
                         })

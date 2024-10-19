@@ -8,6 +8,7 @@ import me.caseload.knockbacksync.manager.ConfigManager;
 import me.caseload.knockbacksync.manager.PlayerDataManager;
 import me.caseload.knockbacksync.player.BukkitPlayer;
 import me.caseload.knockbacksync.player.PlayerData;
+import me.caseload.knockbacksync.sender.BukkitSenderFactory;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;

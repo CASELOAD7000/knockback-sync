@@ -1,9 +1,9 @@
-package me.caseload.knockbacksync.command;
+package me.caseload.knockbacksync.sender;
 
 import me.caseload.knockbacksync.KnockbackSyncBase;
 import me.caseload.knockbacksync.mixin.CommandStackSourceAccessor;
 import me.caseload.knockbacksync.permission.FabricPermissionChecker;
-import me.caseload.knockbacksync.world.KBSyncFabricBase;
+import me.caseload.knockbacksync.KBSyncFabricBase;
 import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
@@ -29,14 +29,14 @@ public class FabricSenderFactory extends SenderFactory<KBSyncFabricBase, Command
         if (commandSource.getEntity() != null) {
             return commandSource.getEntity().getUUID();
         }
-        return PlatformSender.CONSOLE_UUID;
+        return Sender.CONSOLE_UUID;
     }
 
     @Override
     protected String getName(CommandSourceStack commandSource) {
         String name = commandSource.getTextName();
         if (commandSource.getEntity() != null && name.equals("Server")) {
-            return PlatformSender.CONSOLE_NAME;
+            return Sender.CONSOLE_NAME;
         }
         return name;
     }

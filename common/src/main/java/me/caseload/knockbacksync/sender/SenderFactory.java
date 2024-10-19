@@ -1,4 +1,4 @@
-package me.caseload.knockbacksync.command;
+package me.caseload.knockbacksync.sender;
 
 import me.caseload.knockbacksync.KnockbackSyncBase;
 
@@ -38,9 +38,14 @@ public abstract class SenderFactory<P extends KnockbackSyncBase, T> implements A
         return isConsole(sender);
     }
 
-    public final PlatformSender wrap(T sender) {
+    public final Sender wrap(T sender) {
         Objects.requireNonNull(sender, "sender");
         return new AbstractSender<>(this.plugin, this, sender);
+    }
+
+    public final T unwrap(Sender sender) {
+        Objects.requireNonNull(sender, "sender");
+        return (T) sender.getSender();
     }
 
     @Override

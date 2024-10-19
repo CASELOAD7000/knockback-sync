@@ -1,6 +1,5 @@
 package me.caseload.knockbacksync;
 
-import me.caseload.knockbacksync.world.KBSyncFabricBase;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.loader.api.FabricLoader;

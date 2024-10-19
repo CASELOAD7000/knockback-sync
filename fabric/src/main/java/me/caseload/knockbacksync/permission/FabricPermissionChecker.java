@@ -1,6 +1,6 @@
 package me.caseload.knockbacksync.permission;
 
-import me.caseload.knockbacksync.command.PlatformSender;
+import me.caseload.knockbacksync.sender.Sender;
 import me.caseload.knockbacksync.player.FabricPlayer;
 import me.caseload.knockbacksync.player.PlatformPlayer;
 import me.lucko.fabric.api.permissions.v0.Permissions;
@@ -21,7 +21,7 @@ public class FabricPermissionChecker implements PermissionChecker {
     }
 
     @Override
-    public boolean hasPermission(PlatformSender source, String s, boolean defaultIfUnset) {
+    public boolean hasPermission(Sender source, String s, boolean defaultIfUnset) {
         return false;
     }
 

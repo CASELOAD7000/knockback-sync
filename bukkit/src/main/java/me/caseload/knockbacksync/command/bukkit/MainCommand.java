@@ -1,13 +1,27 @@
 package me.caseload.knockbacksync.command.bukkit;
 
 import dev.jorel.commandapi.CommandAPICommand;
+import me.caseload.knockbacksync.KBSyncBukkitBase;
 import me.caseload.knockbacksync.command.bukkit.subcommand.PingSubcommand;
 import me.caseload.knockbacksync.command.bukkit.subcommand.ReloadSubcommand;
 import me.caseload.knockbacksync.command.bukkit.subcommand.StatusSubcommand;
 import me.caseload.knockbacksync.command.bukkit.subcommand.ToggleSubcommand;
+import me.caseload.knockbacksync.sender.Sender;
 import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
 
 public class MainCommand {
+
+    protected KBSyncBukkitBase kbSyncBukkitBase;
+
+    public MainCommand(KBSyncBukkitBase kbSyncBukkitBase) {
+        this.kbSyncBukkitBase = kbSyncBukkitBase;
+    }
+
+    public boolean onCommand(CommandSender sender, String[] args) {
+        Sender wraapped = this.kbSyncBukkitBase.getSenderFactory().wrap(sender);
+        return true;
+    }
 
     public void register() {
         new CommandAPICommand("knockbacksync")

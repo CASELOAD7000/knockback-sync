@@ -74,6 +74,8 @@ dependencies {
 
     shadeThisThing(implementation("com.github.retrooper:packetevents-spigot:2.5.0")!!)
     shadeThisThing(implementation("dev.jorel:commandapi-bukkit-shade:9.5.3")!!)
+    shadeThisThing(implementation("net.kyori:adventure-platform-bukkit:4.3.4")!!)
+    implementation("org.incendo:cloud-paper:2.0.0-beta.10")
 }
 
 tasks.withType<ShadowJar> {
