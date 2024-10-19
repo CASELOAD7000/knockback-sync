@@ -68,21 +68,3 @@ repositories {
 tasks.named("remapJar").configure {
     enabled = false
 }
-
-// Using neoforge in vanilla mode so common code compiles
-//neoForge {
-//     Look for versions on https://projects.neoforged.net/neoforged/neoform
-//    neoFormVersion.set("1.21-20240613.152323")
-
-//    runs {
-//        create("client") {
-//            client()
-//        }
-//        create("server") {
-//            server()
-//        }
-//        create("data") {
-//            data()
-//        }
-//    }
-//}

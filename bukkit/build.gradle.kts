@@ -42,6 +42,7 @@ dependencies {
     shadeThisThing(implementation("dev.jorel:commandapi-bukkit-shade:9.5.3")!!)
     shadeThisThing(implementation("net.kyori:adventure-platform-bukkit:4.3.4")!!)
     shadeThisThing(implementation("org.incendo:cloud-paper:2.0.0-beta.10")!!)
+    shadeThisThing(implementation("org.incendo:cloud-core:2.0.0")!!)
 }
 
 tasks.withType<ShadowJar> {

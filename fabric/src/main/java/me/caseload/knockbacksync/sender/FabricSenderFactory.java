@@ -89,6 +89,11 @@ public class FabricSenderFactory extends SenderFactory<KBSyncFabricBase, Command
         return this.unwrap(mapped);
     }
 
+    @Override
+    public void close() throws Exception {
+
+    }
+
 //    public static Text toNativeText(Component component) {
 //        return Text.Serialization.fromJsonTree(GsonComponentSerializer.gson().serializeToTree(component), DynamicRegistryManager.EMPTY);
 //    }

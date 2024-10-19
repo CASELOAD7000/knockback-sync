@@ -122,17 +122,15 @@ public class ConfigManager {
 
     public void updateConfig() {
         ConfigWrapper oldConfig = getConfigWrapper();
-        long configVersion = oldConfig.getLong("config_version", 0);
+        long oldConfigVersion = oldConfig.getLong("config_version", 0);
 
-        if (configVersion < CONFIG_VERSION) {
-            KnockbackSyncBase.INSTANCE.getLogger().info("Updating configuration file");
+        if (oldConfigVersion < CONFIG_VERSION) {
             // Backup old config
-            File backupFile = new File(configFile.getParentFile(), "config-version-" + configVersion + ".yml");
+            File backupFile = new File(configFile.getParentFile(), "config-version-" + oldConfigVersion + ".yml");
             if (configFile.renameTo(backupFile)) {
                 KnockbackSyncBase.INSTANCE.getLogger().info("Backed up old config to " + backupFile.getName());
             } else {
                 KnockbackSyncBase.INSTANCE.getLogger().warning("Failed to backup old config");
-                return;
             }
 
             // Create new config with default values
@@ -141,18 +139,7 @@ public class ConfigManager {
 
             // Transfer existing settings
             ConfigWrapper newConfig = getConfigWrapper();
-            transferSetting(oldConfig, newConfig, "enabled");
-            transferSetting(oldConfig, newConfig, "runnable.enabled");
-            transferSetting(oldConfig, newConfig, "runnable.interval");
-            transferSetting(oldConfig, newConfig, "notify_updates");
-            transferSetting(oldConfig, newConfig, "runnable.timer");
-            transferSetting(oldConfig, newConfig, "spike_threshold");
-            transferSetting(oldConfig, newConfig, "enable_message");
-            transferSetting(oldConfig, newConfig, "disable_message");
-            transferSetting(oldConfig, newConfig, "player_enable_message");
-            transferSetting(oldConfig, newConfig, "player_disable_message");
-            transferSetting(oldConfig, newConfig, "player_ineligible_message");
-            transferSetting(oldConfig, newConfig, "reload_message");
+            transferAllSettings(oldConfig, newConfig);
 
             // Set new config version
             newConfig.set("config_version", CONFIG_VERSION);
@@ -164,9 +151,21 @@ public class ConfigManager {
         }
     }
 
-    private void transferSetting(ConfigWrapper oldConfig, ConfigWrapper newConfig, String key) {
-        if (oldConfig.contains(key)) {
-            newConfig.set(key, oldConfig.get(key));
+    private void transferAllSettings(ConfigWrapper oldConfig, ConfigWrapper newConfig) {
+        transferSettingsRecursive(oldConfig, newConfig, "");
+    }
+
+    private void transferSettingsRecursive(ConfigWrapper oldConfig, ConfigWrapper newConfig, String currentPath) {
+        for (String key : oldConfig.getKeys(currentPath)) {
+            String fullPath = currentPath.isEmpty() ? key : currentPath + "." + key;
+            if (newConfig.contains(fullPath)) {
+                Object value = oldConfig.get(fullPath);
+                if (value instanceof Map) {
+                    transferSettingsRecursive(oldConfig, newConfig, fullPath);
+                } else {
+                    newConfig.set(fullPath, value);
+                }
+            }
         }
     }
 }

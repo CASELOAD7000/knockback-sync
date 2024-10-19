@@ -17,8 +17,8 @@ public class FabricPermissionChecker implements PermissionChecker {
     }
 
     @Override
-    public boolean hasPermission(Object object, String s, boolean defaultIfUnset) {
-        if (object instanceof CommandSourceStack commandSourceStack) {
+    public boolean hasPermission(Object nativeType, String s, boolean defaultIfUnset) {
+        if (nativeType instanceof CommandSourceStack commandSourceStack) {
             return Permissions.check(commandSourceStack, s, defaultIfUnset);
         }
         throw new IllegalArgumentException();

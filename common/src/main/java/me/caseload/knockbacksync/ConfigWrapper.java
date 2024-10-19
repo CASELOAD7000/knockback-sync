@@ -3,7 +3,9 @@ package me.caseload.knockbacksync;
 import me.caseload.knockbacksync.util.NumberConversions;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class ConfigWrapper {
     private final Map<String, Object> configMap;
@@ -68,5 +70,13 @@ public class ConfigWrapper {
 
     public Object get(String path) {
         return getValue(path);
+    }
+
+    public Set<String> getKeys(String path) {
+        Object value = getValue(path);
+        if (value instanceof Map) {
+            return ((Map<String, Object>) value).keySet();
+        }
+        return new HashSet<>();
     }
 }

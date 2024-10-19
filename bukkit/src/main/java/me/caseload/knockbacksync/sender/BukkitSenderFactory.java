@@ -5,6 +5,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.command.RemoteConsoleCommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.permissions.Permission;
+import org.bukkit.permissions.PermissionDefault;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.incendo.cloud.SenderMapper;
 
@@ -55,6 +57,11 @@ public class BukkitSenderFactory extends SenderFactory<KBSyncBukkitBase, Command
     }
 
     @Override
+    protected boolean hasPermission(CommandSender sender, String node, boolean defaultIfUnset) {
+        return sender.hasPermission(new Permission(node, defaultIfUnset ? PermissionDefault.TRUE : PermissionDefault.FALSE));
+    }
+
+    @Override
     protected void performCommand(CommandSender sender, String command) {
         //
     }
@@ -72,5 +79,10 @@ public class BukkitSenderFactory extends SenderFactory<KBSyncBukkitBase, Command
     @Override
     public @NonNull CommandSender reverse(@NonNull Sender mapped) {
         return this.unwrap(mapped);
+    }
+
+    @Override
+    public void close() throws Exception {
+
     }
 }

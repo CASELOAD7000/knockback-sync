@@ -10,13 +10,20 @@ import me.caseload.knockbacksync.player.PlayerData;
 import me.caseload.knockbacksync.sender.Sender;
 import me.caseload.knockbacksync.util.ChatUtil;
 import org.incendo.cloud.CommandManager;
+import org.incendo.cloud.permission.Permission;
+import org.incendo.cloud.permission.PredicatePermission;
 
 import java.util.UUID;
+import java.util.function.Predicate;
 
 public class ToggleCommand implements BuilderCommand {
 
     private static final ConfigManager configManager = KnockbackSyncBase.INSTANCE.getConfigManager();
     private static final PermissionChecker permissionChecker = KnockbackSyncBase.INSTANCE.getPermissionChecker();
+    private static final String TOGGLE_GLOBAL_PERMISSION = "knockbacksync.toggle.global";
+    private static final String TOGGLE_SELF_PERMISSION = "knockbacksync.toggle.self";
+    private static final String TOGGLE_OTHER_PERMISSION = "knockbacksync.toggle.other";
+
 
     @Override
     public void register(CommandManager<Sender> manager) {
@@ -24,12 +31,21 @@ public class ToggleCommand implements BuilderCommand {
             manager.commandBuilder("knockbacksync", "kbsync", "kbs")
                 .literal("toggle")
                 .optional("target", KnockbackSyncBase.INSTANCE.getPlayerSelectorParser().descriptor())
+                    .permission((sender -> {
+                        Predicate<Sender> senderPredicate = (s) -> {
+                            return s.hasPermission(TOGGLE_GLOBAL_PERMISSION, false)
+                                    || sender.hasPermission(TOGGLE_SELF_PERMISSION, true)
+                                    || sender.hasPermission(TOGGLE_OTHER_PERMISSION, false);
+                        };
+
+                        return PredicatePermission.of(senderPredicate).testPermission(sender);
+                    }))
                 .handler(context -> {
                     Sender sender = context.sender();
                     PlayerSelector targetSelector = context.getOrDefault("target", null);
                     if (targetSelector == null) {
                         // Global toggle
-                        if (permissionChecker.hasPermission(sender, "knockbacksync.toggle.global", false)) {
+                        if (permissionChecker.hasPermission(sender, TOGGLE_GLOBAL_PERMISSION, false)) {
                             toggleGlobalKnockback(configManager, sender);
                         } else {
                             sender.sendMessage(ChatUtil.translateAlternateColorCodes('&', "&cYou don't have permission to toggle the global setting."));
@@ -37,10 +53,10 @@ public class ToggleCommand implements BuilderCommand {
                     } else {
                         PlatformPlayer target = targetSelector.getSinglePlayer();
                         boolean senderIsTarget = sender.getUniqueId() == target.getUUID();
-                        if (!senderIsTarget && !permissionChecker.hasPermission(sender, "knockbacksync.toggle.other", false)) {
+                        if (!senderIsTarget && !permissionChecker.hasPermission(sender, TOGGLE_OTHER_PERMISSION, false)) {
                             sender.sendMessage("You do not have permission to toggle the knockback of other player's.");
                             return;
-                        } else if (senderIsTarget && !permissionChecker.hasPermission(sender, "knockbacksync.toggle.self", true)) {
+                        } else if (senderIsTarget && !permissionChecker.hasPermission(sender, TOGGLE_SELF_PERMISSION, true)) {
                             sender.sendMessage("You do not have permission to toggle your knockback.");
                             return;
                         }
