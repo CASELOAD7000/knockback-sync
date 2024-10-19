@@ -3,10 +3,6 @@ package me.caseload.knockbacksync;
 import com.github.retrooper.packetevents.PacketEvents;
 import io.github.retrooper.packetevents.factory.fabric.FabricPacketEventsBuilder;
 import lombok.Getter;
-import me.caseload.knockbacksync.command.PlayerSelector;
-import me.caseload.knockbacksync.command.subcommand.MainCommand;
-import me.caseload.knockbacksync.command.subcommand.PingCommand;
-import me.caseload.knockbacksync.command.subcommand.StatusCommand;
 import me.caseload.knockbacksync.sender.FabricPlayerSelectorParser;
 import me.caseload.knockbacksync.sender.FabricSenderFactory;
 import me.caseload.knockbacksync.listener.fabric.FabricPlayerDamageListener;
@@ -16,7 +12,6 @@ import me.caseload.knockbacksync.listener.fabric.FabricTickRateChangeListener;
 import me.caseload.knockbacksync.permission.FabricPermissionChecker;
 import me.caseload.knockbacksync.permission.PermissionChecker;
 import me.caseload.knockbacksync.scheduler.FabricSchedulerAdapter;
-import me.caseload.knockbacksync.sender.Sender;
 import me.caseload.knockbacksync.stats.custom.FabricStatsManager;
 import me.caseload.knockbacksync.stats.custom.PluginJarHashProvider;
 import me.caseload.knockbacksync.world.FabricServer;
@@ -42,20 +37,13 @@ public class KBSyncFabricBase extends KnockbackSyncBase {
 
     public KBSyncFabricBase() {
         super.playerSelectorParser = new FabricPlayerSelectorParser<>();
-        statsManager = new FabricStatsManager();
-        platformServer = new FabricServer();
-        URL jarUrl = null;
-        Optional<ModContainer> modContainer = FabricLoader.getInstance().getModContainer("knockbacksync");
-        if (modContainer.isPresent()) {
-            String jarPath = modContainer.get().getRootPath().getFileSystem().toString();
-            jarPath = jarPath.replaceAll("^jar:", "").replaceAll("!/$", "");
-            try {
-                jarUrl = new File(jarPath).toURI().toURL();
-            } catch (MalformedURLException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        pluginJarHashProvider = new PluginJarHashProvider(jarUrl);
+        super.commandManager = new FabricServerCommandManager<>(
+                ExecutionCoordinator.simpleCoordinator(),
+                fabricSenderFactory
+        );
+        super.statsManager = new FabricStatsManager();
+        super.platformServer = new FabricServer();
+        super.pluginJarHashProvider = new PluginJarHashProvider(getJarURL());
     }
 
     @Override
@@ -93,29 +81,6 @@ public class KBSyncFabricBase extends KnockbackSyncBase {
     }
 
     @Override
-    protected void registerCommands() {
-        FabricServerCommandManager<Sender> fabricServerCommandManager = new FabricServerCommandManager<>(
-                ExecutionCoordinator.simpleCoordinator(),
-                fabricSenderFactory
-        );
-
-        new MainCommand().register(fabricServerCommandManager);
-        new PingCommand().register(fabricServerCommandManager);
-        new StatusCommand().register(fabricServerCommandManager);
-
-
-
-//        fabricServerCommandManager.commandRegistrationHandler().registerCommand(
-//                fabricServerCommandManager.commandBuilder("knockbacksync", "kbsync", "kbs")
-//                        .literal("ping")
-//                        .optional("target", StringParser.stringParser())
-//                        .handler(commandContext -> {
-//                            commandContext.sender().sendMessage("Hello World");
-//                        }).build()
-//        );
-    }
-
-    @Override
     protected String getVersion() {
         return FabricLoader.getInstance().getModContainer("knockbacksync")
                 .map(modContainer -> modContainer.getMetadata().getVersion().getFriendlyString())
@@ -148,5 +113,20 @@ public class KBSyncFabricBase extends KnockbackSyncBase {
                 .debug(false);
 
         PacketEvents.getAPI().init();
+    }
+
+    private URL getJarURL() {
+        URL jarUrl = null;
+        Optional<ModContainer> modContainer = FabricLoader.getInstance().getModContainer("knockbacksync");
+        if (modContainer.isPresent()) {
+            String jarPath = modContainer.get().getRootPath().getFileSystem().toString();
+            jarPath = jarPath.replaceAll("^jar:", "").replaceAll("!/$", "");
+            try {
+                jarUrl = new File(jarPath).toURI().toURL();
+            } catch (MalformedURLException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return jarUrl;
     }
 }

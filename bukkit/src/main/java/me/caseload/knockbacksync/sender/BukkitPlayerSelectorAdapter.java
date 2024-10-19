@@ -1,6 +1,6 @@
 package me.caseload.knockbacksync.sender;
 
-import me.caseload.knockbacksync.command.PlayerSelector;
+import me.caseload.knockbacksync.command.generic.PlayerSelector;
 import me.caseload.knockbacksync.player.BukkitPlayer;
 import me.caseload.knockbacksync.player.PlatformPlayer;
 

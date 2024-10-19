@@ -1,13 +1,12 @@
 package me.caseload.knockbacksync.command.subcommand;
 
 import me.caseload.knockbacksync.KnockbackSyncBase;
-import me.caseload.knockbacksync.command.PlayerSelector;
+import me.caseload.knockbacksync.command.generic.BuilderCommand;
+import me.caseload.knockbacksync.command.generic.PlayerSelector;
 import me.caseload.knockbacksync.sender.Sender;
 import org.incendo.cloud.CommandManager;
-import org.incendo.cloud.permission.Permission;
-import org.incendo.cloud.permission.PermissionResult;
 
-public class PingCommand {
+public class PingCommand implements BuilderCommand {
     public void register(CommandManager<Sender> manager) {
         manager.command(
             manager.commandBuilder("knockbacksync", "kbsync", "kbs")

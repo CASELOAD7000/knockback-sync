@@ -2,7 +2,13 @@ package me.caseload.knockbacksync;
 
 import com.github.retrooper.packetevents.PacketEvents;
 import lombok.Getter;
-import me.caseload.knockbacksync.command.AbstractPlayerSelectorParser;
+import me.caseload.knockbacksync.command.generic.AbstractPlayerSelectorParser;
+import me.caseload.knockbacksync.command.MainCommand;
+import me.caseload.knockbacksync.command.generic.BuilderCommand;
+import me.caseload.knockbacksync.command.subcommand.PingCommand;
+import me.caseload.knockbacksync.command.subcommand.ReloadCommand;
+import me.caseload.knockbacksync.command.subcommand.StatusCommand;
+import me.caseload.knockbacksync.command.subcommand.ToggleCommand;
 import me.caseload.knockbacksync.sender.Sender;
 import me.caseload.knockbacksync.listener.packetevents.AttributeChangeListener;
 import me.caseload.knockbacksync.listener.packetevents.PingReceiveListener;
@@ -12,10 +18,13 @@ import me.caseload.knockbacksync.scheduler.SchedulerAdapter;
 import me.caseload.knockbacksync.stats.custom.PluginJarHashProvider;
 import me.caseload.knockbacksync.stats.custom.StatsManager;
 import me.caseload.knockbacksync.world.PlatformServer;
+import org.incendo.cloud.CommandManager;
 import org.kohsuke.github.GitHub;
 
 import java.io.File;
 import java.io.InputStream;
+import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Logger;
 
 // Base class
@@ -30,6 +39,7 @@ public abstract class KnockbackSyncBase {
     protected SchedulerAdapter scheduler;
     @Getter
     protected ConfigManager configManager;
+    protected CommandManager<Sender> commandManager;
 
     @Getter
     protected AbstractPlayerSelectorParser<Sender> playerSelectorParser;
@@ -98,7 +108,17 @@ public abstract class KnockbackSyncBase {
 
     protected abstract void registerPlatformListeners();
 
-    protected abstract void registerCommands();
+    protected void registerCommands() {
+        List<BuilderCommand> list = Arrays.asList(
+            new MainCommand(),
+            new ReloadCommand(),
+            new PingCommand(),
+            new StatusCommand(),
+            new ToggleCommand()
+        );
+        list.forEach(command -> command.register(commandManager));
+    }
+
 
     protected abstract String getVersion();
 

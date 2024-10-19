@@ -2,7 +2,7 @@ package me.caseload.knockbacksync;
 
 import com.github.retrooper.packetevents.PacketEvents;
 import io.github.retrooper.packetevents.factory.spigot.SpigotPacketEventsBuilder;
-import me.caseload.knockbacksync.command.PlayerSelector;
+import me.caseload.knockbacksync.command.generic.PlayerSelector;
 import me.caseload.knockbacksync.command.bukkit.MainCommand;
 import me.caseload.knockbacksync.listener.bukkit.BukkitPlayerDamageListener;
 import me.caseload.knockbacksync.listener.bukkit.BukkitPlayerJoinQuitListener;
@@ -21,7 +21,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.incendo.cloud.bukkit.CloudBukkitCapabilities;
-import org.incendo.cloud.bukkit.parser.selector.SinglePlayerSelectorParser;
 import org.incendo.cloud.execution.ExecutionCoordinator;
 import org.incendo.cloud.paper.LegacyPaperCommandManager;
 
@@ -33,18 +32,19 @@ public class KBSyncBukkitBase extends KnockbackSyncBase {
 
     private final JavaPlugin plugin;
     private final BukkitSenderFactory bukkitSenderFactory;
+    private final PluginPermissionChecker permissionChecker = new PluginPermissionChecker();
 
     public KBSyncBukkitBase(JavaPlugin plugin) {
         this.plugin = plugin;
         this.bukkitSenderFactory = new BukkitSenderFactory(this);
-    }
-
-    private final PluginPermissionChecker permissionChecker = new PluginPermissionChecker();
-
-    {
-        statsManager = new BukkitStatsManager();
-        platformServer = new BukkitServer();
-        pluginJarHashProvider = new PluginJarHashProvider(this.getClass().getProtectionDomain().getCodeSource().getLocation());
+        super.commandManager = new LegacyPaperCommandManager<>(
+                this.plugin,
+                ExecutionCoordinator.simpleCoordinator(),
+                bukkitSenderFactory
+        );
+        super.statsManager = new BukkitStatsManager();
+        super.platformServer = new BukkitServer();
+        super.pluginJarHashProvider = new PluginJarHashProvider(this.getClass().getProtectionDomain().getCodeSource().getLocation());
     }
 
     @Override
@@ -100,37 +100,15 @@ public class KBSyncBukkitBase extends KnockbackSyncBase {
 
     @Override
     protected void registerCommands() {
-        new MainCommand(this).register();
-        LegacyPaperCommandManager<Sender> legacyPaperCommandManager = new LegacyPaperCommandManager<>(
-                this.plugin,
-                ExecutionCoordinator.simpleCoordinator(),
-                bukkitSenderFactory
-        );
-
-        if (legacyPaperCommandManager.hasCapability(CloudBukkitCapabilities.NATIVE_BRIGADIER)) {
-            legacyPaperCommandManager.registerBrigadier();
-        } else if (legacyPaperCommandManager.hasCapability(CloudBukkitCapabilities.ASYNCHRONOUS_COMPLETION)) {
-            legacyPaperCommandManager.registerAsynchronousCompletions();
+        super.registerCommands();
+        if (commandManager instanceof LegacyPaperCommandManager) {
+            LegacyPaperCommandManager<Sender> legacyPaperCommandManager = (LegacyPaperCommandManager<Sender>) commandManager;
+            if (legacyPaperCommandManager.hasCapability(CloudBukkitCapabilities.NATIVE_BRIGADIER)) {
+                legacyPaperCommandManager.registerBrigadier();
+            } else if (commandManager.hasCapability(CloudBukkitCapabilities.ASYNCHRONOUS_COMPLETION)) {
+                legacyPaperCommandManager.registerAsynchronousCompletions();
+            }
         }
-
-        legacyPaperCommandManager.command(
-                legacyPaperCommandManager.commandBuilder("knockbacksync", "kbsync", "kbs")
-                        .literal("ping")
-                        .optional("target", SinglePlayerSelectorParser.singlePlayerSelectorParser())
-                        .handler(commandContext -> {
-                            PlayerSelector selector = new BukkitPlayerSelectorAdapter(commandContext.get("target"));
-                            commandContext.sender().sendMessage("Hello World");
-                        })
-        );
-
-
-
-//            CommandDispatcher dispatcher = Brigadier.getCommandDispatcher();
-//            dispatcher.register(KnockbackSyncCommand.build());
-//            dispatcher.register(
-//                    Commands.literal("kbsync")
-//                            .redirect(dispatcher.getRoot().getChild("knockbacksync"))
-//            );
     }
 
     @Override

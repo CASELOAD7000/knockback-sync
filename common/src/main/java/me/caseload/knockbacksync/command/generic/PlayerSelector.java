@@ -1,4 +1,4 @@
-package me.caseload.knockbacksync.command;
+package me.caseload.knockbacksync.command.generic;
 
 import me.caseload.knockbacksync.player.PlatformPlayer;
 
