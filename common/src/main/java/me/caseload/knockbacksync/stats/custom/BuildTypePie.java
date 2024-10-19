@@ -8,10 +8,7 @@ import org.kohsuke.github.GHAsset;
 import org.kohsuke.github.GHRelease;
 import org.kohsuke.github.GitHub;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -70,7 +67,11 @@ public class BuildTypePie extends SimplePie {
 
                 try (InputStream inputStream = new URL(downloadUrl).openStream();
                      FileOutputStream outputStream = new FileOutputStream(new File(dataFolder, asset.getName()))) {
-                    inputStream.transferTo(outputStream);
+                    byte[] buffer = new byte[4096];
+                    int bytesRead;
+                    while ((bytesRead = inputStream.read(buffer)) != -1) {
+                        outputStream.write(buffer, 0, bytesRead);
+                    }
                 }
 
                 KnockbackSyncBase.INSTANCE.getLogger().info("Downloaded: " + asset.getName());
@@ -88,7 +89,13 @@ public class BuildTypePie extends SimplePie {
 
     private static String readStringFromURL(String urlString) throws IOException {
         try (InputStream inputStream = new URL(urlString).openStream()) {
-            return new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
+            ByteArrayOutputStream result = new ByteArrayOutputStream();
+            byte[] buffer = new byte[4096];
+            int bytesRead;
+            while ((bytesRead = inputStream.read(buffer)) != -1) {
+                result.write(buffer, 0, bytesRead);
+            }
+            return result.toString("UTF-8");
         }
     }
 }
