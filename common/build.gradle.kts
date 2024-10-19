@@ -23,7 +23,6 @@ dependencies {
         exclude(group = "commons-io", module = "commons-io")
         exclude(group = "org.apache.commons", module = "commons-lang3")
     }
-    implementation("dev.jorel:commandapi-bukkit-shade:9.5.3")
 
     api("net.kyori:adventure-api:4.11.0") {
         exclude(module = "adventure-bom")

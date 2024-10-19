@@ -39,7 +39,6 @@ dependencies {
     shadeThisThing(implementation("com.fasterxml.jackson.core:jackson-databind:2.17.2")!!)
     shadeThisThing(implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.17.2")!!)
     shadeThisThing(implementation("com.github.retrooper:packetevents-spigot:2.5.0")!!)
-    shadeThisThing(implementation("dev.jorel:commandapi-bukkit-shade:9.5.3")!!)
     shadeThisThing(implementation("net.kyori:adventure-platform-bukkit:4.3.4")!!)
     shadeThisThing(implementation("org.incendo:cloud-paper:2.0.0-beta.10")!!)
     shadeThisThing(implementation("org.incendo:cloud-core:2.0.0")!!)
