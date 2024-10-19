@@ -2,6 +2,7 @@ package me.caseload.knockbacksync.stats.custom;
 
 import me.caseload.knockbacksync.stats.CustomChart;
 import me.caseload.knockbacksync.stats.JsonObjectBuilder;
+import org.jetbrains.annotations.NotNull;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.io.*;
@@ -94,20 +95,7 @@ public class MetricsBase {
             boolean logSentData,
             boolean logResponseStatusText,
             boolean skipRelocateCheck) {
-        ScheduledThreadPoolExecutor scheduler =
-                new ScheduledThreadPoolExecutor(
-                        1,
-                        task -> {
-                            Thread thread = new Thread(task, "bStats-Metrics");
-                            thread.setDaemon(true);
-                            return thread;
-                        });
-        // We want delayed tasks (non-periodic) that will execute in the future to be
-        // cancelled when the scheduler is shutdown.
-        // Otherwise, we risk preventing the server from shutting down even when
-        // MetricsBase#shutdown() is called
-        scheduler.setExecuteExistingDelayedTasksAfterShutdownPolicy(false);
-        this.scheduler = scheduler;
+        this.scheduler = getScheduledThreadPoolExecutor();
         this.platform = platform;
         this.serverUuid = serverUuid;
         this.serviceId = serviceId;
@@ -129,6 +117,23 @@ public class MetricsBase {
             // bStats
             startSubmitting();
         }
+    }
+
+    private static @NotNull ScheduledThreadPoolExecutor getScheduledThreadPoolExecutor() {
+        ScheduledThreadPoolExecutor scheduler =
+                new ScheduledThreadPoolExecutor(
+                        1,
+                        task -> {
+                            Thread thread = new Thread(task, "bStats-Metrics");
+                            thread.setDaemon(true);
+                            return thread;
+                        });
+        // We want delayed tasks (non-periodic) that will execute in the future to be
+        // cancelled when the scheduler is shutdown.
+        // Otherwise, we risk preventing the server from shutting down even when
+        // MetricsBase#shutdown() is called
+        scheduler.setExecuteExistingDelayedTasksAfterShutdownPolicy(false);
+        return scheduler;
     }
 
     /**

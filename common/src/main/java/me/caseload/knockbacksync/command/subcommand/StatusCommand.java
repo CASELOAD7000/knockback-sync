@@ -6,7 +6,6 @@ import me.caseload.knockbacksync.command.generic.PlayerSelector;
 import me.caseload.knockbacksync.manager.ConfigManager;
 import me.caseload.knockbacksync.manager.PlayerDataManager;
 import me.caseload.knockbacksync.player.PlatformPlayer;
-import me.caseload.knockbacksync.player.PlayerData;
 import me.caseload.knockbacksync.sender.Sender;
 import me.caseload.knockbacksync.util.ChatUtil;
 import org.incendo.cloud.CommandManager;
@@ -24,7 +23,6 @@ public class StatusCommand implements BuilderCommand {
                         .optional("target", KnockbackSyncBase.INSTANCE.getPlayerSelectorParser().descriptor())
                         .handler(context -> {
                             Sender sender = context.sender();
-                            ConfigManager configManager = KnockbackSyncBase.INSTANCE.getConfigManager();
 
                             PlayerSelector targetSelector = context.getOrDefault("target", null);
                                 if (targetSelector == null) {

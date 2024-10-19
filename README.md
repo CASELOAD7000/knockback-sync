@@ -32,7 +32,7 @@ or restart your server.
 **It promotes consistency across all servers.** Extensive testing with top players has shown that an offset of 25 provides a balanced experience for everyone.
 
 ### How do I change the ping offset?
-**You must run a modified build of KnockbackSync.** The variable can be changed inside of the [PlayerData](src/main/java/me/caseload/knockbacksync/manager/PlayerData.java) class.
+**You must run a modified build of KnockbackSync.** The variable can be changed inside of the [PlayerData](common/src/main/java/me/caseload/knockbacksync/player/PlayerData.java) class.
 
 >>>>>>> Stashed changes
 
@@ -178,4 +178,4 @@ This command reloads the KnockbackSync plugin's configuration file.
 ## License
 GNU General Public License v3.0 or later
 
-See [LICENSE](LICENSE) to see the full text.
+See [LICENSE](https://www.gnu.org/licenses/gpl-3.0.en.html) to see the full text.

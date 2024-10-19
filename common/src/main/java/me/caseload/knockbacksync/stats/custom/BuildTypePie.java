@@ -65,8 +65,7 @@ public class BuildTypePie extends SimplePie {
                 JsonObject jsonObject = JsonParser.parseString(jsonContent).getAsJsonObject();
                 String downloadUrl = jsonObject.get("browser_download_url").getAsString();
 
-                try (InputStream inputStream = new URL(downloadUrl).openStream();
-                     FileOutputStream outputStream = new FileOutputStream(new File(dataFolder, asset.getName()))) {
+                try (InputStream inputStream = new URL(downloadUrl).openStream(); FileOutputStream outputStream = new FileOutputStream(new File(dataFolder, asset.getName()))) {
                     byte[] buffer = new byte[4096];
                     int bytesRead;
                     while ((bytesRead = inputStream.read(buffer)) != -1) {

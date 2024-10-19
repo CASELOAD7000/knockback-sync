@@ -45,13 +45,9 @@ public abstract class SenderFactory<P extends KnockbackSyncBase, T> implements A
         return new AbstractSender<>(this.plugin, this, sender);
     }
 
+    @SuppressWarnings("unchecked")
     public final T unwrap(Sender sender) {
         Objects.requireNonNull(sender, "sender");
         return (T) sender.getSender();
-    }
-
-    @Override
-    public void close() {
-
     }
 }

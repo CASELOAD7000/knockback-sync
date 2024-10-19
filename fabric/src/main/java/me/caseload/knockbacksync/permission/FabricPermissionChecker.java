@@ -1,6 +1,5 @@
 package me.caseload.knockbacksync.permission;
 
-import me.caseload.knockbacksync.KnockbackSyncBase;
 import me.caseload.knockbacksync.player.FabricPlayer;
 import me.caseload.knockbacksync.player.PlatformPlayer;
 import me.caseload.knockbacksync.sender.Sender;

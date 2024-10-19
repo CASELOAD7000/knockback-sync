@@ -18,13 +18,13 @@ public class PluginPermissionChecker implements PermissionChecker {
 
     // Currently shouldn't be called
     @Override
-    public boolean hasPermission(Object CommandSourceStack, String s, boolean defaultIfUnset) {
-        return false;
+    public boolean hasPermission(Object commandSourceStack, String s, boolean defaultIfUnset) {
+        throw new IllegalArgumentException("Attempted to check permission of an object that wasn't a platformplayer or Sender. This should never happen on Bukkit!");
     }
 
     @Override
     public boolean hasPermission(Sender source, String s, boolean defaultIfUnset) {
-        return false;
+        return source.hasPermission(s, defaultIfUnset);
     }
 
     @Override

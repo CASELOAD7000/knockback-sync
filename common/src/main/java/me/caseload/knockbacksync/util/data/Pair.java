@@ -1,7 +1,10 @@
 package me.caseload.knockbacksync.util.data;
 
+import lombok.Getter;
+
 import java.util.Objects;
 
+@Getter
 public class Pair<A, B> {
     private final A first;
     private final B second;
@@ -13,14 +16,6 @@ public class Pair<A, B> {
 
     public static <T, K> Pair<T, K> of(T a, K b) {
         return new Pair<T, K>(a, b);
-    }
-
-    public A getFirst() {
-        return first;
-    }
-
-    public B getSecond() {
-        return second;
     }
 
     @Override

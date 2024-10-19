@@ -66,7 +66,7 @@ public class PlayerData {
     public Queue<Pair<Long, Long>> keepaliveMap = new LinkedList<>();
     public long lastKeepAliveID = 0;
     @Getter
-    private JitterCalculator jitterCalculator = new JitterCalculator();
+    private final JitterCalculator jitterCalculator = new JitterCalculator();
     @Getter
     @Setter
     private double jitter;

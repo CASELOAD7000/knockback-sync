@@ -1,8 +1,5 @@
 package me.caseload.knockbacksync.command.subcommand;
 
-import com.mojang.brigadier.Command;
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.mojang.brigadier.context.CommandContext;
 import me.caseload.knockbacksync.KnockbackSyncBase;
 import me.caseload.knockbacksync.command.generic.BuilderCommand;
 import me.caseload.knockbacksync.permission.PermissionChecker;
@@ -14,8 +11,6 @@ import org.incendo.cloud.permission.PredicatePermission;
 import java.util.function.Predicate;
 
 public class ToggleOffGroundSubcommand implements BuilderCommand {
-
-    private static final PermissionChecker permissionChecker = KnockbackSyncBase.INSTANCE.getPermissionChecker();
 
     @Override
     public void register(CommandManager<Sender> manager) {

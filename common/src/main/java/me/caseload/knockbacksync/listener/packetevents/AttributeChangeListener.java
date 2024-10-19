@@ -18,9 +18,9 @@ public class AttributeChangeListener extends PacketListenerAbstract {
     public static final UUID SPRINTING_MODIFIER_UUID =
             UUID.fromString("662A6B8D-DA3E-4C1C-8813-96EA6097278D");
 
-    double minGravity = -1;
-    double maxGravity = 1;
-    double defaultGravity = 0.08;
+    final double minGravity = -1;
+    final double maxGravity = 1;
+    final double defaultGravity = 0.08;
     double currentGravity;
 
     public AttributeChangeListener() {

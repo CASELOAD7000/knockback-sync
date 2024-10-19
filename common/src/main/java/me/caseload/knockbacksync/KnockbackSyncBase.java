@@ -32,7 +32,7 @@ public abstract class KnockbackSyncBase {
     public static Logger LOGGER;
     public static KnockbackSyncBase INSTANCE;
 
-    public Platform platform;
+    public final Platform platform;
     public StatsManager statsManager;
     public PlatformServer platformServer;
     @Getter protected PluginJarHashProvider pluginJarHashProvider;
