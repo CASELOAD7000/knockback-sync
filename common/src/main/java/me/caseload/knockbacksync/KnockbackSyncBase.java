@@ -46,7 +46,6 @@ public abstract class KnockbackSyncBase {
     protected KnockbackSyncBase() {
         this.platform = getPlatform();
         INSTANCE = this;
-        configManager = new ConfigManager();
     }
 
     private Platform getPlatform() {

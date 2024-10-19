@@ -12,17 +12,6 @@ val shadeThisThing: Configuration by configurations.creating {
     isTransitive = true
 }
 
-//sourceSets {
-//    main {
-//        java {
-//            srcDir(project(":common").sourceSets.main.get().java.srcDirs)
-//        }
-//        resources {
-//            srcDir(project(":common").sourceSets.main.get().resources.srcDirs)
-//        }
-//    }
-//}
-
 // TODO migrate to only including sourceset for compile, test and javadoc tasks
 // Currently must build with gradle build -x test to skip test
 tasks.withType<JavaCompile>().configureEach {

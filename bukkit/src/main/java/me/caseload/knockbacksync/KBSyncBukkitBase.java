@@ -5,10 +5,12 @@ import io.github.retrooper.packetevents.factory.spigot.SpigotPacketEventsBuilder
 import me.caseload.knockbacksync.listener.bukkit.BukkitPlayerDamageListener;
 import me.caseload.knockbacksync.listener.bukkit.BukkitPlayerJoinQuitListener;
 import me.caseload.knockbacksync.listener.bukkit.BukkitPlayerKnockbackListener;
+import me.caseload.knockbacksync.manager.ConfigManager;
 import me.caseload.knockbacksync.permission.PermissionChecker;
 import me.caseload.knockbacksync.permission.PluginPermissionChecker;
 import me.caseload.knockbacksync.scheduler.BukkitSchedulerAdapter;
 import me.caseload.knockbacksync.scheduler.FoliaSchedulerAdapter;
+import me.caseload.knockbacksync.sender.BukkitPlayerSelectorParser;
 import me.caseload.knockbacksync.sender.BukkitSenderFactory;
 import me.caseload.knockbacksync.sender.Sender;
 import me.caseload.knockbacksync.stats.custom.BukkitStatsManager;
@@ -27,17 +29,14 @@ import java.util.logging.Logger;
 
 public class KBSyncBukkitBase extends KnockbackSyncBase {
 
-    private final JavaPlugin plugin = KBSyncBukkitLoaderPlugin.getPlugin(KBSyncBukkitLoaderPlugin.class);
-    private final BukkitSenderFactory bukkitSenderFactory;
+    private final JavaPlugin plugin;
+    private final BukkitSenderFactory bukkitSenderFactory = new BukkitSenderFactory(this);
     private final PluginPermissionChecker permissionChecker = new PluginPermissionChecker();
 
-    public KBSyncBukkitBase() {
-        this.bukkitSenderFactory = new BukkitSenderFactory(this);
-        super.commandManager = new LegacyPaperCommandManager<>(
-                this.plugin,
-                ExecutionCoordinator.simpleCoordinator(),
-                bukkitSenderFactory
-        );
+    public KBSyncBukkitBase(JavaPlugin plugin) {
+        this.plugin = plugin;
+        super.configManager = new ConfigManager();
+        super.playerSelectorParser = new BukkitPlayerSelectorParser<>();
         super.statsManager = new BukkitStatsManager();
         super.platformServer = new BukkitServer();
         super.pluginJarHashProvider = new PluginJarHashProvider(this.getClass().getProtectionDomain().getCodeSource().getLocation());
@@ -96,7 +95,11 @@ public class KBSyncBukkitBase extends KnockbackSyncBase {
 
     @Override
     protected void registerCommands() {
-        super.registerCommands();
+        super.commandManager = new LegacyPaperCommandManager<>(
+                this.plugin,
+                ExecutionCoordinator.simpleCoordinator(),
+                bukkitSenderFactory
+        );
         if (commandManager instanceof LegacyPaperCommandManager) {
             LegacyPaperCommandManager<Sender> legacyPaperCommandManager = (LegacyPaperCommandManager<Sender>) commandManager;
             if (legacyPaperCommandManager.hasCapability(CloudBukkitCapabilities.NATIVE_BRIGADIER)) {
@@ -105,6 +108,7 @@ public class KBSyncBukkitBase extends KnockbackSyncBase {
                 legacyPaperCommandManager.registerAsynchronousCompletions();
             }
         }
+        super.registerCommands();
     }
 
     @Override

@@ -82,7 +82,7 @@ public class PingReceiveListener extends PacketListenerAbstract {
     }
 
     private void handlePingCalculationPackets(PacketReceiveEvent event, PlayerData playerData, long id) {
-        long pingNanos = (System.nanoTime() - playerData.transactionsSent.remove(0).getSecond());
+        long pingNanos = (System.nanoTime() - playerData.transactionsSent.poll().getSecond());
         double diffMillisDouble = pingNanos / 1_000_000.0;
 
         playerData.setPreviousPing(playerData.getPing());
