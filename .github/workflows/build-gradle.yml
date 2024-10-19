@@ -201,6 +201,7 @@ jobs:
             spigot
             paper
             folia
+            purpur
 
           game-versions: |
             >=1.16.5
