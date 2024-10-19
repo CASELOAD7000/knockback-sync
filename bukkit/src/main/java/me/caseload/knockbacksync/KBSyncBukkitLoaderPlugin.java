@@ -7,7 +7,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public final class KBSyncBukkitLoaderPlugin extends JavaPlugin {
 
-    private final KnockbackSyncBase core = new KBSyncBukkitBase(this);
+    private final KnockbackSyncBase core = new KBSyncBukkitBase();
 
     @Override
     public void onLoad() {

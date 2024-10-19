@@ -27,12 +27,11 @@ import java.util.logging.Logger;
 
 public class KBSyncBukkitBase extends KnockbackSyncBase {
 
-    private final JavaPlugin plugin;
+    private final JavaPlugin plugin = KBSyncBukkitLoaderPlugin.getPlugin(KBSyncBukkitLoaderPlugin.class);
     private final BukkitSenderFactory bukkitSenderFactory;
     private final PluginPermissionChecker permissionChecker = new PluginPermissionChecker();
 
-    public KBSyncBukkitBase(JavaPlugin plugin) {
-        this.plugin = plugin;
+    public KBSyncBukkitBase() {
         this.bukkitSenderFactory = new BukkitSenderFactory(this);
         super.commandManager = new LegacyPaperCommandManager<>(
                 this.plugin,

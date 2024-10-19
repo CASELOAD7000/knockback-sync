@@ -121,7 +121,6 @@ public class PlayerData {
 //        return id == lastKeepAliveID;
 //    }
 
-    // Doesn't actually send a ping, sends a keepalive, more accurate and processed faster
     public void sendPing(boolean async) {
         if (user == null || user.getEncoderState() != ConnectionState.PLAY) return;
 
