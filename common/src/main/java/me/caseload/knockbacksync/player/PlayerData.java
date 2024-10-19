@@ -130,6 +130,8 @@ public class PlayerData {
     public void sendPing(boolean async) {
         if (user == null || user.getEncoderState() != ConnectionState.PLAY) return;
 
+        KnockbackSyncBase.INSTANCE.getConfigManager().getConfigWrapper().getString("ping_strategy")
+
         if (async) {
             ChannelHelper.runInEventLoop(user.getChannel(), () -> {
                 // We call sendPacket instead of writePacket because it flushes immediately

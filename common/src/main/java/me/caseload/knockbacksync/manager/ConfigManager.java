@@ -19,6 +19,8 @@ import java.util.Map;
 @Setter
 public class ConfigManager {
 
+    public static final long CONFIG_VERSION = 2;
+
     private boolean toggled;
     private boolean runnableEnabled;
     private boolean updateAvailable;
@@ -116,5 +118,55 @@ public class ConfigManager {
         playerDisableMessage = config.getString("player_disable_message", "&cSuccessfully disabled KnockbackSync for %player%.");
         playerIneligibleMessage = config.getString("player_ineligible_message", "&c%player% is ineligible for KnockbackSync. If you believe this is an error, please open an issue on the github page.");
         reloadMessage = config.getString("reload_message", "&aSuccessfully reloaded KnockbackSync.");
+    }
+
+    public void updateConfig() {
+        ConfigWrapper oldConfig = getConfigWrapper();
+        long configVersion = oldConfig.getLong("config_version", 0);
+
+        if (configVersion < CONFIG_VERSION) {
+            KnockbackSyncBase.INSTANCE.getLogger().info("Updating configuration file");
+            // Backup old config
+            File backupFile = new File(configFile.getParentFile(), "config-version-" + configVersion + ".yml");
+            if (configFile.renameTo(backupFile)) {
+                KnockbackSyncBase.INSTANCE.getLogger().info("Backed up old config to " + backupFile.getName());
+            } else {
+                KnockbackSyncBase.INSTANCE.getLogger().warning("Failed to backup old config");
+                return;
+            }
+
+            // Create new config with default values
+            KnockbackSyncBase.INSTANCE.saveDefaultConfig();
+            reloadConfig();
+
+            // Transfer existing settings
+            ConfigWrapper newConfig = getConfigWrapper();
+            transferSetting(oldConfig, newConfig, "enabled");
+            transferSetting(oldConfig, newConfig, "runnable.enabled");
+            transferSetting(oldConfig, newConfig, "runnable.interval");
+            transferSetting(oldConfig, newConfig, "notify_updates");
+            transferSetting(oldConfig, newConfig, "runnable.timer");
+            transferSetting(oldConfig, newConfig, "spike_threshold");
+            transferSetting(oldConfig, newConfig, "enable_message");
+            transferSetting(oldConfig, newConfig, "disable_message");
+            transferSetting(oldConfig, newConfig, "player_enable_message");
+            transferSetting(oldConfig, newConfig, "player_disable_message");
+            transferSetting(oldConfig, newConfig, "player_ineligible_message");
+            transferSetting(oldConfig, newConfig, "reload_message");
+
+            // Set new config version
+            newConfig.set("config_version", CONFIG_VERSION);
+
+            // Save updated config
+            saveConfig();
+
+            KnockbackSyncBase.INSTANCE.getLogger().info("Config updated to version " + CONFIG_VERSION);
+        }
+    }
+
+    private void transferSetting(ConfigWrapper oldConfig, ConfigWrapper newConfig, String key) {
+        if (oldConfig.contains(key)) {
+            newConfig.set(key, oldConfig.get(key));
+        }
     }
 }

@@ -2,6 +2,9 @@
 #      KnockbackSync Configuration      #
 #########################################
 
+# Do not modify!
+config-version: 2
+
 # Plugin enabled state
 # Toggleable using /knockbacksync toggle
 # Required permission: knockbacksync.toggle
@@ -15,7 +18,7 @@ notify_updates: true
 # Disabling this may lead to inaccuracies in calculations
 runnable:
   enabled: true       # Runnable enabled state
-  interval: 5         # The interval in ticks between sending out pings to players
+  interval: 20         # The interval in ticks between sending out pings to players
   combat_timer: 30    # The timer in ticks before being considered out of combat
 
 # The minimum change in ping required for it to be considered a lag spike.
@@ -23,6 +26,19 @@ runnable:
 # the threshold, the previous ping value is used to avoid calculation inaccuracies.
 spike_threshold: 20
 
+# OPTIONS: KEEPALIVE, PING, TRANSACTION - PING and TRANSACTION are aliases for each other and are effectively the same
+# The packet type used to measure ping by the runnable.
+# KEEPALIVE is the most accurate however sending too many of them too often (such as using a runnable with a low interval)
+# - May disconnect players, especially laggy ones if sent too often
+# - The default interval of 20 ticks or 1 second
+#    means it is in theory possible for a player to have a ping spike in-between two sword attacks
+#    and have it immediately spike back down, slightly throwing off knockback synchronization
+#    in practice this is very rare and the extra ping accuracy and precision is more valued
+# PING/TRANSACTION can be sent more often (and therefore better detect ping spikes) but are less precise
+# ping measured in ms with PING/TRANSACTION is typically within ± 5ms of actual but can be up to 50ms off
+ping_strategy: "KEEPALIVE"
+
+# This setting has yet to be implemented. Enable if you want it to be enabled as soon as the next update add support
 enable_experimental_offground: false
 
 enable_message: "&aSuccessfully enabled KnockbackSync."

@@ -61,4 +61,12 @@ public class ConfigWrapper {
         }
         current.put(parts[parts.length - 1], value);
     }
+
+    public boolean contains(String path) {
+        return getValue(path) != null;
+    }
+
+    public Object get(String path) {
+        return getValue(path);
+    }
 }
