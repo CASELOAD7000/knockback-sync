@@ -2,11 +2,7 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 plugins {
     id("com.gradleup.shadow")
-//    id("io.papermc.paperweight.userdev") version "1.7.3"
-//    id("net.neoforged.moddev") version "1.0.11"
 }
-
-//paperweight.reobfArtifactConfiguration = io.papermc.paperweight.userdev.ReobfArtifactConfiguration.REOBF_PRODUCTION
 
 base {
     archivesName.set("${rootProject.property("archives_base_name")}-bukkit")
@@ -17,23 +13,9 @@ val shadeThisThing: Configuration by configurations.creating {
     isTransitive = true
 }
 
-//sourceSets {
-//    main {
-//        java {
-//            srcDir(project(":common").sourceSets.main.get().java.srcDirs)
-//        }
-//        resources {
-//            srcDir(project(":common").sourceSets.main.get().resources.srcDirs)
-//        }
-//    }
-//}
-
-// TODO migrate to only including sourceset for compile, test and javadoc tasks
-// Currently must build with gradle build -x test to skip test
+// TODO migrate to only including sources sets for compile, test and javadoc tasks
 tasks.withType<JavaCompile>().configureEach {
-    source(project(":common").sourceSets.main.get().java.srcDirs)
-    source(project(":common").sourceSets.main.get().resources.srcDirs())
-    options.annotationProcessorPath = configurations["annotationProcessor"] + configurations["compileClasspath"]
+    source(project(":common").sourceSets.main.get().allSource)
 }
 
 tasks.withType<Javadoc>().configureEach {
@@ -44,21 +26,12 @@ tasks.named<JavaCompile>("compileTestJava") {
     exclude("**/*")
 }
 
-// Dirty hack exists so the build process will finish running
-//tasks.withType<Test>().configureEach {
-//    classpath += project(":common").sourceSets["main"].output + configurations["compileClasspath"] + configurations["runtimeClasspath"]
-//}
-
 
 dependencies {
-//    shadeThisThing(implementation(project(":common"))!!)
     implementation(project(":common"))
 
-//    paperweight.paperDevBundle("1.16.5-R0.1-SNAPSHOT")
-//    compileOnly("com.mojang:brigadier:1.0.18")
     compileOnly("org.spigotmc:spigot-api:1.16.5-R0.1-SNAPSHOT")
     compileOnly("org.geysermc.floodgate:api:2.0-SNAPSHOT")
-//    compileOnly("dev.folia:folia-api:1.20.4-R0.1-SNAPSHOT")
 
     compileOnly("org.projectlombok:lombok:1.18.34")
     annotationProcessor("org.projectlombok:lombok:1.18.34")
@@ -79,27 +52,14 @@ dependencies {
 }
 
 tasks.withType<ShadowJar> {
-    // Exclude Java 21 specific classes
-    exclude("META-INF/**")
-
-//    archiveClassifier.set("-all")
     configurations = listOf(shadeThisThing)
     isEnableRelocation = true
     relocationPrefix = "${project.property("maven_group")}.${project.property("archives_base_name")}.shaded"
-
-    // Exclude Java 21 specific classes
-    exclude("META-INF/**")
 }
-
-//tasks.named("reobfJar") {
-//    dependsOn(tasks.named("shadowJar"))
-//}
 
 tasks.build {
-//    dependsOn(tasks.named("reobfJar"))
     dependsOn(tasks.shadowJar)
 }
-
 
 tasks.processResources {
     from(project(":common").sourceSets.main.get().resources)
@@ -111,14 +71,4 @@ tasks.processResources {
             "version" to project.version,
         )
     }
-}
-
-//neoForge {
-// Look for versions on https://projects.neoforged.net/neoforged/neoform
-//    neoFormVersion.set("1.21-20240613.152323")
-//}
-
-java {
-    sourceCompatibility = JavaVersion.VERSION_16
-    targetCompatibility = JavaVersion.VERSION_16
 }

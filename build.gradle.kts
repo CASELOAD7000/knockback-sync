@@ -49,24 +49,7 @@ subprojects {
     apply(plugin = "java")
 
     java {
-        sourceCompatibility = JavaVersion.VERSION_16
-        targetCompatibility = JavaVersion.VERSION_16
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
     }
-
-//    if (project.name != "common") {
-//        tasks.withType<JavaCompile> {
-//            source(project(":common").sourceSets.main.get().allSource)
-//        }
-//        tasks.withType<Javadoc> {
-//            source(project(":common").sourceSets.main.get().allJava)
-//        }
-
-//        tasks.named<Jar>("sourcesJar") {
-//            from(project(":common").sourceSets.main.get().allSource)
-//        }
-
-//        tasks.named<JavaCompile>("compileTestJava") {
-//            exclude("**/*")
-//        }
-//    }
 }

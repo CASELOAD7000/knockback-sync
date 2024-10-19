@@ -37,19 +37,6 @@ tasks.named<JavaCompile>("compileTestJava") {
     exclude("**/*")
 }
 
-//tasks.withType<Test>().configureEach {
-//    classpath += project(":common").sourceSets["main"].output + configurations["testRuntimeClasspath"]
-//}
-
-//tasks.named<Jar>("sourcesJar") {
-//    from(project(":common").sourceSets.main.get().allSource)
-//}
-
-tasks.jar {
-//    from(project(":common").sourceSets.named("main").get().output)
-//    from(project(":common").sourceSets.main.get().resources)
-}
-
 dependencies {
     implementation(project(":common"))
 
@@ -63,23 +50,11 @@ dependencies {
 
     include(modImplementation("me.lucko:fabric-permissions-api:0.3.1")!!)
     include(modImplementation("com.github.retrooper:packetevents-fabric:2.5.8-SNAPSHOT")!!)
+    include(modImplementation("org.incendo:cloud-fabric:2.0.0-beta.9")!!)
 
     shadeThisThing(implementation("com.fasterxml.jackson.core:jackson-databind:2.17.2")!!)
     shadeThisThing(implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.17.2")!!)
     shadeThisThing(implementation("org.kohsuke:github-api:1.326")!!)
-
-    val cloudFabric = "org.incendo:cloud-fabric:2.0.0-beta.9"
-    modImplementation(cloudFabric)
-    include(cloudFabric)
-
-//    include(implementation("com.fasterxml.jackson.core:jackson-databind:2.17.2")!!)
-//    include(implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.17.2")!!)
-//    include(implementation("org.kohsuke:github-api:1.326")!!)
-
-//    include(implementation("org.kohsuke:github-api:1.326") {
-//        exclude(group = "commons-io", module = "commons-io")
-//        exclude(group = "org.apache.commons", module = "commons-lang3")
-//    })
 
     compileOnly("org.geysermc.floodgate:api:2.0-SNAPSHOT")
     compileOnly("org.projectlombok:lombok:1.18.34")
