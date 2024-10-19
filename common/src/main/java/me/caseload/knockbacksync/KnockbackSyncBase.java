@@ -2,8 +2,8 @@ package me.caseload.knockbacksync;
 
 import com.github.retrooper.packetevents.PacketEvents;
 import lombok.Getter;
-import lombok.Setter;
-import me.caseload.knockbacksync.sender.SenderFactory;
+import me.caseload.knockbacksync.command.AbstractPlayerSelectorParser;
+import me.caseload.knockbacksync.sender.Sender;
 import me.caseload.knockbacksync.listener.packetevents.AttributeChangeListener;
 import me.caseload.knockbacksync.listener.packetevents.PingReceiveListener;
 import me.caseload.knockbacksync.manager.ConfigManager;
@@ -30,6 +30,9 @@ public abstract class KnockbackSyncBase {
     protected SchedulerAdapter scheduler;
     @Getter
     protected ConfigManager configManager;
+
+    @Getter
+    protected AbstractPlayerSelectorParser<Sender> playerSelectorParser;
 
     protected KnockbackSyncBase() {
         this.platform = getPlatform();

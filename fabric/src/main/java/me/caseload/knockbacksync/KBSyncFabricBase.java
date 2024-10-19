@@ -3,8 +3,12 @@ package me.caseload.knockbacksync;
 import com.github.retrooper.packetevents.PacketEvents;
 import io.github.retrooper.packetevents.factory.fabric.FabricPacketEventsBuilder;
 import lombok.Getter;
+import me.caseload.knockbacksync.command.PlayerSelector;
+import me.caseload.knockbacksync.command.subcommand.MainCommand;
+import me.caseload.knockbacksync.command.subcommand.PingCommand;
+import me.caseload.knockbacksync.command.subcommand.StatusCommand;
+import me.caseload.knockbacksync.sender.FabricPlayerSelectorParser;
 import me.caseload.knockbacksync.sender.FabricSenderFactory;
-import me.caseload.knockbacksync.command.KnockbackSyncCommand;
 import me.caseload.knockbacksync.listener.fabric.FabricPlayerDamageListener;
 import me.caseload.knockbacksync.listener.fabric.FabricPlayerJoinQuitListener;
 import me.caseload.knockbacksync.listener.fabric.FabricPlayerKnockbackListener;
@@ -12,13 +16,14 @@ import me.caseload.knockbacksync.listener.fabric.FabricTickRateChangeListener;
 import me.caseload.knockbacksync.permission.FabricPermissionChecker;
 import me.caseload.knockbacksync.permission.PermissionChecker;
 import me.caseload.knockbacksync.scheduler.FabricSchedulerAdapter;
+import me.caseload.knockbacksync.sender.Sender;
 import me.caseload.knockbacksync.stats.custom.FabricStatsManager;
 import me.caseload.knockbacksync.stats.custom.PluginJarHashProvider;
 import me.caseload.knockbacksync.world.FabricServer;
-import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
-import net.minecraft.commands.Commands;
+import org.incendo.cloud.execution.ExecutionCoordinator;
+import org.incendo.cloud.fabric.FabricServerCommandManager;
 
 import java.io.File;
 import java.io.IOException;
@@ -36,6 +41,7 @@ public class KBSyncFabricBase extends KnockbackSyncBase {
     @Getter private final FabricSenderFactory fabricSenderFactory = new FabricSenderFactory(this);
 
     public KBSyncFabricBase() {
+        super.playerSelectorParser = new FabricPlayerSelectorParser<>();
         statsManager = new FabricStatsManager();
         platformServer = new FabricServer();
         URL jarUrl = null;
@@ -88,16 +94,25 @@ public class KBSyncFabricBase extends KnockbackSyncBase {
 
     @Override
     protected void registerCommands() {
-//      ServerLifecycleEvents.SERVER_STARTED.register(server -> {
-//        CommandDispatcher<CommandSourceStack> dispatcher = server.getCommands().getDispatcher();
-//        dispatcher.register(KnockbackSyncCommand.build());
-//      });
-        CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
-            dispatcher.register(KnockbackSyncCommand.build());
-            dispatcher.register(
-                    Commands.literal("kbsync")
-                            .redirect(dispatcher.getRoot().getChild("knockbacksync")));
-        });
+        FabricServerCommandManager<Sender> fabricServerCommandManager = new FabricServerCommandManager<>(
+                ExecutionCoordinator.simpleCoordinator(),
+                fabricSenderFactory
+        );
+
+        new MainCommand().register(fabricServerCommandManager);
+        new PingCommand().register(fabricServerCommandManager);
+        new StatusCommand().register(fabricServerCommandManager);
+
+
+
+//        fabricServerCommandManager.commandRegistrationHandler().registerCommand(
+//                fabricServerCommandManager.commandBuilder("knockbacksync", "kbsync", "kbs")
+//                        .literal("ping")
+//                        .optional("target", StringParser.stringParser())
+//                        .handler(commandContext -> {
+//                            commandContext.sender().sendMessage("Hello World");
+//                        }).build()
+//        );
     }
 
     @Override

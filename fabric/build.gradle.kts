@@ -68,7 +68,7 @@ dependencies {
     shadeThisThing(implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.17.2")!!)
     shadeThisThing(implementation("org.kohsuke:github-api:1.326")!!)
 
-    val cloudFabric = "org.incendo:cloud-fabric:2.0.0-SNAPSHOT"
+    val cloudFabric = "org.incendo:cloud-fabric:2.0.0-beta.9"
     modImplementation(cloudFabric)
     include(cloudFabric)
 
