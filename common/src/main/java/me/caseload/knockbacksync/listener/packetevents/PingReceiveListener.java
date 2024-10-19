@@ -16,6 +16,8 @@ import me.caseload.knockbacksync.manager.PlayerDataManager;
 import me.caseload.knockbacksync.player.PlayerData;
 import me.caseload.knockbacksync.util.data.Pair;
 
+import java.util.List;
+
 public class PingReceiveListener extends PacketListenerAbstract {
 // TODO supplment our own ping calculations with over keepalive sent by the server with
     @Override
@@ -61,7 +63,7 @@ public class PingReceiveListener extends PacketListenerAbstract {
 
             long receivedId = keepAlive.getId();
 
-            handlePingCalculationPackets(event, playerData, receivedId);
+            handlePingCalculationPackets(event, playerData, receivedId, playerData.keepaliveMap);
         } else if (packetType == PacketType.Play.Client.PONG) {
             WrapperPlayClientPong pong = new WrapperPlayClientPong(event);
             PlayerData playerData = PlayerDataManager.getPlayerData(event.getUser().getUUID());
@@ -69,7 +71,7 @@ public class PingReceiveListener extends PacketListenerAbstract {
 
             int id = pong.getId();
 
-            handlePingCalculationPackets(event, playerData, id);
+            handlePingCalculationPackets(event, playerData, id, playerData.transactionsSent);
         } else if (packetType == PacketType.Play.Client.WINDOW_CONFIRMATION) {
             WrapperPlayClientWindowConfirmation windowConfirmation = new WrapperPlayClientWindowConfirmation(event);
             PlayerData playerData = PlayerDataManager.getPlayerData(event.getUser().getUUID());
@@ -77,12 +79,12 @@ public class PingReceiveListener extends PacketListenerAbstract {
 
             int id = windowConfirmation.getActionId();
 
-            handlePingCalculationPackets(event, playerData, id);
+            handlePingCalculationPackets(event, playerData, id, playerData.transactionsSent);
         }
     }
 
-    private void handlePingCalculationPackets(PacketReceiveEvent event, PlayerData playerData, long id) {
-        long pingNanos = (System.nanoTime() - playerData.transactionsSent.poll().getSecond());
+    private <T extends Number> void handlePingCalculationPackets(PacketReceiveEvent event, PlayerData playerData, long id, List<Pair<T, Long>> packetSentList) {
+        long pingNanos = (System.nanoTime() - packetSentList.remove(0).getSecond());
         double diffMillisDouble = pingNanos / 1_000_000.0;
 
         playerData.setPreviousPing(playerData.getPing());

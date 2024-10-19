@@ -40,7 +40,7 @@ public class PlayerData {
     public static final long PING_OFFSET = 25;
     public static float TICK_RATE = 20.0F;
     private static Field playerField;
-    public final Queue<Pair<Integer, Long>> transactionsSent = new ConcurrentLinkedQueue<>();
+    public final List<Pair<Integer, Long>> transactionsSent = new LinkedList<>();
     public final List<Pair<Long, Long>> keepaliveMap = new LinkedList<>();
 
     private static final short MAIN_THREAD_TRANSACTION_ID = -1;
