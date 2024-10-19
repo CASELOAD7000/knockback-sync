@@ -1,7 +1,6 @@
 package me.caseload.knockbacksync.sender;
 
 import me.caseload.knockbacksync.KBSyncBukkitBase;
-import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.command.RemoteConsoleCommandSender;
@@ -34,6 +33,7 @@ public class BukkitSenderFactory extends SenderFactory<KBSyncBukkitBase, Command
         }
         return Sender.CONSOLE_UUID;
     }
+
     @Override
     protected void sendMessage(CommandSender sender, String message) {
         sender.sendMessage(message);
@@ -62,11 +62,6 @@ public class BukkitSenderFactory extends SenderFactory<KBSyncBukkitBase, Command
     @Override
     protected boolean isConsole(CommandSender sender) {
         return sender instanceof ConsoleCommandSender || sender instanceof RemoteConsoleCommandSender;
-    }
-
-    @Override
-    public void close() {
-        super.close();
     }
 
     @Override

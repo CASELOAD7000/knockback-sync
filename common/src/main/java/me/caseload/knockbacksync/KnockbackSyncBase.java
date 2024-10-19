@@ -2,19 +2,19 @@ package me.caseload.knockbacksync;
 
 import com.github.retrooper.packetevents.PacketEvents;
 import lombok.Getter;
-import me.caseload.knockbacksync.command.generic.AbstractPlayerSelectorParser;
 import me.caseload.knockbacksync.command.MainCommand;
+import me.caseload.knockbacksync.command.generic.AbstractPlayerSelectorParser;
 import me.caseload.knockbacksync.command.generic.BuilderCommand;
 import me.caseload.knockbacksync.command.subcommand.PingCommand;
 import me.caseload.knockbacksync.command.subcommand.ReloadCommand;
 import me.caseload.knockbacksync.command.subcommand.StatusCommand;
 import me.caseload.knockbacksync.command.subcommand.ToggleCommand;
-import me.caseload.knockbacksync.sender.Sender;
 import me.caseload.knockbacksync.listener.packetevents.AttributeChangeListener;
 import me.caseload.knockbacksync.listener.packetevents.PingReceiveListener;
 import me.caseload.knockbacksync.manager.ConfigManager;
 import me.caseload.knockbacksync.permission.PermissionChecker;
 import me.caseload.knockbacksync.scheduler.SchedulerAdapter;
+import me.caseload.knockbacksync.sender.Sender;
 import me.caseload.knockbacksync.stats.custom.PluginJarHashProvider;
 import me.caseload.knockbacksync.stats.custom.StatsManager;
 import me.caseload.knockbacksync.world.PlatformServer;
@@ -31,14 +31,13 @@ import java.util.logging.Logger;
 public abstract class KnockbackSyncBase {
     public static Logger LOGGER;
     public static KnockbackSyncBase INSTANCE;
+
     public Platform platform;
     public StatsManager statsManager;
     public PlatformServer platformServer;
-    public PluginJarHashProvider pluginJarHashProvider;
-    @Getter
-    protected SchedulerAdapter scheduler;
-    @Getter
-    protected ConfigManager configManager;
+    @Getter protected PluginJarHashProvider pluginJarHashProvider;
+    @Getter protected SchedulerAdapter scheduler;
+    @Getter protected ConfigManager configManager;
     protected CommandManager<Sender> commandManager;
 
     @Getter
@@ -110,11 +109,11 @@ public abstract class KnockbackSyncBase {
 
     protected void registerCommands() {
         List<BuilderCommand> list = Arrays.asList(
-            new MainCommand(),
-            new ReloadCommand(),
-            new PingCommand(),
-            new StatusCommand(),
-            new ToggleCommand()
+                new MainCommand(),
+                new ReloadCommand(),
+                new PingCommand(),
+                new StatusCommand(),
+                new ToggleCommand()
         );
         list.forEach(command -> command.register(commandManager));
     }

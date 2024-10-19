@@ -63,6 +63,8 @@ public interface Sender {
      */
     boolean hasPermission(String permission);
 
+    boolean hasPermission(String permission, boolean defaultIfUnset);
+
     /**
      * Makes the sender perform a command.
      *

@@ -2,6 +2,7 @@ package me.caseload.knockbacksync.command.generic;
 
 import org.incendo.cloud.context.CommandContext;
 import org.incendo.cloud.parser.ParserDescriptor;
+
 import java.util.concurrent.CompletableFuture;
 
 public abstract class AbstractPlayerSelectorParser<C> {

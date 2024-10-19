@@ -17,7 +17,7 @@ public class FabricPlayerSelectorParser<C> extends AbstractPlayerSelectorParser<
 
     @Override
     protected ParserDescriptor<C, ?> getPlatformSpecificDescriptor() {
-        return VanillaArgumentParsers.<C>singlePlayerSelectorParser();
+        return VanillaArgumentParsers.singlePlayerSelectorParser();
     }
 
     @Override

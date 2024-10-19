@@ -17,7 +17,7 @@ public class BukkitPlayerSelectorParser<C> extends AbstractPlayerSelectorParser<
 
     @Override
     protected ParserDescriptor<C, ?> getPlatformSpecificDescriptor() {
-        return SinglePlayerSelectorParser.<C>singlePlayerSelectorParser();
+        return SinglePlayerSelectorParser.singlePlayerSelectorParser();
     }
 
     @Override

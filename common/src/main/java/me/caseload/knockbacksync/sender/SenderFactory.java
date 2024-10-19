@@ -30,6 +30,8 @@ public abstract class SenderFactory<P extends KnockbackSyncBase, T> implements A
 
     protected abstract boolean hasPermission(T sender, String node);
 
+    protected abstract boolean hasPermission(T sender, String node, boolean defaultIfUnset);
+
     protected abstract void performCommand(T sender, String command);
 
     protected abstract boolean isConsole(T sender);

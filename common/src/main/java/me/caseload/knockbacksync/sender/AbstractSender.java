@@ -53,6 +53,11 @@ public final class AbstractSender<T> implements Sender {
     }
 
     @Override
+    public boolean hasPermission(String permission, boolean defaultIfUnset) {
+        return isConsole() || this.factory.hasPermission(this.sender, permission, defaultIfUnset);
+    }
+
+    @Override
     public void performCommand(String commandLine) {
         this.factory.performCommand(this.sender, commandLine);
     }

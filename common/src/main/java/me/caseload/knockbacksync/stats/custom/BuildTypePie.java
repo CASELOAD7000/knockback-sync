@@ -39,7 +39,7 @@ public class BuildTypePie extends SimplePie {
 
     private static String calculateBuildType() {
         try {
-            String currentHash = KnockbackSyncBase.INSTANCE.pluginJarHashProvider.getPluginJarHash();
+            String currentHash = KnockbackSyncBase.INSTANCE.getPluginJarHashProvider().getPluginJarHash();
             downloadBuildFiles();
 
             if (isHashInFile(currentHash, new File(dataFolder, RELEASES_FILE))) {

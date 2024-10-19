@@ -5,7 +5,7 @@ import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 
 public class BukkitTaskHandle implements AbstractTaskHandle {
-    private BukkitTask bukkitTask;
+    private final BukkitTask bukkitTask;
     private boolean cancelled;
 
     public BukkitTaskHandle(@NotNull BukkitTask bukkitTask) {

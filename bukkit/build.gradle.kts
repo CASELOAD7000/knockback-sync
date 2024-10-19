@@ -26,7 +26,6 @@ tasks.named<JavaCompile>("compileTestJava") {
     exclude("**/*")
 }
 
-
 dependencies {
     implementation(project(":common"))
 
@@ -36,19 +35,13 @@ dependencies {
     compileOnly("org.projectlombok:lombok:1.18.34")
     annotationProcessor("org.projectlombok:lombok:1.18.34")
 
-    shadeThisThing(implementation("org.kohsuke:github-api:1.326") {
-        exclude(group = "commons-io", module = "commons-io")
-        exclude(group = "org.apache.commons", module = "commons-lang3")
-    })
-
-
+    shadeThisThing(implementation("org.kohsuke:github-api:1.326")!!)
     shadeThisThing(implementation("com.fasterxml.jackson.core:jackson-databind:2.17.2")!!)
     shadeThisThing(implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.17.2")!!)
-
     shadeThisThing(implementation("com.github.retrooper:packetevents-spigot:2.5.0")!!)
     shadeThisThing(implementation("dev.jorel:commandapi-bukkit-shade:9.5.3")!!)
     shadeThisThing(implementation("net.kyori:adventure-platform-bukkit:4.3.4")!!)
-    implementation("org.incendo:cloud-paper:2.0.0-beta.10")
+    shadeThisThing(implementation("org.incendo:cloud-paper:2.0.0-beta.10")!!)
 }
 
 tasks.withType<ShadowJar> {

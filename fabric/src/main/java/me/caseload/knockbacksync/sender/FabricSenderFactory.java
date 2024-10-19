@@ -1,9 +1,9 @@
 package me.caseload.knockbacksync.sender;
 
+import me.caseload.knockbacksync.KBSyncFabricBase;
 import me.caseload.knockbacksync.KnockbackSyncBase;
 import me.caseload.knockbacksync.mixin.CommandStackSourceAccessor;
 import me.caseload.knockbacksync.permission.FabricPermissionChecker;
-import me.caseload.knockbacksync.KBSyncFabricBase;
 import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
@@ -59,6 +59,11 @@ public class FabricSenderFactory extends SenderFactory<KBSyncFabricBase, Command
     @Override
     protected boolean hasPermission(CommandSourceStack commandSource, String node) {
         return ((FabricPermissionChecker) KnockbackSyncBase.INSTANCE.getPermissionChecker()).hasPermission(commandSource, node);
+    }
+
+    @Override
+    protected boolean hasPermission(CommandSourceStack commandSource, String node, boolean defaultIfUnset) {
+        return ((FabricPermissionChecker) KnockbackSyncBase.INSTANCE.getPermissionChecker()).hasPermission(commandSource, node, defaultIfUnset);
     }
 
     @Override

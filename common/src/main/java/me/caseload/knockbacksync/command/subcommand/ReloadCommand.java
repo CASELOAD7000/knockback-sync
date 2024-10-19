@@ -6,22 +6,32 @@ import me.caseload.knockbacksync.manager.ConfigManager;
 import me.caseload.knockbacksync.sender.Sender;
 import me.caseload.knockbacksync.util.ChatUtil;
 import org.incendo.cloud.CommandManager;
+import org.incendo.cloud.permission.PredicatePermission;
+
+import java.util.function.Predicate;
 
 public class ReloadCommand implements BuilderCommand {
     public void register(CommandManager<Sender> manager) {
         manager.command(
             manager.commandBuilder("knockbacksync", "kbsync", "kbs")
                 .literal("reload")
-//                                .requires(source -> KnockbackSyncBase.INSTANCE.getPermissionChecker().hasPermission(source, "knockbacksync.reload", false))
-                    .handler(context -> {
-                        ConfigManager configManager = KnockbackSyncBase.INSTANCE.getConfigManager();
-                        configManager.loadConfig(true);
+                .permission((sender -> {
+                    final String permission = "knockbacksync.reload";
+                    Predicate<Sender> senderPredicate = (s) -> {
+                        return s.hasPermission(permission, false);
+                    };
 
-                        String rawReloadMessage = configManager.getReloadMessage();
-                        String reloadMessage = ChatUtil.translateAlternateColorCodes('&', rawReloadMessage);
+                    return PredicatePermission.of(senderPredicate).testPermission(sender);
+                }))
+                .handler(context -> {
+                    ConfigManager configManager = KnockbackSyncBase.INSTANCE.getConfigManager();
+                    configManager.loadConfig(true);
 
-                        context.sender().sendMessage(reloadMessage);
-                    })
+                    String rawReloadMessage = configManager.getReloadMessage();
+                    String reloadMessage = ChatUtil.translateAlternateColorCodes('&', rawReloadMessage);
+
+                    context.sender().sendMessage(reloadMessage);
+                })
         );
     }
 }

@@ -1,7 +1,7 @@
 package me.caseload.knockbacksync.permission;
 
-import me.caseload.knockbacksync.sender.Sender;
 import me.caseload.knockbacksync.player.PlatformPlayer;
+import me.caseload.knockbacksync.sender.Sender;
 
 public interface PermissionChecker {
     boolean hasPermission(Object CommandSourceStack, String s, boolean defaultIfUnset);

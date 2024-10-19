@@ -2,8 +2,6 @@ package me.caseload.knockbacksync;
 
 import com.github.retrooper.packetevents.PacketEvents;
 import io.github.retrooper.packetevents.factory.spigot.SpigotPacketEventsBuilder;
-import me.caseload.knockbacksync.command.generic.PlayerSelector;
-import me.caseload.knockbacksync.command.bukkit.MainCommand;
 import me.caseload.knockbacksync.listener.bukkit.BukkitPlayerDamageListener;
 import me.caseload.knockbacksync.listener.bukkit.BukkitPlayerJoinQuitListener;
 import me.caseload.knockbacksync.listener.bukkit.BukkitPlayerKnockbackListener;
@@ -11,7 +9,6 @@ import me.caseload.knockbacksync.permission.PermissionChecker;
 import me.caseload.knockbacksync.permission.PluginPermissionChecker;
 import me.caseload.knockbacksync.scheduler.BukkitSchedulerAdapter;
 import me.caseload.knockbacksync.scheduler.FoliaSchedulerAdapter;
-import me.caseload.knockbacksync.sender.BukkitPlayerSelectorAdapter;
 import me.caseload.knockbacksync.sender.BukkitSenderFactory;
 import me.caseload.knockbacksync.sender.Sender;
 import me.caseload.knockbacksync.stats.custom.BukkitStatsManager;
