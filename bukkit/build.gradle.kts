@@ -29,7 +29,7 @@ tasks.named<JavaCompile>("compileTestJava") {
 dependencies {
     implementation(project(":common"))
 
-    compileOnly("org.spigotmc:spigot-api:1.16.5-R0.1-SNAPSHOT")
+    compileOnly("org.spigotmc:spigot-api:1.14.4-R0.1-SNAPSHOT")
     compileOnly("org.geysermc.floodgate:api:2.0-SNAPSHOT")
 
     compileOnly("org.projectlombok:lombok:1.18.34")
@@ -42,6 +42,9 @@ dependencies {
 //    shadeThisThing(implementation("net.kyori:adventure-platform-bukkit:4.3.4")!!)
     shadeThisThing(implementation("org.incendo:cloud-paper:2.0.0-beta.10")!!)
     shadeThisThing(implementation("org.incendo:cloud-core:2.0.0")!!)
+
+    // Required for 1.14.4 support because gson is too old to have JosnParser.parseString()
+    shadeThisThing(implementation("com.google.code.gson:gson:2.11.0")!!)
 }
 
 tasks.withType<ShadowJar> {

@@ -24,38 +24,6 @@ dependencies {
         exclude(group = "org.apache.commons", module = "commons-lang3")
     }
 
-    api("net.kyori:adventure-api:4.11.0") {
-        exclude(module = "adventure-bom")
-        exclude(module = "checker-qual")
-        exclude(module = "annotations")
-    }
-
-    api("net.kyori:adventure-text-serializer-gson:4.11.0") {
-        exclude(module = "adventure-bom")
-        exclude(module = "adventure-api")
-        exclude(module = "gson")
-    }
-
-    api("net.kyori:adventure-text-serializer-legacy:4.11.0") {
-        exclude(module = "adventure-bom")
-        exclude(module = "adventure-api")
-    }
-
-    api("net.kyori:adventure-text-serializer-plain:4.11.0") {
-        exclude(module = "adventure-bom")
-        exclude(module = "adventure-api")
-    }
-
-    api("net.kyori:adventure-text-minimessage:4.11.0") {
-        exclude(module = "adventure-bom")
-        exclude(module = "adventure-api")
-    }
-
-    api("net.kyori:event-api:3.0.0") {
-        exclude(module = "checker-qual")
-        exclude(module = "guava")
-    }
-
     implementation("org.incendo:cloud-core:2.0.0")
     implementation("org.incendo:cloud-minecraft-extras:2.0.0-beta.10")
 }

@@ -1,8 +1,11 @@
 package me.caseload.knockbacksync.player;
 
+import com.github.retrooper.packetevents.PacketEvents;
+import com.github.retrooper.packetevents.PacketEventsAPI;
 import com.github.retrooper.packetevents.util.Vector3d;
 import me.caseload.knockbacksync.world.PlatformWorld;
 import me.caseload.knockbacksync.world.SpigotWorld;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -10,10 +13,33 @@ import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.lang.reflect.Method;
 import java.util.UUID;
 
 public class BukkitPlayer implements PlatformPlayer {
     public final Player bukkitPlayer;
+
+    // Reflection variables
+    private static Class<?> craftPlayerClass;
+    private static Method getHandleMethod;
+    private static Method getAttackStrengthScaleMethod;
+
+    static {
+        try {
+            String bukkitversion = Bukkit.getServer().getClass().getPackage()
+                    .getName();
+            // Step 1: Load the CraftPlayer class
+            craftPlayerClass = Class.forName(bukkitversion + ".entity.CraftPlayer");
+            // Step 2: Get the getHandle method
+            getHandleMethod = craftPlayerClass.getMethod("getHandle");
+            // Step 3: Get the getAttackStrengthScale method from the EntityPlayer class
+            Class<?> entityPlayerClass = Class.forName("net.minecraft.server." + bukkitversion + ".EntityPlayer");
+            getAttackStrengthScaleMethod = entityPlayerClass.getDeclaredMethod("getAttackStrengthScale", float.class);
+            getAttackStrengthScaleMethod.setAccessible(true);
+        } catch (ClassNotFoundException | NoSuchMethodException e) {
+            e.printStackTrace();
+        }
+    }
 
     public BukkitPlayer(Player player) {
         this.bukkitPlayer = player;
@@ -67,7 +93,7 @@ public class BukkitPlayer implements PlatformPlayer {
 
     @Override
     public int getPing() {
-        return bukkitPlayer.getPing();
+        return PacketEvents.getAPI().getPlayerManager().getPing(bukkitPlayer);
     }
 
     @Override
@@ -93,7 +119,17 @@ public class BukkitPlayer implements PlatformPlayer {
 
     @Override
     public double getAttackCooldown() {
-        return bukkitPlayer.getAttackCooldown();
+        try {
+            // Step 1: Get the CraftPlayer instance
+            Object craftPlayer = craftPlayerClass.cast(bukkitPlayer);
+            // Step 2: Get the handle (NMS EntityPlayer)
+            Object entityPlayer = getHandleMethod.invoke(craftPlayer);
+            // Step 3: Invoke the getAttackStrengthScale method
+            return (float) getAttackStrengthScaleMethod.invoke(entityPlayer, 0.5f);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return -1; // Return -1 if an error occurs
+        }
     }
 
     @Override
