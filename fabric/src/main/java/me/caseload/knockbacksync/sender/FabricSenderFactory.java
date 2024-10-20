@@ -1,17 +1,19 @@
-package me.caseload.knockbacksync.command;
+package me.caseload.knockbacksync.sender;
 
+import me.caseload.knockbacksync.KBSyncFabricBase;
 import me.caseload.knockbacksync.KnockbackSyncBase;
 import me.caseload.knockbacksync.mixin.CommandStackSourceAccessor;
 import me.caseload.knockbacksync.permission.FabricPermissionChecker;
-import me.caseload.knockbacksync.world.KBSyncFabricBase;
 import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.rcon.RconConsoleSource;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.incendo.cloud.SenderMapper;
 
 import java.util.UUID;
 
-public class FabricSenderFactory extends SenderFactory<KBSyncFabricBase, CommandSourceStack> {
+public class FabricSenderFactory extends SenderFactory<KBSyncFabricBase, CommandSourceStack> implements SenderMapper<CommandSourceStack, Sender> {
     private final KBSyncFabricBase plugin;
 
     public FabricSenderFactory(KBSyncFabricBase kbSyncFabricBase) {
@@ -29,14 +31,14 @@ public class FabricSenderFactory extends SenderFactory<KBSyncFabricBase, Command
         if (commandSource.getEntity() != null) {
             return commandSource.getEntity().getUUID();
         }
-        return PlatformSender.CONSOLE_UUID;
+        return Sender.CONSOLE_UUID;
     }
 
     @Override
     protected String getName(CommandSourceStack commandSource) {
         String name = commandSource.getTextName();
         if (commandSource.getEntity() != null && name.equals("Server")) {
-            return PlatformSender.CONSOLE_NAME;
+            return Sender.CONSOLE_NAME;
         }
         return name;
     }
@@ -60,6 +62,11 @@ public class FabricSenderFactory extends SenderFactory<KBSyncFabricBase, Command
     }
 
     @Override
+    protected boolean hasPermission(CommandSourceStack commandSource, String node, boolean defaultIfUnset) {
+        return ((FabricPermissionChecker) KnockbackSyncBase.INSTANCE.getPermissionChecker()).hasPermission(commandSource, node, defaultIfUnset);
+    }
+
+    @Override
     protected void performCommand(CommandSourceStack sender, String command) {
 //        sender.getServer().getCommandManager().executeWithPrefix(sender, command);
     }
@@ -70,6 +77,21 @@ public class FabricSenderFactory extends SenderFactory<KBSyncFabricBase, Command
         return output == sender.getServer() || // Console
                 output.getClass() == RconConsoleSource.class || // Rcon
                 (output == CommandSource.NULL && sender.getTextName().equals("")); // Functions
+    }
+
+    @Override
+    public @NonNull Sender map(@NonNull CommandSourceStack base) {
+        return this.wrap(base);
+    }
+
+    @Override
+    public @NonNull CommandSourceStack reverse(@NonNull Sender mapped) {
+        return this.unwrap(mapped);
+    }
+
+    @Override
+    public void close() throws Exception {
+
     }
 
 //    public static Text toNativeText(Component component) {

@@ -1,6 +1,7 @@
 package me.caseload.knockbacksync.player;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class JitterCalculator {
     private final int SAMPLE_SIZE = 15;
@@ -31,7 +32,7 @@ public class JitterCalculator {
         double upperBound = q3 + 1.5 * iqr;
         List<Long> filteredPings = sortedPings.stream()
                 .filter(p -> p >= lowerBound && p <= upperBound)
-                .toList();
+                .collect(Collectors.toList());
 
         // Calculate standard deviation
         double mean = filteredPings.stream().mapToLong(Long::longValue).average().orElse(0);

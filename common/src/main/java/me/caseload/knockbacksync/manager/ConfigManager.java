@@ -7,7 +7,6 @@ import lombok.Setter;
 import me.caseload.knockbacksync.ConfigWrapper;
 import me.caseload.knockbacksync.KnockbackSyncBase;
 import me.caseload.knockbacksync.Platform;
-import me.caseload.knockbacksync.player.PlayerData;
 import me.caseload.knockbacksync.runnable.PingRunnable;
 import me.caseload.knockbacksync.scheduler.AbstractTaskHandle;
 
@@ -19,6 +18,8 @@ import java.util.Map;
 @Getter
 @Setter
 public class ConfigManager {
+
+    public static final long CONFIG_VERSION = 2;
 
     private boolean toggled;
     private boolean runnableEnabled;
@@ -117,5 +118,54 @@ public class ConfigManager {
         playerDisableMessage = config.getString("player_disable_message", "&cSuccessfully disabled KnockbackSync for %player%.");
         playerIneligibleMessage = config.getString("player_ineligible_message", "&c%player% is ineligible for KnockbackSync. If you believe this is an error, please open an issue on the github page.");
         reloadMessage = config.getString("reload_message", "&aSuccessfully reloaded KnockbackSync.");
+    }
+
+    public void updateConfig() {
+        ConfigWrapper oldConfig = getConfigWrapper();
+        long oldConfigVersion = oldConfig.getLong("config_version", 0);
+
+        if (oldConfigVersion < CONFIG_VERSION) {
+            // Backup old config
+            File backupFile = new File(configFile.getParentFile(), "config-version-" + oldConfigVersion + ".yml");
+            if (configFile.renameTo(backupFile)) {
+                KnockbackSyncBase.INSTANCE.getLogger().info("Backed up old config to " + backupFile.getName());
+            } else {
+                KnockbackSyncBase.INSTANCE.getLogger().warning("Failed to backup old config");
+            }
+
+            // Create new config with default values
+            KnockbackSyncBase.INSTANCE.saveDefaultConfig();
+            reloadConfig();
+
+            // Transfer existing settings
+            ConfigWrapper newConfig = getConfigWrapper();
+            transferAllSettings(oldConfig, newConfig);
+
+            // Set new config version
+            newConfig.set("config_version", CONFIG_VERSION);
+
+            // Save updated config
+            saveConfig();
+
+            KnockbackSyncBase.INSTANCE.getLogger().info("Config updated to version " + CONFIG_VERSION);
+        }
+    }
+
+    private void transferAllSettings(ConfigWrapper oldConfig, ConfigWrapper newConfig) {
+        transferSettingsRecursive(oldConfig, newConfig, "");
+    }
+
+    private void transferSettingsRecursive(ConfigWrapper oldConfig, ConfigWrapper newConfig, String currentPath) {
+        for (String key : oldConfig.getKeys(currentPath)) {
+            String fullPath = currentPath.isEmpty() ? key : currentPath + "." + key;
+            if (newConfig.contains(fullPath)) {
+                Object value = oldConfig.get(fullPath);
+                if (value instanceof Map) {
+                    transferSettingsRecursive(oldConfig, newConfig, fullPath);
+                } else {
+                    newConfig.set(fullPath, value);
+                }
+            }
+        }
     }
 }

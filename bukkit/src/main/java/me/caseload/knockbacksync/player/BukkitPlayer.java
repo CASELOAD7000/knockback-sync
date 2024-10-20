@@ -56,8 +56,14 @@ public class BukkitPlayer implements PlatformPlayer {
 
     @Override
     public boolean isOnGround() {
+    /* Inconsistent with Entity.isOnGround()
+    /  Checks to see if this player is currently standing on a block.
+    /  This information may not be reliable, as it is a state provided by the client, and may therefore not be accurate.
+    /  It can also easily be spoofed. We may want to cast to LivingEntity and call isOnGround() instead
+    */
         return bukkitPlayer.isOnGround();
     }
+
 
     @Override
     public int getPing() {

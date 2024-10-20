@@ -1,15 +1,15 @@
-package me.caseload.knockbacksync.command;
+package me.caseload.knockbacksync.sender;
 
 import me.caseload.knockbacksync.KnockbackSyncBase;
 
 import java.util.UUID;
 
 /**
- * Simple implementation of {@link PlatformSender} using a {@link SenderFactory}
+ * Simple implementation of {@link Sender} using a {@link SenderFactory}
  *
  * @param <T> the command sender type
  */
-public final class AbstractSender<T> implements PlatformSender {
+public final class AbstractSender<T> implements Sender {
     private final KnockbackSyncBase plugin;
     private final SenderFactory<?, T> factory;
     private final T sender;
@@ -50,6 +50,11 @@ public final class AbstractSender<T> implements PlatformSender {
     @Override
     public boolean hasPermission(String permission) {
         return isConsole() || this.factory.hasPermission(this.sender, permission);
+    }
+
+    @Override
+    public boolean hasPermission(String permission, boolean defaultIfUnset) {
+        return isConsole() || this.factory.hasPermission(this.sender, permission, defaultIfUnset);
     }
 
     @Override

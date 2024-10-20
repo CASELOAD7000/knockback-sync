@@ -1,4 +1,4 @@
-package me.caseload.knockbacksync.command;
+package me.caseload.knockbacksync.sender;
 
 import me.caseload.knockbacksync.KnockbackSyncBase;
 
@@ -30,6 +30,8 @@ public abstract class SenderFactory<P extends KnockbackSyncBase, T> implements A
 
     protected abstract boolean hasPermission(T sender, String node);
 
+    protected abstract boolean hasPermission(T sender, String node, boolean defaultIfUnset);
+
     protected abstract void performCommand(T sender, String command);
 
     protected abstract boolean isConsole(T sender);
@@ -38,13 +40,14 @@ public abstract class SenderFactory<P extends KnockbackSyncBase, T> implements A
         return isConsole(sender);
     }
 
-    public final PlatformSender wrap(T sender) {
+    public final Sender wrap(T sender) {
         Objects.requireNonNull(sender, "sender");
         return new AbstractSender<>(this.plugin, this, sender);
     }
 
-    @Override
-    public void close() {
-
+    @SuppressWarnings("unchecked")
+    public final T unwrap(Sender sender) {
+        Objects.requireNonNull(sender, "sender");
+        return (T) sender.getSender();
     }
 }

@@ -2,43 +2,50 @@ package me.caseload.knockbacksync;
 
 import com.github.retrooper.packetevents.PacketEvents;
 import lombok.Getter;
-import lombok.Setter;
-import me.caseload.knockbacksync.command.SenderFactory;
+import me.caseload.knockbacksync.command.MainCommand;
+import me.caseload.knockbacksync.command.generic.AbstractPlayerSelectorParser;
+import me.caseload.knockbacksync.command.generic.BuilderCommand;
+import me.caseload.knockbacksync.command.subcommand.PingCommand;
+import me.caseload.knockbacksync.command.subcommand.ReloadCommand;
+import me.caseload.knockbacksync.command.subcommand.StatusCommand;
+import me.caseload.knockbacksync.command.subcommand.ToggleCommand;
 import me.caseload.knockbacksync.listener.packetevents.AttributeChangeListener;
 import me.caseload.knockbacksync.listener.packetevents.PingReceiveListener;
 import me.caseload.knockbacksync.manager.ConfigManager;
 import me.caseload.knockbacksync.permission.PermissionChecker;
 import me.caseload.knockbacksync.scheduler.SchedulerAdapter;
+import me.caseload.knockbacksync.sender.Sender;
 import me.caseload.knockbacksync.stats.custom.PluginJarHashProvider;
 import me.caseload.knockbacksync.stats.custom.StatsManager;
 import me.caseload.knockbacksync.world.PlatformServer;
+import org.incendo.cloud.CommandManager;
 import org.kohsuke.github.GitHub;
 
 import java.io.File;
 import java.io.InputStream;
+import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Logger;
 
 // Base class
 public abstract class KnockbackSyncBase {
     public static Logger LOGGER;
     public static KnockbackSyncBase INSTANCE;
-    public Platform platform;
+
+    public final Platform platform;
     public StatsManager statsManager;
     public PlatformServer platformServer;
-    public PluginJarHashProvider pluginJarHashProvider;
-    @Getter
-    protected SchedulerAdapter scheduler;
-    @Getter
-    protected ConfigManager configManager;
+    @Getter protected PluginJarHashProvider pluginJarHashProvider;
+    @Getter protected SchedulerAdapter scheduler;
+    @Getter protected ConfigManager configManager;
+    protected CommandManager<Sender> commandManager;
 
-    @Setter
     @Getter
-    private SenderFactory<? extends KnockbackSyncBase, ?> senderFactory;
+    protected AbstractPlayerSelectorParser<Sender> playerSelectorParser;
 
     protected KnockbackSyncBase() {
         this.platform = getPlatform();
         INSTANCE = this;
-        configManager = new ConfigManager();
     }
 
     private Platform getPlatform() {
@@ -99,7 +106,17 @@ public abstract class KnockbackSyncBase {
 
     protected abstract void registerPlatformListeners();
 
-    protected abstract void registerCommands();
+    protected void registerCommands() {
+        List<BuilderCommand> list = Arrays.asList(
+                new MainCommand(),
+                new ReloadCommand(),
+                new PingCommand(),
+                new StatusCommand(),
+                new ToggleCommand()
+        );
+        list.forEach(command -> command.register(commandManager));
+    }
+
 
     protected abstract String getVersion();
 

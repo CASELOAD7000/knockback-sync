@@ -1,4 +1,4 @@
-package me.caseload.knockbacksync.command;
+package me.caseload.knockbacksync.sender;
 
 import me.caseload.knockbacksync.KnockbackSyncBase;
 
@@ -7,7 +7,7 @@ import java.util.UUID;
 /**
  * Wrapper interface to represent a CommandSender/CommandSource within the common command implementations.
  */
-public interface PlatformSender {
+public interface Sender {
 
     /**
      * The uuid used by the console sender.
@@ -62,6 +62,8 @@ public interface PlatformSender {
      * @return true if the sender has the permission
      */
     boolean hasPermission(String permission);
+
+    boolean hasPermission(String permission, boolean defaultIfUnset);
 
     /**
      * Makes the sender perform a command.

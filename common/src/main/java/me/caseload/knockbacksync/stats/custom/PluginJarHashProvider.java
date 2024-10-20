@@ -6,7 +6,7 @@ import java.security.MessageDigest;
 
 public class PluginJarHashProvider {
 
-    protected URL jarURL;
+    protected final URL jarURL;
 
     public PluginJarHashProvider(URL jarURL) {
         this.jarURL = jarURL;

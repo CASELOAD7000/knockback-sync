@@ -2,7 +2,7 @@ package me.caseload.knockbacksync.scheduler;
 
 public interface AbstractTaskHandle {
 
-    public boolean getCancelled();
+    boolean getCancelled();
 
-    public void cancel();
+    void cancel();
 }
