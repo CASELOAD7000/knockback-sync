@@ -17,18 +17,6 @@ public class FabricPlayerDamageListener extends PlayerDamageListener {
             onPlayerDamage((ServerPlayer) player, entity);
             return InteractionResult.PASS;
         });
-
-        // Sending ping packets on tick if runnable is disabled
-//        ServerTickEvents.END_SERVER_TICK.register(server -> {
-//            if (!KnockbackSyncBase.INSTANCE.getConfigManager().isRunnableEnabled()) {
-//                for (ServerPlayerEntity player : server.getPlayerList()) {
-//                    PlayerData playerData = PlayerDataManager.getPlayerData(player);
-//                    if (playerData != null) {
-//                        playerData.sendPing();
-//                    }
-//                }
-//            }
-//        });
     }
 
     private void onPlayerDamage(ServerPlayer attacker, Entity victimEntity) {

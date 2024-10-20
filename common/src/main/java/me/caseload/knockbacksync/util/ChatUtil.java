@@ -49,7 +49,7 @@ public class ChatUtil {
         if (playerData.getPing() == null) {
             rawReturnString = String.format("Pong not received. %s estimated ping is &b" + playerData.getPlatformPlayer().getPing() + "&rms.", noun);
         } else {
-            rawReturnString = String.format("%s last ping packet took &b %.3f&rms. Jitter: &b%.3f&rms.", noun, playerData.getPing(), playerData.getJitter());
+            rawReturnString = String.format("%s last ping packet took &b%.3f&rms. Jitter: &b%.3f&rms.", noun, playerData.getPing(), playerData.getJitter());
         }
         return ChatUtil.translateAlternateColorCodes('&', rawReturnString);
     }

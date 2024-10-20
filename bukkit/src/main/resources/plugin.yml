@@ -1,8 +1,8 @@
 name: KnockbackSync
 version: ${version}
 main: me.caseload.knockbacksync.KBSyncBukkitLoaderPlugin
-api-version: '1.14'
-authors: [ Caseload ]
+api-version: '1.13' # We actually support 1.12.2, api-version was added later though
+authors: [ Caseload, Axionize ]
 description: Synchronizes player knockback for smoother gameplay.
 folia-supported: true
 permissions:

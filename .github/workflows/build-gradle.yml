@@ -204,7 +204,7 @@ jobs:
             purpur
 
           game-versions: |
-            >=1.14.4
+            >=1.12.2
 
           retry-attempts: 2
           retry-delay: 10000

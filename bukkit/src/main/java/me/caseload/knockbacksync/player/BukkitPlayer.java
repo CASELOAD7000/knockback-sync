@@ -1,7 +1,7 @@
 package me.caseload.knockbacksync.player;
 
 import com.github.retrooper.packetevents.PacketEvents;
-import com.github.retrooper.packetevents.PacketEventsAPI;
+import com.github.retrooper.packetevents.manager.server.ServerVersion;
 import com.github.retrooper.packetevents.util.Vector3d;
 import me.caseload.knockbacksync.world.PlatformWorld;
 import me.caseload.knockbacksync.world.SpigotWorld;
@@ -13,6 +13,7 @@ import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.UUID;
 
@@ -24,20 +25,34 @@ public class BukkitPlayer implements PlatformPlayer {
     private static Method getHandleMethod;
     private static Method getAttackStrengthScaleMethod;
 
+    // 1.12.2 support
     static {
         try {
-            String bukkitversion = Bukkit.getServer().getClass().getPackage()
-                    .getName();
+            Object server = Bukkit.getServer().getClass().getDeclaredMethod("getServer").invoke(Bukkit.getServer());
+            String nmsPackage = server.getClass().getPackage().getName();
+            String bukkitPackage = Bukkit.getServer().getClass().getPackage().getName();
             // Step 1: Load the CraftPlayer class
-            craftPlayerClass = Class.forName(bukkitversion + ".entity.CraftPlayer");
+            craftPlayerClass = Class.forName(bukkitPackage + ".entity.CraftPlayer");
             // Step 2: Get the getHandle method
             getHandleMethod = craftPlayerClass.getMethod("getHandle");
             // Step 3: Get the getAttackStrengthScale method from the EntityPlayer class
-            Class<?> entityPlayerClass = Class.forName("net.minecraft.server." + bukkitversion + ".EntityPlayer");
-            getAttackStrengthScaleMethod = entityPlayerClass.getDeclaredMethod("getAttackStrengthScale", float.class);
+            Class<?> entityPlayerClass = Class.forName(nmsPackage + ".EntityPlayer");
+            String getAttackStrengthScaleMethodName = "";
+            if (PacketEvents.getAPI().getServerManager().getVersion().isOlderThan(ServerVersion.V_1_13)) {
+                getAttackStrengthScaleMethodName = "n";
+            } else if (PacketEvents.getAPI().getServerManager().getVersion().isOlderThan(ServerVersion.V_1_14)) {
+                getAttackStrengthScaleMethodName = "r";
+            } else if (PacketEvents.getAPI().getServerManager().getVersion().isOlderThan(ServerVersion.V_1_15)) {
+                getAttackStrengthScaleMethodName = "s";
+            } else { // > 1.14.4
+                getAttackStrengthScaleMethodName = "getAttackStrengthScale";
+            }
+            getAttackStrengthScaleMethod = entityPlayerClass.getMethod(getAttackStrengthScaleMethodName, float.class); // getAttackStrengthScale(float)
             getAttackStrengthScaleMethod.setAccessible(true);
         } catch (ClassNotFoundException | NoSuchMethodException e) {
             e.printStackTrace();
+        } catch (InvocationTargetException | IllegalAccessException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -121,14 +136,13 @@ public class BukkitPlayer implements PlatformPlayer {
     public double getAttackCooldown() {
         try {
             // Step 1: Get the CraftPlayer instance
-            Object craftPlayer = craftPlayerClass.cast(bukkitPlayer);
+//            Object craftPlayer = craftPlayerClass.cast(bukkitPlayer);
             // Step 2: Get the handle (NMS EntityPlayer)
-            Object entityPlayer = getHandleMethod.invoke(craftPlayer);
+            Object entityPlayer = getHandleMethod.invoke(bukkitPlayer);
             // Step 3: Invoke the getAttackStrengthScale method
             return (float) getAttackStrengthScaleMethod.invoke(entityPlayer, 0.5f);
         } catch (Exception e) {
-            e.printStackTrace();
-            return -1; // Return -1 if an error occurs
+            throw new IllegalStateException("This plugin will not work. NMS mapping for getAttackCooldown() failed!");
         }
     }
 
