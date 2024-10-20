@@ -55,7 +55,6 @@ public class SpigotWorld implements PlatformWorld {
 
     public SpigotWorld(World world) {
         this.world = world;
-//        ((org.bukkit.craftbukkit.v1_12_R1.CraftWorld) this.world).getHandle().rayTrace();
     }
 
     private static BlockFace getBlockFaceFrom(org.bukkit.block.BlockFace direction) {
@@ -128,7 +127,7 @@ public class SpigotWorld implements PlatformWorld {
                 );
 
                 Object hitDirection = hitResult.getClass().getField("direction").get(hitResult);
-                Object hitBlock = hitResult.getClass().getField("e").get(hitResult);
+                Object hitBlock = hitResult.getClass().getField("e").get(hitResult); // e = BlockHitResult
 
                 return new RayTraceResult(
                         hitPosition,

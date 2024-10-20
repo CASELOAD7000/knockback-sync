@@ -24,31 +24,40 @@ public class BukkitPlayer implements PlatformPlayer {
     private static Class<?> craftPlayerClass;
     private static Method getHandleMethod;
     private static Method getAttackStrengthScaleMethod;
+    private static ServerVersion currentVersion = PacketEvents.getAPI().getServerManager().getVersion();
 
     // 1.12.2 support
     static {
         try {
-            Object server = Bukkit.getServer().getClass().getDeclaredMethod("getServer").invoke(Bukkit.getServer());
-            String nmsPackage = server.getClass().getPackage().getName();
-            String bukkitPackage = Bukkit.getServer().getClass().getPackage().getName();
-            // Step 1: Load the CraftPlayer class
-            craftPlayerClass = Class.forName(bukkitPackage + ".entity.CraftPlayer");
-            // Step 2: Get the getHandle method
-            getHandleMethod = craftPlayerClass.getMethod("getHandle");
-            // Step 3: Get the getAttackStrengthScale method from the EntityPlayer class
-            Class<?> entityPlayerClass = Class.forName(nmsPackage + ".EntityPlayer");
-            String getAttackStrengthScaleMethodName = "";
-            if (PacketEvents.getAPI().getServerManager().getVersion().isOlderThan(ServerVersion.V_1_13)) {
-                getAttackStrengthScaleMethodName = "n";
-            } else if (PacketEvents.getAPI().getServerManager().getVersion().isOlderThan(ServerVersion.V_1_14)) {
-                getAttackStrengthScaleMethodName = "r";
-            } else if (PacketEvents.getAPI().getServerManager().getVersion().isOlderThan(ServerVersion.V_1_15)) {
-                getAttackStrengthScaleMethodName = "s";
-            } else { // > 1.14.4
-                getAttackStrengthScaleMethodName = "getAttackStrengthScale";
+            // Check the current server versio
+
+            // If the version is greater than 1.14.4, use the Player method directly
+            if (currentVersion.isOlderThan(ServerVersion.V_1_15)) {
+                Object server = Bukkit.getServer().getClass().getDeclaredMethod("getServer").invoke(Bukkit.getServer());
+                String nmsPackage = server.getClass().getPackage().getName();
+                String bukkitPackage = Bukkit.getServer().getClass().getPackage().getName();
+
+                // Step 1: Load the CraftPlayer class
+                craftPlayerClass = Class.forName(bukkitPackage + ".entity.CraftPlayer");
+                // Step 2: Get the getHandle method
+                getHandleMethod = craftPlayerClass.getMethod("getHandle");
+                // Step 3: Get the getAttackStrengthScale method from the EntityPlayer class
+                Class<?> entityPlayerClass = Class.forName(nmsPackage + ".EntityPlayer");
+                String getAttackStrengthScaleMethodName = "";
+
+                // Determine the method name based on the version
+                if (currentVersion.isOlderThan(ServerVersion.V_1_13)) {
+                    getAttackStrengthScaleMethodName = "n";
+                } else if (currentVersion.isOlderThan(ServerVersion.V_1_14)) {
+                    getAttackStrengthScaleMethodName = "r";
+                } else if (currentVersion.isOlderThan(ServerVersion.V_1_15)) {
+                    getAttackStrengthScaleMethodName = "s";
+                }
+
+                // Get the attack strength scale method for EntityPlayer
+                getAttackStrengthScaleMethod = entityPlayerClass.getMethod(getAttackStrengthScaleMethodName, float.class);
+                getAttackStrengthScaleMethod.setAccessible(true);
             }
-            getAttackStrengthScaleMethod = entityPlayerClass.getMethod(getAttackStrengthScaleMethodName, float.class); // getAttackStrengthScale(float)
-            getAttackStrengthScaleMethod.setAccessible(true);
         } catch (ClassNotFoundException | NoSuchMethodException e) {
             e.printStackTrace();
         } catch (InvocationTargetException | IllegalAccessException e) {
@@ -134,15 +143,19 @@ public class BukkitPlayer implements PlatformPlayer {
 
     @Override
     public double getAttackCooldown() {
-        try {
-            // Step 1: Get the CraftPlayer instance
+        if (currentVersion.isNewerThan(ServerVersion.V_1_14_4)) {
+            return bukkitPlayer.getAttackCooldown();
+        } else {
+            try {
+                // Step 1: Get the CraftPlayer instance
 //            Object craftPlayer = craftPlayerClass.cast(bukkitPlayer);
-            // Step 2: Get the handle (NMS EntityPlayer)
-            Object entityPlayer = getHandleMethod.invoke(bukkitPlayer);
-            // Step 3: Invoke the getAttackStrengthScale method
-            return (float) getAttackStrengthScaleMethod.invoke(entityPlayer, 0.5f);
-        } catch (Exception e) {
-            throw new IllegalStateException("This plugin will not work. NMS mapping for getAttackCooldown() failed!");
+                // Step 2: Get the handle (NMS EntityPlayer)
+                Object entityPlayer = getHandleMethod.invoke(bukkitPlayer);
+                // Step 3: Invoke the getAttackStrengthScale method
+                return (float) getAttackStrengthScaleMethod.invoke(entityPlayer, 0.5f);
+            } catch (Exception e) {
+                throw new IllegalStateException("This plugin will not work. NMS mapping for getAttackCooldown() failed!");
+            }
         }
     }
 
