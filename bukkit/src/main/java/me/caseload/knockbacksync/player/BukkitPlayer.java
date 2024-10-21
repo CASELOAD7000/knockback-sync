@@ -59,9 +59,9 @@ public class BukkitPlayer implements PlatformPlayer {
                 getAttackStrengthScaleMethod.setAccessible(true);
             }
         } catch (ClassNotFoundException | NoSuchMethodException e) {
-            e.printStackTrace();
+            throw new IllegalStateException("Method of Class required to support this version not found via reflection" + e);
         } catch (InvocationTargetException | IllegalAccessException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Cannot access required methods via reflection to support this version" + e);
         }
     }
 
