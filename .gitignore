@@ -9,7 +9,6 @@ target/
 
 
 .gradle/
-gradle/
 build/
 
 run/
