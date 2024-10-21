@@ -222,7 +222,7 @@ jobs:
 
           name: KnockbackSync-${{ env.NEW_VERSION }}
           version: ${{ env.NEW_VERSION }}
-          version-type: beta
+          version-type: alpha
 
           loaders: |
             fabric
