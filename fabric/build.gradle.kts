@@ -3,6 +3,10 @@ plugins {
     id("com.gradleup.shadow")
 }
 
+loom {
+    accessWidenerPath = file("src/main/resources/knockbacksync.accesswidener")
+}
+
 base {
     archivesName.set("${rootProject.property("archives_base_name")}-fabric")
 }

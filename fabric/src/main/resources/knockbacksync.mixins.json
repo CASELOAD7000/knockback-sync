@@ -4,10 +4,12 @@
   "package": "me.caseload.knockbacksync.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
+    "ChunkMapMixin",
     "CommandStackSourceAccessor",
     "PlayerMixin",
     "ServerEntityMixin",
-    "TickRateManagerMixin"
+    "TickRateManagerMixin",
+    "TrackedEntityMixin"
   ],
   "injectors": {
     "defaultRequire": 1
