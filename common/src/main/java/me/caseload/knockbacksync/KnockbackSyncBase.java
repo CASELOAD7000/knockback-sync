@@ -9,6 +9,9 @@ import me.caseload.knockbacksync.command.subcommand.PingCommand;
 import me.caseload.knockbacksync.command.subcommand.ReloadCommand;
 import me.caseload.knockbacksync.command.subcommand.StatusCommand;
 import me.caseload.knockbacksync.command.subcommand.ToggleCommand;
+import me.caseload.knockbacksync.event.Event;
+import me.caseload.knockbacksync.event.EventBus;
+import me.caseload.knockbacksync.event.OptimizedEventBus;
 import me.caseload.knockbacksync.listener.packetevents.AttributeChangeListener;
 import me.caseload.knockbacksync.listener.packetevents.PingReceiveListener;
 import me.caseload.knockbacksync.manager.ConfigManager;
@@ -39,6 +42,7 @@ public abstract class KnockbackSyncBase {
     @Getter protected SchedulerAdapter scheduler;
     @Getter protected ConfigManager configManager;
     protected CommandManager<Sender> commandManager;
+    private final EventBus simpleEventBus = new OptimizedEventBus();
 
     @Getter
     protected AbstractPlayerSelectorParser<Sender> playerSelectorParser;
@@ -102,6 +106,7 @@ public abstract class KnockbackSyncBase {
                 new AttributeChangeListener(),
                 new PingReceiveListener()
         );
+        Event.setEventBus(simpleEventBus);
     }
 
     protected abstract void registerPlatformListeners();

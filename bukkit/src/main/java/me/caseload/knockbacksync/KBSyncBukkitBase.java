@@ -16,6 +16,7 @@ import me.caseload.knockbacksync.sender.Sender;
 import me.caseload.knockbacksync.stats.custom.BukkitStatsManager;
 import me.caseload.knockbacksync.stats.custom.PluginJarHashProvider;
 import me.caseload.knockbacksync.world.BukkitServer;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
