@@ -117,7 +117,11 @@ public class BukkitPlayer implements PlatformPlayer {
 
     @Override
     public int getPing() {
-        return PacketEvents.getAPI().getPlayerManager().getPing(bukkitPlayer);
+        if (currentVersion.isNewerThanOrEquals(ServerVersion.V_1_16_5)) {
+            return bukkitPlayer.getPing();
+        } else {
+            return PacketEvents.getAPI().getPlayerManager().getPing(bukkitPlayer);
+        }
     }
 
     @Override
