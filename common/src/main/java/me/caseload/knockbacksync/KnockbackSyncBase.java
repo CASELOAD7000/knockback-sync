@@ -2,6 +2,7 @@ package me.caseload.knockbacksync;
 
 import com.github.retrooper.packetevents.PacketEvents;
 import lombok.Getter;
+import lombok.var;
 import me.caseload.knockbacksync.command.MainCommand;
 import me.caseload.knockbacksync.command.generic.AbstractPlayerSelectorParser;
 import me.caseload.knockbacksync.command.generic.BuilderCommand;
@@ -25,6 +26,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 // Base class
@@ -49,25 +51,26 @@ public abstract class KnockbackSyncBase {
     }
 
     private Platform getPlatform() {
-        try {
-            Class.forName("io.papermc.paper.threadedregions.RegionizedServer");
-            return Platform.FOLIA; // Paper (Folia) detected
-        } catch (ClassNotFoundException ignored1) {
-        }
+        final var platforms = Map.of(
+                "io.papermc.paper.threadedregions.RegionizedServer", Platform.FOLIA,
+                "org.bukkit.Bukkit", Platform.BUKKIT,
+                "net.fabricmc.loader.api.FabricLoader", Platform.FABRIC
+        );
 
-        try {
-            Class.forName("org.bukkit.Bukkit");
-            return Platform.BUKKIT; // Bukkit (Spigot/Paper without Folia) detected
-        } catch (ClassNotFoundException ignored2) {
-        }
+        return platforms.entrySet().stream()
+                .filter(entry -> isClassPresent(entry.getKey()))
+                .map(Map.Entry::getValue)
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("Unknown platform!"));
+    }
 
+    private boolean isClassPresent(String className) {
         try {
-            Class.forName("net.fabricmc.loader.api.FabricLoader");
-            return Platform.FABRIC; // Fabric detected
-        } catch (ClassNotFoundException ignored3) {
+            Class.forName(className);
+            return true;
+        } catch (ClassNotFoundException ignored) {
+            return false;
         }
-
-        throw new IllegalStateException("Unknown platform!");
     }
 
     public abstract Logger getLogger();

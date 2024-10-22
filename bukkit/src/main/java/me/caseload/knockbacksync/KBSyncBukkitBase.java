@@ -4,6 +4,7 @@ import com.github.retrooper.packetevents.PacketEvents;
 import io.github.retrooper.packetevents.factory.spigot.SpigotPacketEventsBuilder;
 import me.caseload.knockbacksync.listener.bukkit.BukkitPlayerDamageListener;
 import me.caseload.knockbacksync.listener.bukkit.BukkitPlayerJoinQuitListener;
+import me.caseload.knockbacksync.listener.bukkit.BukkitPlayerJumpListener;
 import me.caseload.knockbacksync.listener.bukkit.BukkitPlayerKnockbackListener;
 import me.caseload.knockbacksync.manager.ConfigManager;
 import me.caseload.knockbacksync.permission.PermissionChecker;
@@ -89,7 +90,8 @@ public class KBSyncBukkitBase extends KnockbackSyncBase {
         registerPluginListeners(
                 new BukkitPlayerDamageListener(),
                 new BukkitPlayerKnockbackListener(),
-                new BukkitPlayerJoinQuitListener()
+                new BukkitPlayerJoinQuitListener(),
+                new BukkitPlayerJumpListener()
         );
     }
 
