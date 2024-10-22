@@ -30,14 +30,14 @@ import java.nio.file.Files;
 import java.util.Optional;
 import java.util.logging.Logger;
 
-public class KBSyncFabricBase extends KnockbackSyncBase {
+public class FabricBase extends Base {
 
-    private final Logger logger = Logger.getLogger(KBSyncFabricLoaderMod.class.getName());
+    private final Logger logger = Logger.getLogger(FabricLoaderMod.class.getName());
     private final FabricPermissionChecker permissionChecker = new FabricPermissionChecker();
     @Getter
     private final FabricSenderFactory fabricSenderFactory = new FabricSenderFactory(this);
 
-    public KBSyncFabricBase() {
+    public FabricBase() {
         super.configManager = new ConfigManager();
         super.playerSelectorParser = new FabricPlayerSelectorParser<>();
         super.commandManager = new FabricServerCommandManager<>(

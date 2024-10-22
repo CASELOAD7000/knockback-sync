@@ -1,7 +1,7 @@
 package me.caseload.knockbacksync.sender;
 
-import me.caseload.knockbacksync.KBSyncFabricBase;
-import me.caseload.knockbacksync.KnockbackSyncBase;
+import me.caseload.knockbacksync.FabricBase;
+import me.caseload.knockbacksync.Base;
 import me.caseload.knockbacksync.mixin.CommandStackSourceAccessor;
 import me.caseload.knockbacksync.permission.FabricPermissionChecker;
 import net.minecraft.commands.CommandSource;
@@ -13,16 +13,16 @@ import org.incendo.cloud.SenderMapper;
 
 import java.util.UUID;
 
-public class FabricSenderFactory extends SenderFactory<KBSyncFabricBase, CommandSourceStack> implements SenderMapper<CommandSourceStack, Sender> {
-    private final KBSyncFabricBase plugin;
+public class FabricSenderFactory extends SenderFactory<FabricBase, CommandSourceStack> implements SenderMapper<CommandSourceStack, Sender> {
+    private final FabricBase plugin;
 
-    public FabricSenderFactory(KBSyncFabricBase kbSyncFabricBase) {
+    public FabricSenderFactory(FabricBase kbSyncFabricBase) {
         super(kbSyncFabricBase);
         this.plugin = kbSyncFabricBase;
     }
 
     @Override
-    protected KBSyncFabricBase getPlugin() {
+    protected FabricBase getPlugin() {
         return this.plugin;
     }
 
@@ -58,12 +58,12 @@ public class FabricSenderFactory extends SenderFactory<KBSyncFabricBase, Command
 
     @Override
     protected boolean hasPermission(CommandSourceStack commandSource, String node) {
-        return ((FabricPermissionChecker) KnockbackSyncBase.INSTANCE.getPermissionChecker()).hasPermission(commandSource, node);
+        return ((FabricPermissionChecker) Base.INSTANCE.getPermissionChecker()).hasPermission(commandSource, node);
     }
 
     @Override
     protected boolean hasPermission(CommandSourceStack commandSource, String node, boolean defaultIfUnset) {
-        return ((FabricPermissionChecker) KnockbackSyncBase.INSTANCE.getPermissionChecker()).hasPermission(commandSource, node, defaultIfUnset);
+        return ((FabricPermissionChecker) Base.INSTANCE.getPermissionChecker()).hasPermission(commandSource, node, defaultIfUnset);
     }
 
     @Override

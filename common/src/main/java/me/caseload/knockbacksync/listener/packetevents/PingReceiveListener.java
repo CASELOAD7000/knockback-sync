@@ -11,7 +11,7 @@ import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientWi
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerKeepAlive;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerPing;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerWindowConfirmation;
-import me.caseload.knockbacksync.KnockbackSyncBase;
+import me.caseload.knockbacksync.Base;
 import me.caseload.knockbacksync.manager.PlayerDataManager;
 import me.caseload.knockbacksync.player.PlayerData;
 import me.caseload.knockbacksync.util.data.Pair;
@@ -52,7 +52,7 @@ public class PingReceiveListener extends PacketListenerAbstract {
 
     @Override
     public void onPacketReceive(PacketReceiveEvent event) {
-        if (!KnockbackSyncBase.INSTANCE.getConfigManager().isToggled()) return;
+        if (!Base.INSTANCE.getConfigManager().isToggled()) return;
 
         PacketTypeCommon packetType = event.getPacketType();
         if (packetType == PacketType.Play.Client.KEEP_ALIVE) {

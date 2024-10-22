@@ -15,8 +15,8 @@ package me.caseload.knockbacksync.stats.custom;
  * Violations will result in a ban of your plugin and account from bStats.
  */
 
-import me.caseload.knockbacksync.KBSyncBukkitLoaderPlugin;
-import me.caseload.knockbacksync.KnockbackSyncBase;
+import me.caseload.knockbacksync.BukkitLoaderPlugin;
+import me.caseload.knockbacksync.Base;
 import me.caseload.knockbacksync.stats.CustomChart;
 import me.caseload.knockbacksync.stats.JsonObjectBuilder;
 import org.bukkit.Bukkit;
@@ -39,7 +39,7 @@ public class MetricsBukkit implements Metrics {
 
 
     public MetricsBukkit(int serviceId) {
-        this.plugin = KBSyncBukkitLoaderPlugin.getPlugin(KBSyncBukkitLoaderPlugin.class);
+        this.plugin = BukkitLoaderPlugin.getPlugin(BukkitLoaderPlugin.class);
         // Get the config file
         File bStatsFolder = new File(plugin.getDataFolder().getParentFile(), "bStats");
         File configFile = new File(bStatsFolder, "config.yml");
@@ -91,7 +91,7 @@ public class MetricsBukkit implements Metrics {
                         enabled,
                         this::appendPlatformData,
                         this::appendServiceData,
-                        submitDataTask -> KnockbackSyncBase.INSTANCE.getScheduler().runTask(submitDataTask),
+                        submitDataTask -> Base.INSTANCE.getScheduler().runTask(submitDataTask),
 //                        isFolia
 //                                ? null
 //                                : submitDataTask -> Bukkit.getScheduler().runTask(plugin, submitDataTask),

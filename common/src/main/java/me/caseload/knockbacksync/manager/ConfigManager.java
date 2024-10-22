@@ -5,7 +5,7 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import lombok.Getter;
 import lombok.Setter;
 import me.caseload.knockbacksync.ConfigWrapper;
-import me.caseload.knockbacksync.KnockbackSyncBase;
+import me.caseload.knockbacksync.Base;
 import me.caseload.knockbacksync.Platform;
 import me.caseload.knockbacksync.runnable.PingRunnable;
 import me.caseload.knockbacksync.scheduler.AbstractTaskHandle;
@@ -46,7 +46,7 @@ public class ConfigManager {
 
     public ConfigManager() {
         mapper = new ObjectMapper(new YAMLFactory());
-        KnockbackSyncBase instance = KnockbackSyncBase.INSTANCE;
+        Base instance = Base.INSTANCE;
         configFile = new File(instance.getDataFolder(), "config.yml");
     }
 
@@ -60,7 +60,7 @@ public class ConfigManager {
     public void reloadConfig() {
         try {
             if (!configFile.exists()) {
-                KnockbackSyncBase.INSTANCE.saveDefaultConfig();
+                Base.INSTANCE.saveDefaultConfig();
             }
             config = mapper.readValue(configFile, Map.class);
             configWrapper = new ConfigWrapper(config);
@@ -102,11 +102,11 @@ public class ConfigManager {
             long initialDelay = 0L;
             long pingTaskRunnableInterval = runnableInterval;
             // Folia does not allow 0 ticks of wait time
-            if (KnockbackSyncBase.INSTANCE.platform == Platform.FOLIA) {
+            if (Base.INSTANCE.platform == Platform.FOLIA) {
                 initialDelay = 1L;
                 pingTaskRunnableInterval = Math.max(pingTaskRunnableInterval, 1L);
             }
-            pingTask = KnockbackSyncBase.INSTANCE.getScheduler().runTaskTimerAsynchronously(new PingRunnable(), initialDelay, pingTaskRunnableInterval);
+            pingTask = Base.INSTANCE.getScheduler().runTaskTimerAsynchronously(new PingRunnable(), initialDelay, pingTaskRunnableInterval);
         }
 
         notifyUpdate = config.getBoolean("notify_updates", true);
@@ -128,13 +128,13 @@ public class ConfigManager {
             // Backup old config
             File backupFile = new File(configFile.getParentFile(), "config-version-" + oldConfigVersion + ".yml");
             if (configFile.renameTo(backupFile)) {
-                KnockbackSyncBase.INSTANCE.getLogger().info("Backed up old config to " + backupFile.getName());
+                Base.INSTANCE.getLogger().info("Backed up old config to " + backupFile.getName());
             } else {
-                KnockbackSyncBase.INSTANCE.getLogger().warning("Failed to backup old config");
+                Base.INSTANCE.getLogger().warning("Failed to backup old config");
             }
 
             // Create new config with default values
-            KnockbackSyncBase.INSTANCE.saveDefaultConfig();
+            Base.INSTANCE.saveDefaultConfig();
             reloadConfig();
 
             // Transfer existing settings
@@ -147,7 +147,7 @@ public class ConfigManager {
             // Save updated config
             saveConfig();
 
-            KnockbackSyncBase.INSTANCE.getLogger().info("Config updated to version " + CONFIG_VERSION);
+            Base.INSTANCE.getLogger().info("Config updated to version " + CONFIG_VERSION);
         }
     }
 

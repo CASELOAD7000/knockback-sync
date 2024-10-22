@@ -1,6 +1,6 @@
 package me.caseload.knockbacksync.sender;
 
-import me.caseload.knockbacksync.KBSyncBukkitBase;
+import me.caseload.knockbacksync.BukkitBase;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.command.RemoteConsoleCommandSender;
@@ -12,10 +12,10 @@ import org.incendo.cloud.SenderMapper;
 
 import java.util.UUID;
 
-public class BukkitSenderFactory extends SenderFactory<KBSyncBukkitBase, CommandSender> implements SenderMapper<CommandSender, Sender> {
+public class BukkitSenderFactory extends SenderFactory<BukkitBase, CommandSender> implements SenderMapper<CommandSender, Sender> {
 //    private final BukkitAudiences audiences;
 
-    public BukkitSenderFactory(KBSyncBukkitBase kbSyncBukkitBase) {
+    public BukkitSenderFactory(BukkitBase kbSyncBukkitBase) {
         super(kbSyncBukkitBase);
 //        this.audiences = BukkitAudiences.create(kbSyncBukkitBase.getLoader());
     }

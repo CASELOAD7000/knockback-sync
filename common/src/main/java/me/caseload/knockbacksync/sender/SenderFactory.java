@@ -1,6 +1,6 @@
 package me.caseload.knockbacksync.sender;
 
-import me.caseload.knockbacksync.KnockbackSyncBase;
+import me.caseload.knockbacksync.Base;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -11,7 +11,7 @@ import java.util.UUID;
  * @param <P> the plugin type
  * @param <T> the command sender type
  */
-public abstract class SenderFactory<P extends KnockbackSyncBase, T> implements AutoCloseable {
+public abstract class SenderFactory<P extends Base, T> implements AutoCloseable {
     private final P plugin;
 
     public SenderFactory(P plugin) {

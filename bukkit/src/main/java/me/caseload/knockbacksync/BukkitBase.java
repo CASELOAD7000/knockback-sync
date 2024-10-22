@@ -28,13 +28,13 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.logging.Logger;
 
-public class KBSyncBukkitBase extends KnockbackSyncBase {
+public class BukkitBase extends Base {
 
     private final JavaPlugin plugin;
     private final BukkitSenderFactory bukkitSenderFactory = new BukkitSenderFactory(this);
     private final PluginPermissionChecker permissionChecker = new PluginPermissionChecker();
 
-    public KBSyncBukkitBase(JavaPlugin plugin) {
+    public BukkitBase(JavaPlugin plugin) {
         this.plugin = plugin;
         super.configManager = new ConfigManager();
         super.playerSelectorParser = new BukkitPlayerSelectorParser<>();

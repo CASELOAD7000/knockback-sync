@@ -29,9 +29,9 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 // Base class
-public abstract class KnockbackSyncBase {
+public abstract class Base {
     public static Logger LOGGER;
-    public static KnockbackSyncBase INSTANCE;
+    public static Base INSTANCE;
 
     public final Platform platform;
     public StatsManager statsManager;
@@ -44,7 +44,7 @@ public abstract class KnockbackSyncBase {
     @Getter
     protected AbstractPlayerSelectorParser<Sender> playerSelectorParser;
 
-    protected KnockbackSyncBase() {
+    protected Base() {
         this.platform = getPlatform();
         INSTANCE = this;
     }

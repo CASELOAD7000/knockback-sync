@@ -1,6 +1,6 @@
 package me.caseload.knockbacksync.sender;
 
-import me.caseload.knockbacksync.KnockbackSyncBase;
+import me.caseload.knockbacksync.Base;
 
 import java.util.UUID;
 
@@ -23,7 +23,7 @@ public interface Sender {
      *
      * @return the plugin
      */
-    KnockbackSyncBase getPlugin();
+    Base getPlugin();
 
     /**
      * Gets the sender's username

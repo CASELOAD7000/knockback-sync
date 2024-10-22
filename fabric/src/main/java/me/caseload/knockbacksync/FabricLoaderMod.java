@@ -6,9 +6,9 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.entrypoint.PreLaunchEntrypoint;
 import net.minecraft.server.MinecraftServer;
 
-public class KBSyncFabricLoaderMod implements PreLaunchEntrypoint, ModInitializer {
+public class FabricLoaderMod implements PreLaunchEntrypoint, ModInitializer {
 
-    private final KnockbackSyncBase core = new KBSyncFabricBase();
+    private final Base core = new FabricBase();
 
     public static MinecraftServer getServer() {
         return (MinecraftServer) FabricLoader.getInstance().getGameInstance();

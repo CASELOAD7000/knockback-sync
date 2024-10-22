@@ -1,6 +1,6 @@
 package me.caseload.knockbacksync.command.subcommand;
 
-import me.caseload.knockbacksync.KnockbackSyncBase;
+import me.caseload.knockbacksync.Base;
 import me.caseload.knockbacksync.command.generic.BuilderCommand;
 import me.caseload.knockbacksync.manager.ConfigManager;
 import me.caseload.knockbacksync.sender.Sender;
@@ -24,7 +24,7 @@ public class ReloadCommand implements BuilderCommand {
                     return PredicatePermission.of(senderPredicate).testPermission(sender);
                 }))
                 .handler(context -> {
-                    ConfigManager configManager = KnockbackSyncBase.INSTANCE.getConfigManager();
+                    ConfigManager configManager = Base.INSTANCE.getConfigManager();
                     configManager.loadConfig(true);
 
                     String rawReloadMessage = configManager.getReloadMessage();

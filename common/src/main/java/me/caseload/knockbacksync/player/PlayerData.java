@@ -16,7 +16,7 @@ import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerPi
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerWindowConfirmation;
 import lombok.Getter;
 import lombok.Setter;
-import me.caseload.knockbacksync.KnockbackSyncBase;
+import me.caseload.knockbacksync.Base;
 import me.caseload.knockbacksync.manager.CombatManager;
 import me.caseload.knockbacksync.scheduler.AbstractTaskHandle;
 import me.caseload.knockbacksync.util.MathUtil;
@@ -24,14 +24,11 @@ import me.caseload.knockbacksync.util.data.Pair;
 import me.caseload.knockbacksync.world.PlatformWorld;
 import me.caseload.knockbacksync.world.raytrace.FluidHandling;
 import me.caseload.knockbacksync.world.raytrace.RayTraceResult;
-import org.incendo.cloud.CloudCapability;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Field;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 @Getter
 public class PlayerData {
@@ -48,7 +45,7 @@ public class PlayerData {
 
     static {
         try {
-            switch (KnockbackSyncBase.INSTANCE.platform) {
+            switch (Base.INSTANCE.platform) {
                 case BUKKIT:
                 case FOLIA:
                     Class<?> bukkitPlayerClass = Class.forName("me.caseload.knockbacksync.player.BukkitPlayer");
@@ -59,7 +56,7 @@ public class PlayerData {
                     playerField = fabricPlayerClass.getDeclaredField("fabricPlayer");
                     break;
                 default:
-                    throw new IllegalStateException("Unexpected platform: " + KnockbackSyncBase.INSTANCE.platform);
+                    throw new IllegalStateException("Unexpected platform: " + Base.INSTANCE.platform);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -112,7 +109,7 @@ public class PlayerData {
     public double getEstimatedPing() {
         double currentPing = (ping != null) ? ping : platformPlayer.getPing();
         double lastPing = (previousPing != null) ? previousPing : platformPlayer.getPing();
-        double ping = (currentPing - lastPing > KnockbackSyncBase.INSTANCE.getConfigManager().getSpikeThreshold()) ? lastPing : currentPing;
+        double ping = (currentPing - lastPing > Base.INSTANCE.getConfigManager().getSpikeThreshold()) ? lastPing : currentPing;
 
         return Math.max(1, ping - PING_OFFSET);
     }
@@ -124,7 +121,7 @@ public class PlayerData {
     public void sendPing(boolean async) {
         if (user == null || user.getEncoderState() != ConnectionState.PLAY) return;
 
-       String pingStrategy = KnockbackSyncBase.INSTANCE.getConfigManager().getConfigWrapper().getString("ping_strategy", "KEEPALIVE");
+       String pingStrategy = Base.INSTANCE.getConfigManager().getConfigWrapper().getString("ping_strategy", "KEEPALIVE");
        switch (pingStrategy) {
            case "KEEPALIVE":
                long keepAliveID = async ? NETTY_THREAD_TRANSACTION_ID : MAIN_THREAD_TRANSACTION_ID;
@@ -292,8 +289,8 @@ public class PlayerData {
 
     @NotNull
     private AbstractTaskHandle newCombatTask() {
-        return KnockbackSyncBase.INSTANCE.getScheduler().runTaskLaterAsynchronously(
-                () -> quitCombat(false), KnockbackSyncBase.INSTANCE.getConfigManager().getCombatTimer());
+        return Base.INSTANCE.getScheduler().runTaskLaterAsynchronously(
+                () -> quitCombat(false), Base.INSTANCE.getConfigManager().getCombatTimer());
     }
 
     public ClientVersion getClientVersion() {

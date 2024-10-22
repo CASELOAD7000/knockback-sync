@@ -1,6 +1,6 @@
 package me.caseload.knockbacksync.scheduler;
 
-import me.caseload.knockbacksync.KBSyncFabricLoaderMod;
+import me.caseload.knockbacksync.FabricLoaderMod;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.server.MinecraftServer;
 
@@ -32,7 +32,7 @@ public class FabricSchedulerAdapter implements SchedulerAdapter {
 
     @Override
     public AbstractTaskHandle runTask(Runnable task) {
-        ScheduledTask scheduledTask = new ScheduledTask(task, KBSyncFabricLoaderMod.getServer().getTickCount(), 0, false);
+        ScheduledTask scheduledTask = new ScheduledTask(task, FabricLoaderMod.getServer().getTickCount(), 0, false);
         Runnable cancellationTask = () -> taskMap.remove(scheduledTask);
         taskMap.put(scheduledTask, cancellationTask);
         return new FabricTaskHandle(cancellationTask);
@@ -52,7 +52,7 @@ public class FabricSchedulerAdapter implements SchedulerAdapter {
 
     @Override
     public AbstractTaskHandle runTaskLater(Runnable task, long delayTicks) {
-        ScheduledTask scheduledTask = new ScheduledTask(task, KBSyncFabricLoaderMod.getServer().getTickCount() + delayTicks, 0, false);
+        ScheduledTask scheduledTask = new ScheduledTask(task, FabricLoaderMod.getServer().getTickCount() + delayTicks, 0, false);
         Runnable cancellationTask = () -> taskMap.remove(scheduledTask);
         taskMap.put(scheduledTask, cancellationTask);
         return new FabricTaskHandle(cancellationTask);
@@ -60,7 +60,7 @@ public class FabricSchedulerAdapter implements SchedulerAdapter {
 
     @Override
     public AbstractTaskHandle runTaskTimer(Runnable task, long delayTicks, long periodTicks) {
-        ScheduledTask scheduledTask = new ScheduledTask(task, KBSyncFabricLoaderMod.getServer().getTickCount() + delayTicks, periodTicks, true);
+        ScheduledTask scheduledTask = new ScheduledTask(task, FabricLoaderMod.getServer().getTickCount() + delayTicks, periodTicks, true);
         Runnable cancellationTask = () -> taskMap.remove(scheduledTask);
         taskMap.put(scheduledTask, cancellationTask);
         return new FabricTaskHandle(cancellationTask);

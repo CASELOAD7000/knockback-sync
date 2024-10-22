@@ -1,5 +1,5 @@
 package me.caseload.knockbacksync.command.subcommand;
-import me.caseload.knockbacksync.KnockbackSyncBase;
+import me.caseload.knockbacksync.Base;
 import me.caseload.knockbacksync.command.generic.BuilderCommand;
 import me.caseload.knockbacksync.command.generic.PlayerSelector;
 import me.caseload.knockbacksync.manager.ConfigManager;
@@ -10,7 +10,6 @@ import me.caseload.knockbacksync.player.PlayerData;
 import me.caseload.knockbacksync.sender.Sender;
 import me.caseload.knockbacksync.util.ChatUtil;
 import org.incendo.cloud.CommandManager;
-import org.incendo.cloud.permission.Permission;
 import org.incendo.cloud.permission.PredicatePermission;
 
 import java.util.UUID;
@@ -18,8 +17,8 @@ import java.util.function.Predicate;
 
 public class ToggleCommand implements BuilderCommand {
 
-    private static final ConfigManager configManager = KnockbackSyncBase.INSTANCE.getConfigManager();
-    private static final PermissionChecker permissionChecker = KnockbackSyncBase.INSTANCE.getPermissionChecker();
+    private static final ConfigManager configManager = Base.INSTANCE.getConfigManager();
+    private static final PermissionChecker permissionChecker = Base.INSTANCE.getPermissionChecker();
     private static final String TOGGLE_GLOBAL_PERMISSION = "knockbacksync.toggle.global";
     private static final String TOGGLE_SELF_PERMISSION = "knockbacksync.toggle.self";
     private static final String TOGGLE_OTHER_PERMISSION = "knockbacksync.toggle.other";
@@ -30,7 +29,7 @@ public class ToggleCommand implements BuilderCommand {
         manager.command(
             manager.commandBuilder("knockbacksync", "kbsync", "kbs")
                 .literal("toggle")
-                .optional("target", KnockbackSyncBase.INSTANCE.getPlayerSelectorParser().descriptor())
+                .optional("target", Base.INSTANCE.getPlayerSelectorParser().descriptor())
                     .permission((sender -> {
                         Predicate<Sender> senderPredicate = (s) -> {
                             return s.hasPermission(TOGGLE_GLOBAL_PERMISSION, false)
@@ -76,8 +75,8 @@ public class ToggleCommand implements BuilderCommand {
         boolean toggledState = !configManager.isToggled();
         configManager.setToggled(toggledState);
 
-        KnockbackSyncBase.INSTANCE.getConfigManager().getConfigWrapper().set("enabled", toggledState);
-        KnockbackSyncBase.INSTANCE.getConfigManager().saveConfig();
+        Base.INSTANCE.getConfigManager().getConfigWrapper().set("enabled", toggledState);
+        Base.INSTANCE.getConfigManager().saveConfig();
 
         String message = ChatUtil.translateAlternateColorCodes('&',
                 toggledState ? configManager.getEnableMessage() : configManager.getDisableMessage()
@@ -101,7 +100,7 @@ public class ToggleCommand implements BuilderCommand {
         if (hasPlayerData)
             PlayerDataManager.removePlayerData(uuid);
         else {
-            PlayerDataManager.addPlayerData(uuid, new PlayerData(KnockbackSyncBase.INSTANCE.platformServer.getPlayer(uuid)));
+            PlayerDataManager.addPlayerData(uuid, new PlayerData(Base.INSTANCE.platformServer.getPlayer(uuid)));
         }
 
         String message = ChatUtil.translateAlternateColorCodes('&',

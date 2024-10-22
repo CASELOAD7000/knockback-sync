@@ -1,6 +1,6 @@
 package me.caseload.knockbacksync.sender;
 
-import me.caseload.knockbacksync.KnockbackSyncBase;
+import me.caseload.knockbacksync.Base;
 
 import java.util.UUID;
 
@@ -10,7 +10,7 @@ import java.util.UUID;
  * @param <T> the command sender type
  */
 public final class AbstractSender<T> implements Sender {
-    private final KnockbackSyncBase plugin;
+    private final Base plugin;
     private final SenderFactory<?, T> factory;
     private final T sender;
 
@@ -18,7 +18,7 @@ public final class AbstractSender<T> implements Sender {
     private final String name;
     private final boolean isConsole;
 
-    AbstractSender(KnockbackSyncBase plugin, SenderFactory<?, T> factory, T sender) {
+    AbstractSender(Base plugin, SenderFactory<?, T> factory, T sender) {
         this.plugin = plugin;
         this.factory = factory;
         this.sender = sender;
@@ -28,7 +28,7 @@ public final class AbstractSender<T> implements Sender {
     }
 
     @Override
-    public KnockbackSyncBase getPlugin() {
+    public Base getPlugin() {
         return this.plugin;
     }
 

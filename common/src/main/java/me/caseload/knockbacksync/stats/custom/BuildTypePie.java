@@ -2,7 +2,7 @@ package me.caseload.knockbacksync.stats.custom;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import me.caseload.knockbacksync.KnockbackSyncBase;
+import me.caseload.knockbacksync.Base;
 import me.caseload.knockbacksync.stats.SimplePie;
 import org.kohsuke.github.GHAsset;
 import org.kohsuke.github.GHRelease;
@@ -18,7 +18,7 @@ public class BuildTypePie extends SimplePie {
 
     private static final String RELEASES_FILE = "releases.txt";
     private static final String DEV_BUILDS_FILE = "dev-builds.txt";
-    private static final File dataFolder = KnockbackSyncBase.INSTANCE.getDataFolder();
+    private static final File dataFolder = Base.INSTANCE.getDataFolder();
     public static URL jarUrl;
     private static String cachedBuildType = null;
 
@@ -35,7 +35,7 @@ public class BuildTypePie extends SimplePie {
 
     private static String calculateBuildType() {
         try {
-            String currentHash = KnockbackSyncBase.INSTANCE.getPluginJarHashProvider().getPluginJarHash();
+            String currentHash = Base.INSTANCE.getPluginJarHashProvider().getPluginJarHash();
             downloadBuildFiles();
 
             if (isHashInFile(currentHash, new File(dataFolder, RELEASES_FILE))) {
@@ -58,7 +58,7 @@ public class BuildTypePie extends SimplePie {
         List<GHAsset> assets = latestRelease.listAssets().toList();
         for (GHAsset asset : assets) {
             if (asset.getName().equals(RELEASES_FILE) || asset.getName().equals(DEV_BUILDS_FILE)) {
-                KnockbackSyncBase.INSTANCE.getLogger().info("Downloading: " + asset.getName());
+                Base.INSTANCE.getLogger().info("Downloading: " + asset.getName());
 
                 String jsonContent = readStringFromURL(asset.getUrl().toString());
                 JsonObject jsonObject = JsonParser.parseString(jsonContent).getAsJsonObject();
@@ -72,7 +72,7 @@ public class BuildTypePie extends SimplePie {
                     }
                 }
 
-                KnockbackSyncBase.INSTANCE.getLogger().info("Downloaded: " + asset.getName());
+                Base.INSTANCE.getLogger().info("Downloaded: " + asset.getName());
             }
         }
     }

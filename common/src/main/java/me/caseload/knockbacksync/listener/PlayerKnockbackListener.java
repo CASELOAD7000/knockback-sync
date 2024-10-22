@@ -1,7 +1,7 @@
 package me.caseload.knockbacksync.listener;
 
 import com.github.retrooper.packetevents.util.Vector3d;
-import me.caseload.knockbacksync.KnockbackSyncBase;
+import me.caseload.knockbacksync.Base;
 import me.caseload.knockbacksync.manager.PlayerDataManager;
 import me.caseload.knockbacksync.player.PlatformPlayer;
 import me.caseload.knockbacksync.player.PlayerData;
@@ -9,7 +9,7 @@ import me.caseload.knockbacksync.player.PlayerData;
 public abstract class PlayerKnockbackListener {
 
     public void onPlayerVelocity(PlatformPlayer victim, Vector3d velocity) {
-        if (!KnockbackSyncBase.INSTANCE.getConfigManager().isToggled())
+        if (!Base.INSTANCE.getConfigManager().isToggled())
             return;
 
         PlayerData playerData = PlayerDataManager.getPlayerData(victim.getUUID());

@@ -1,6 +1,6 @@
 package me.caseload.knockbacksync.command.subcommand;
 
-import me.caseload.knockbacksync.KnockbackSyncBase;
+import me.caseload.knockbacksync.Base;
 import me.caseload.knockbacksync.command.generic.BuilderCommand;
 import me.caseload.knockbacksync.command.generic.PlayerSelector;
 import me.caseload.knockbacksync.sender.Sender;
@@ -23,7 +23,7 @@ public class PingCommand implements BuilderCommand {
                     return PredicatePermission.of(senderPredicate).testPermission(sender);
                 }))
                 .literal("ping")
-                .optional("target", KnockbackSyncBase.INSTANCE.getPlayerSelectorParser().descriptor())
+                .optional("target", Base.INSTANCE.getPlayerSelectorParser().descriptor())
                 .handler(context -> {
                     PlayerSelector targetSelector = context.getOrDefault("target", null);
 

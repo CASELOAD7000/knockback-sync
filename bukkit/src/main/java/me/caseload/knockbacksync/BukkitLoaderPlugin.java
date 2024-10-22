@@ -3,9 +3,9 @@ package me.caseload.knockbacksync;
 import com.github.retrooper.packetevents.PacketEvents;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public final class KBSyncBukkitLoaderPlugin extends JavaPlugin {
+public final class BukkitLoaderPlugin extends JavaPlugin {
 
-    private final KnockbackSyncBase core = new KBSyncBukkitBase(this);
+    private final Base core = new BukkitBase(this);
 
     @Override
     public void onLoad() {

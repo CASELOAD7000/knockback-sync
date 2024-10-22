@@ -1,6 +1,6 @@
 package me.caseload.knockbacksync.runnable;
 
-import me.caseload.knockbacksync.KnockbackSyncBase;
+import me.caseload.knockbacksync.Base;
 import me.caseload.knockbacksync.manager.CombatManager;
 import me.caseload.knockbacksync.manager.PlayerDataManager;
 import me.caseload.knockbacksync.player.PlayerData;
@@ -11,7 +11,7 @@ public class PingRunnable implements Runnable {
 
     @Override
     public void run() {
-        if (!KnockbackSyncBase.INSTANCE.getConfigManager().isToggled())
+        if (!Base.INSTANCE.getConfigManager().isToggled())
             return;
 
         for (UUID uuid : CombatManager.getPlayers()) {

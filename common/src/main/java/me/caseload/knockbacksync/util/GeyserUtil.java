@@ -2,7 +2,7 @@ package me.caseload.knockbacksync.util;
 
 import com.github.retrooper.packetevents.PacketEvents;
 import com.github.retrooper.packetevents.util.reflection.Reflection;
-import me.caseload.knockbacksync.KnockbackSyncBase;
+import me.caseload.knockbacksync.Base;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -19,7 +19,7 @@ public class GeyserUtil {
     public static boolean isGeyserPlayer(UUID uuid) {
         if (!CHECKED_FOR_GEYSER) {
             try {
-                switch (KnockbackSyncBase.INSTANCE.platform) {
+                switch (Base.INSTANCE.platform) {
                     case BUKKIT:
                     case FOLIA:
                         ClassLoader classLoader = PacketEvents.getAPI().getPlugin().getClass().getClassLoader();
@@ -40,7 +40,7 @@ public class GeyserUtil {
         if (GEYSER_PRESENT) {
             if (GEYSER_API_CLASS == null) {
                 try {
-                    switch (KnockbackSyncBase.INSTANCE.platform) {
+                    switch (Base.INSTANCE.platform) {
                         case BUKKIT:
                         case FOLIA:
                             ClassLoader classLoader = PacketEvents.getAPI().getPlugin().getClass().getClassLoader();
