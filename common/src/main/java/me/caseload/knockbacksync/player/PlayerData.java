@@ -45,8 +45,8 @@ public class PlayerData {
     public final List<Pair<Integer, Long>> transactionsSent = new LinkedList<>();
     public final List<Pair<Long, Long>> keepaliveMap = new LinkedList<>();
 
-    private static final short MAIN_THREAD_TRANSACTION_ID = -1;
-    private static final short NETTY_THREAD_TRANSACTION_ID = -2;
+    private static final short MAIN_THREAD_TRANSACTION_ID = 31407;
+    private static final short NETTY_THREAD_TRANSACTION_ID = 31408;
 
     static {
         try {
