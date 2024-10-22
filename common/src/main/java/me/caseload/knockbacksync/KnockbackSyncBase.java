@@ -2,7 +2,6 @@ package me.caseload.knockbacksync;
 
 import com.github.retrooper.packetevents.PacketEvents;
 import lombok.Getter;
-import lombok.var;
 import me.caseload.knockbacksync.command.MainCommand;
 import me.caseload.knockbacksync.command.generic.AbstractPlayerSelectorParser;
 import me.caseload.knockbacksync.command.generic.BuilderCommand;
@@ -51,7 +50,7 @@ public abstract class KnockbackSyncBase {
     }
 
     private Platform getPlatform() {
-        final var platforms = Map.of(
+        final Map<String, Platform> platforms = Map.of(
                 "io.papermc.paper.threadedregions.RegionizedServer", Platform.FOLIA,
                 "org.bukkit.Bukkit", Platform.BUKKIT,
                 "net.fabricmc.loader.api.FabricLoader", Platform.FABRIC
