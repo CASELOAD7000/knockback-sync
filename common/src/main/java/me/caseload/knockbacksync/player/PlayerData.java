@@ -7,6 +7,8 @@ import com.github.retrooper.packetevents.netty.channel.ChannelHelper;
 import com.github.retrooper.packetevents.protocol.ConnectionState;
 import com.github.retrooper.packetevents.protocol.player.ClientVersion;
 import com.github.retrooper.packetevents.protocol.player.User;
+import com.github.retrooper.packetevents.protocol.world.BoundingBox;
+import com.github.retrooper.packetevents.protocol.world.Location;
 import com.github.retrooper.packetevents.protocol.world.states.WrappedBlockState;
 import com.github.retrooper.packetevents.protocol.world.states.type.StateTypes;
 import com.github.retrooper.packetevents.util.Vector3d;
@@ -177,7 +179,7 @@ public class PlayerData {
      * @return <code>true</code> if the Player is on the ground; <code>false</code> otherwise.
      */
     public boolean isOnGround(double verticalVelocity) {
-        WrappedBlockState blockState = platformPlayer.getWorld().getBlockStateAt(platformPlayer.getLocation());
+        WrappedBlockState blockState = platformPlayer.getWorld().getBlockStateAt(platformPlayer.getLocation().getPosition());
 
         if (platformPlayer.isGliding() ||
                 blockState.getType() == StateTypes.WATER ||
@@ -215,8 +217,8 @@ public class PlayerData {
 
         PlatformWorld world = platformPlayer.getWorld();
 
-        for (Vector3d corner : getBBCorners()) {
-            RayTraceResult result = world.rayTraceBlocks(corner, new Vector3d(0, -1, 0), 5, FluidHandling.NONE, true);
+        for (Location corner : getBBCorners()) {
+            RayTraceResult result = world.rayTraceBlocks(corner.getPosition(), new Vector3d(0, -1, 0), 5, FluidHandling.NONE, true);
 
             if (result == null || result.getHitPosition() == null)
                 continue;
@@ -232,17 +234,17 @@ public class PlayerData {
      *
      * @return An array of locations representing the corners of the bounding box.
      */
-    private Vector3d[] getBBCorners() {
-        Vector3d playerPos = platformPlayer.getLocation();
-        double width = 0.6;  // typical player width
-//        double height = 1.8;  // typical player height
-        double adjustment = 0.01;
+    private Location[] getBBCorners() {
+        BoundingBox boundingBox = platformPlayer.getBoundingBox();
+        Location location = platformPlayer.getLocation();
 
-        return new Vector3d[]{
-                new Vector3d(playerPos.getX() - width / 2 + adjustment, playerPos.getY(), playerPos.getZ() - width / 2 + adjustment),
-                new Vector3d(playerPos.getX() - width / 2 + adjustment, playerPos.getY(), playerPos.getZ() + width / 2 - adjustment),
-                new Vector3d(playerPos.getX() + width / 2 - adjustment, playerPos.getY(), playerPos.getZ() - width / 2 + adjustment),
-                new Vector3d(playerPos.getX() + width / 2 - adjustment, playerPos.getY(), playerPos.getZ() + width / 2 - adjustment)
+        double adjustment = 0.01; // To ensure the bounding box isn't clipping inside a wall
+
+        return new Location[] {
+                new Location(boundingBox.getMinX() + adjustment, location.getY(), boundingBox.getMinZ() + adjustment, 0, 0),
+                new Location(boundingBox.getMinX() + adjustment, location.getY(), boundingBox.getMaxZ() - adjustment, 0, 0),
+                new Location(boundingBox.getMaxX() - adjustment, location.getY(), boundingBox.getMinZ() + adjustment,0 , 0),
+                new Location(boundingBox.getMaxX() - adjustment, location.getY(), boundingBox.getMaxZ() - adjustment,0, 0)
         };
     }
 

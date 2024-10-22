@@ -2,11 +2,12 @@ package me.caseload.knockbacksync.player;
 
 import com.github.retrooper.packetevents.PacketEvents;
 import com.github.retrooper.packetevents.manager.server.ServerVersion;
+import com.github.retrooper.packetevents.protocol.world.BoundingBox;
+import com.github.retrooper.packetevents.protocol.world.Location;
 import com.github.retrooper.packetevents.util.Vector3d;
 import me.caseload.knockbacksync.world.PlatformWorld;
 import me.caseload.knockbacksync.world.SpigotWorld;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
@@ -135,9 +136,9 @@ public class BukkitPlayer implements PlatformPlayer {
     }
 
     @Override
-    public Vector3d getLocation() {
-        Location location = bukkitPlayer.getLocation();
-        return new Vector3d(location.getX(), location.getY(), location.getZ());
+    public Location getLocation() {
+        org.bukkit.Location location = bukkitPlayer.getLocation();
+        return new Location(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
     }
 
     @Override
@@ -181,5 +182,11 @@ public class BukkitPlayer implements PlatformPlayer {
     @Override
     public void setVelocity(Vector3d adjustedVelocity) {
         bukkitPlayer.setVelocity(new Vector(adjustedVelocity.x, adjustedVelocity.y, adjustedVelocity.z));
+    }
+
+    @Override
+    public BoundingBox getBoundingBox() {
+        org.bukkit.util.BoundingBox boundingBox = bukkitPlayer.getBoundingBox();
+        return new BoundingBox(boundingBox.getMinX(), boundingBox.getMinY(), boundingBox.getMinZ(), boundingBox.getMaxX(), boundingBox.getMaxY(), boundingBox.getMaxZ());
     }
 }

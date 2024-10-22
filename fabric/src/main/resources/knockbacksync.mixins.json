@@ -7,9 +7,9 @@
     "ChunkMapMixin",
     "CommandStackSourceAccessor",
     "PlayerMixin",
-    "ServerEntityMixin",
+//    "ServerEntityMixin",
     "TickRateManagerMixin",
-    "TrackedEntityMixin"
+//    "TrackedEntityMixin"
   ],
   "injectors": {
     "defaultRequire": 1

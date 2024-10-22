@@ -26,13 +26,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 //
 //import java.util.Map;
 //
-@Mixin(ServerEntity.class)
-public class ServerEntityMixin implements UpdateIntervalAccessor {
+//@Mixin(ServerEntity.class)
+//public class ServerEntityMixin implements UpdateIntervalAccessor {
 
 //
-    @Shadow
-    @Final
-    private Entity entity;
+//    @Shadow
+//    @Final
+//    private Entity entity;
 //
 //    // Velocity event
 //    @Inject(method = "sendChanges", at = @At(value = "FIELD", target = "Lnet/minecraft/world/entity/Entity;hurtMarked:Z", ordinal = 1), cancellable = true)
@@ -53,8 +53,8 @@ public class ServerEntityMixin implements UpdateIntervalAccessor {
 //    }
 //
     // Custom tick intervals
-    @Shadow
-    private int updateInterval;
+//    @Shadow
+//    private int updateInterval;
 //
 //    @Accessor("entity")
 //    Entity getEntity() {
@@ -66,10 +66,10 @@ public class ServerEntityMixin implements UpdateIntervalAccessor {
 //
 //    }
 //
-    @Override
-    public void setUpdateInterval(int interval) {
-        this.updateInterval = interval;
-    }
+//    @Override
+//    public void setUpdateInterval(int interval) {
+//        this.updateInterval = interval;
+//    }
 //
 //
 //    @KBSyncEventHandler
@@ -79,4 +79,4 @@ public class ServerEntityMixin implements UpdateIntervalAccessor {
 //            CustomUpdateIntervals.updateIntervals(level, entityIntervals);
 //        }
 //    }
-}
+//}

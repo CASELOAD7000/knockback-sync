@@ -1,5 +1,7 @@
 package me.caseload.knockbacksync.player;
 
+import com.github.retrooper.packetevents.protocol.world.BoundingBox;
+import com.github.retrooper.packetevents.protocol.world.Location;
 import com.github.retrooper.packetevents.util.Vector3d;
 import me.caseload.knockbacksync.world.PlatformWorld;
 import org.jetbrains.annotations.NotNull;
@@ -30,7 +32,7 @@ public interface PlatformPlayer {
 
     PlatformWorld getWorld();
 
-    Vector3d getLocation();
+    Location getLocation();
 
     void sendMessage(@NotNull String s);
 
@@ -43,5 +45,7 @@ public interface PlatformPlayer {
     @Nullable Integer getNoDamageTicks();
 
     void setVelocity(Vector3d adjustedVelocity);
+
+    BoundingBox getBoundingBox();
     // Add more methods as needed
 }
