@@ -43,5 +43,9 @@ public interface PlatformPlayer {
     @Nullable Integer getNoDamageTicks();
 
     void setVelocity(Vector3d adjustedVelocity);
+
+    Vector3d getVelocity();
+
+    double getJumpVelocity();
     // Add more methods as needed
 }

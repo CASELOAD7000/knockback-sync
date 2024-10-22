@@ -125,5 +125,15 @@ public class FabricPlayer implements PlatformPlayer {
         fabricPlayer.hurtMarked = true;
     }
 
+    @Override
+    public Vector3d getVelocity() {
+        final Vec3 fabricVelocity = fabricPlayer.getDeltaMovement();
+        return new Vector3d(fabricVelocity.x, fabricVelocity.y, fabricVelocity.z);
+    }
+
+    @Override
+    public double getJumpVelocity() {
+        return 0;
+    }
     // Implement other methods
 }

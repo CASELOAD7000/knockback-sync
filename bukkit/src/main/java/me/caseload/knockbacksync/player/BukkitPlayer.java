@@ -9,6 +9,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -181,5 +183,24 @@ public class BukkitPlayer implements PlatformPlayer {
     @Override
     public void setVelocity(Vector3d adjustedVelocity) {
         bukkitPlayer.setVelocity(new Vector(adjustedVelocity.x, adjustedVelocity.y, adjustedVelocity.z));
+    }
+
+    @Override
+    public Vector3d getVelocity() {
+        final Vector bukkitVelocity = bukkitPlayer.getVelocity();
+        return new Vector3d(bukkitVelocity.getX(), bukkitVelocity.getY(), bukkitVelocity.getZ());
+    }
+
+    @Override
+    public double getJumpVelocity() {
+        double jumpVelocity = 0.42;
+
+        PotionEffect jumpEffect = bukkitPlayer.getPotionEffect(PotionEffectType.JUMP);
+        if (jumpEffect != null) {
+            int amplifier = jumpEffect.getAmplifier();
+            jumpVelocity += (amplifier + 1) * 0.1F;
+        }
+
+        return jumpVelocity;
     }
 }

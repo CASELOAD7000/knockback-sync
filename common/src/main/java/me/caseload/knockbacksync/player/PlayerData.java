@@ -270,19 +270,6 @@ public class PlayerData {
         return yAxis;
     }
 
-    // might need soon
-//    public double calculateJumpVelocity() {
-//        double jumpVelocity = 0.42;
-//
-//        PotionEffect jumpEffect = player.getPotionEffect(PotionEffectType.JUMP);
-//        if (jumpEffect != null) {
-//            int amplifier = jumpEffect.getAmplifier();
-//            jumpVelocity += (amplifier + 1) * 0.1F;
-//        }
-//
-//        return jumpVelocity;
-//    }
-
     public boolean isInCombat() {
         return combatTask != null;
     }
