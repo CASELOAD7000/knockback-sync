@@ -220,10 +220,10 @@ public class PlayerData {
         for (Location corner : getBBCorners()) {
             RayTraceResult result = world.rayTraceBlocks(corner.getPosition(), new Vector3d(0, -1, 0), 5, FluidHandling.NONE, true);
 
-            if (result == null || result.getHitPosition() == null)
+            if (result == null || result.getHitBlock() == null)
                 continue;
 
-            collisionDist = Math.min(collisionDist, corner.getY() - result.getHitPosition().getY());
+            collisionDist = Math.min(collisionDist, corner.getY() - result.getHitBlockPosition().getY());
         }
 
         return collisionDist - 1;
