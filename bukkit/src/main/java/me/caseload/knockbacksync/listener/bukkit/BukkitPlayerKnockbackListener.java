@@ -34,7 +34,7 @@ public class BukkitPlayerKnockbackListener extends PlayerKnockbackListener imple
         if (MultiLibUtil.isExternalPlayer(victim))
             return;
 
-        Vector vector = event.getVelocity();
+        Vector vector = victim.getVelocity();
         onPlayerVelocity(new BukkitPlayer(victim), new Vector3d(vector.getX(), vector.getY(), vector.getZ()));
     }
 }
