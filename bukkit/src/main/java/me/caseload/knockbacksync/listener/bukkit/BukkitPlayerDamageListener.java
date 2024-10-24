@@ -15,9 +15,12 @@ public class BukkitPlayerDamageListener extends PlayerDamageListener implements 
     public void onPlayerDamage(EntityDamageByEntityEvent event) {
         Entity victim = event.getEntity();
         Entity attacker = event.getDamager();
-        if ((victim instanceof Player) && (attacker instanceof Player))
-            if (!MultiLibUtil.isExternalPlayer((Player) victim)) {
-                onPlayerDamage(new BukkitPlayer((Player) victim), new BukkitPlayer((Player) attacker));
-            }
+        if (!(victim instanceof Player) || !(attacker instanceof Player))
+            return;
+
+        if (MultiLibUtil.isExternalPlayer((Player) victim))
+            return;
+
+        onPlayerDamage(new BukkitPlayer((Player) victim), new BukkitPlayer((Player) attacker));
     }
 }
