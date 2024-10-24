@@ -1,7 +1,7 @@
 package me.caseload.knockbacksync.util;
 
+import me.caseload.knockbacksync.Base;
 import me.caseload.knockbacksync.ConfigWrapper;
-import me.caseload.knockbacksync.KnockbackSyncBase;
 import me.caseload.knockbacksync.mixin.UpdateIntervalAccessor;
 import net.minecraft.server.level.ChunkMap;
 import net.minecraft.server.level.ServerChunkCache;
@@ -41,7 +41,7 @@ public class CustomUpdateIntervals {
 
     public static Map<String, Integer> loadEntityIntervalsFromConfig() {
         Map<String, Integer> intervals = new HashMap<>();
-        ConfigWrapper config = KnockbackSyncBase.INSTANCE.getConfigManager().getConfigWrapper();
+        ConfigWrapper config = Base.INSTANCE.getConfigManager().getConfigWrapper();
 
         String basePath = "entity_update_intervals";
         if (config.contains(basePath)) {

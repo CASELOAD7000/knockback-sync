@@ -1,7 +1,7 @@
 package me.caseload.knockbacksync.entity;
 
+import me.caseload.knockbacksync.Base;
 import me.caseload.knockbacksync.ConfigWrapper;
-import me.caseload.knockbacksync.KnockbackSyncBase;
 import me.caseload.knockbacksync.event.ConfigReloadEvent;
 import me.caseload.knockbacksync.event.KBSyncEventHandler;
 import net.minecraft.world.entity.EntityType;
@@ -14,7 +14,7 @@ public class EntityTickManager {
     private static final Map<EntityType<?>, Integer> customTickIntervals = new HashMap<>();
 
     static {
-        updateTickIntervals(KnockbackSyncBase.INSTANCE.getConfigManager().getConfigWrapper());
+        updateTickIntervals(Base.INSTANCE.getConfigManager().getConfigWrapper());
     }
 
     @KBSyncEventHandler

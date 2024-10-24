@@ -23,8 +23,6 @@ public abstract class ChunkMapMixin {
 
     @Redirect(method = "addEntity", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/EntityType;updateInterval()I"))
     private int getCustomUpdateInterval(EntityType<?> entityType) {
-//        BuiltInRegistries.ENTITY_TYPE.get(ResourceLocation.parse());
-        // Check if we have a custom interval for this entity type
         return EntityTickManager.getCustomUpdateInterval(entityType);
     }
 }
