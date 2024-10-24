@@ -14,7 +14,7 @@ import java.util.function.Predicate;
 
 public class ReloadCommand implements BuilderCommand {
 
-    private final ConfigManager configManager = BASE.INSTANCE.getConfigManager();
+    private final ConfigManager configManager = Base.INSTANCE.getConfigManager();
     private String rawReloadMessage = configManager.getConfigWrapper().getString("reload_message", "&aSuccessfully reloaded KnockbackSync.");
 
     public void register(CommandManager<Sender> manager) {

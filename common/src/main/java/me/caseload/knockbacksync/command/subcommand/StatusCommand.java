@@ -1,8 +1,11 @@
 package me.caseload.knockbacksync.command.subcommand;
 
-import me.caseload.knockbacksync.KnockbackSyncBase;
+import me.caseload.knockbacksync.Base;
+import me.caseload.knockbacksync.ConfigWrapper;
 import me.caseload.knockbacksync.command.generic.BuilderCommand;
 import me.caseload.knockbacksync.command.generic.PlayerSelector;
+import me.caseload.knockbacksync.event.ConfigReloadEvent;
+import me.caseload.knockbacksync.event.KBSyncEventHandler;
 import me.caseload.knockbacksync.manager.ConfigManager;
 import me.caseload.knockbacksync.manager.PlayerDataManager;
 import me.caseload.knockbacksync.player.PlatformPlayer;
@@ -54,7 +57,7 @@ public class StatusCommand implements BuilderCommand {
                                     if (sender.hasPermission(STATUS_SELF_PERMISSION, true)) {
                                         // Show player status for the sender (no target specified)
                                         if (!sender.isConsole()) {
-                                            showPlayerStatus(sender, Base.INSTANCE.platformServer.getPlayer(sender.getUniqueId()), configManager);
+                                            showPlayerStatus(sender, Base.INSTANCE.platformServer.getPlayer(sender.getUniqueId()));
                                         }
                                     } else {
                                         sender.sendMessage(ChatUtil.translateAlternateColorCodes('&', "&cYou do not have permisssion to check your knockbacksync status."));

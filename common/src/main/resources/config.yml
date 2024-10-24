@@ -59,6 +59,7 @@ disable_experimental_offground_message: "&cSuccessfully disabled offground exper
 # These include but are not limited to jumping, taking knockback, swimming, and a target entity being affected by a special mob attack
 # Such as the enderdragon's huge knockback
 # If an entity below doesn't exist in the version of the game your server is running in, changing the config for it will do nothing
+# THIS CURRENTLY ONLY WORKS ON FABRIC
 entity_tick_intervals:
   player: 1 # This is 2 by default in vanilla and paper
   allay: 2
