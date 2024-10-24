@@ -84,8 +84,8 @@ public class FabricPlayer implements PlatformPlayer {
     }
 
     @Override
-    public Location getLocation() {
-        return new Location(fabricPlayer.getX(), fabricPlayer.getY(), fabricPlayer.getZ(), fabricPlayer.getYRot(), fabricPlayer.getXRot());
+    public Vector3d getLocation() {
+        return new Vector3d(fabricPlayer.getX(), fabricPlayer.getY(), fabricPlayer.getZ());
     }
 
     @Override

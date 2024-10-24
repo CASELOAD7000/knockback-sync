@@ -179,7 +179,7 @@ public class PlayerData {
      * @return <code>true</code> if the Player is on the ground; <code>false</code> otherwise.
      */
     public boolean isOnGround(double verticalVelocity) {
-        WrappedBlockState blockState = platformPlayer.getWorld().getBlockStateAt(platformPlayer.getLocation().getPosition());
+        WrappedBlockState blockState = platformPlayer.getWorld().getBlockStateAt(platformPlayer.getLocation());
 
         if (platformPlayer.isGliding() ||
                 blockState.getType() == StateTypes.WATER ||
@@ -217,8 +217,8 @@ public class PlayerData {
 
         PlatformWorld world = platformPlayer.getWorld();
 
-        for (Location corner : getBBCorners()) {
-            RayTraceResult result = world.rayTraceBlocks(corner.getPosition(), new Vector3d(0, -1, 0), 5, FluidHandling.NONE, true);
+        for (Vector3d corner : getBBCorners()) {
+            RayTraceResult result = world.rayTraceBlocks(corner, new Vector3d(0, -1, 0), 5, FluidHandling.NONE, true);
 
             if (result == null || result.getHitBlock() == null)
                 continue;
@@ -234,17 +234,17 @@ public class PlayerData {
      *
      * @return An array of locations representing the corners of the bounding box.
      */
-    private Location[] getBBCorners() {
+    private Vector3d[] getBBCorners() {
         BoundingBox boundingBox = platformPlayer.getBoundingBox();
-        Location location = platformPlayer.getLocation();
+        Vector3d location = platformPlayer.getLocation();
 
         double adjustment = 0.01; // To ensure the bounding box isn't clipping inside a wall
 
-        return new Location[] {
-                new Location(boundingBox.getMinX() + adjustment, location.getY(), boundingBox.getMinZ() + adjustment, 0, 0),
-                new Location(boundingBox.getMinX() + adjustment, location.getY(), boundingBox.getMaxZ() - adjustment, 0, 0),
-                new Location(boundingBox.getMaxX() - adjustment, location.getY(), boundingBox.getMinZ() + adjustment,0 , 0),
-                new Location(boundingBox.getMaxX() - adjustment, location.getY(), boundingBox.getMaxZ() - adjustment,0, 0)
+        return new Vector3d[] {
+                new Vector3d(boundingBox.getMinX() + adjustment, location.getY(), boundingBox.getMinZ() + adjustment),
+                new Vector3d(boundingBox.getMinX() + adjustment, location.getY(), boundingBox.getMaxZ() - adjustment),
+                new Vector3d(boundingBox.getMaxX() - adjustment, location.getY(), boundingBox.getMinZ() + adjustment),
+                new Vector3d(boundingBox.getMaxX() - adjustment, location.getY(), boundingBox.getMaxZ() - adjustment)
         };
     }
 

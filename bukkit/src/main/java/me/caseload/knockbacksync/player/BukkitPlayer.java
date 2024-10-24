@@ -136,9 +136,9 @@ public class BukkitPlayer implements PlatformPlayer {
     }
 
     @Override
-    public Location getLocation() {
+    public Vector3d getLocation() {
         org.bukkit.Location location = bukkitPlayer.getLocation();
-        return new Location(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
+        return new Vector3d(location.getX(), location.getY(), location.getZ());
     }
 
     @Override
@@ -153,7 +153,6 @@ public class BukkitPlayer implements PlatformPlayer {
         } else {
             try {
                 // Step 1: Get the CraftPlayer instance
-//            Object craftPlayer = craftPlayerClass.cast(bukkitPlayer);
                 // Step 2: Get the handle (NMS EntityPlayer)
                 Object entityPlayer = getHandleMethod.invoke(bukkitPlayer);
                 // Step 3: Invoke the getAttackStrengthScale method

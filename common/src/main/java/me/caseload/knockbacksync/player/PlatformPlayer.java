@@ -32,7 +32,7 @@ public interface PlatformPlayer {
 
     PlatformWorld getWorld();
 
-    Location getLocation();
+    Vector3d getLocation();
 
     void sendMessage(@NotNull String s);
 

@@ -25,7 +25,7 @@ public abstract class PlayerKnockbackListener {
             return;
 
         // Since we're already changing types do we need to use withY to get a new object
-        // Or can we just go velcoity.y = verticalVelocity ?
+        // Or can we just go velocity.y = verticalVelocity ?
         Vector3d adjustedVelocity = velocity.withY(verticalVelocity);
         victim.setVelocity(adjustedVelocity); // Use PlatformPlayer's setVelocity
     }

@@ -36,6 +36,5 @@ public class BukkitPlayerKnockbackListener extends PlayerKnockbackListener imple
 
         Vector vector = event.getVelocity();
         onPlayerVelocity(new BukkitPlayer(victim), new Vector3d(vector.getX(), vector.getY(), vector.getZ()));
-//        callback.setVelocity(victim.getVelocity()); // Update the callback's velocity in Spigot
     }
 }
