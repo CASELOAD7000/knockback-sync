@@ -1,5 +1,7 @@
 package me.caseload.knockbacksync.player;
 
+import com.github.retrooper.packetevents.protocol.world.BoundingBox;
+import com.github.retrooper.packetevents.protocol.world.Location;
 import com.github.retrooper.packetevents.util.Vector3d;
 import me.caseload.knockbacksync.world.FabricWorld;
 import me.caseload.knockbacksync.world.PlatformWorld;
@@ -11,6 +13,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -82,8 +85,7 @@ public class FabricPlayer implements PlatformPlayer {
 
     @Override
     public Vector3d getLocation() {
-        Vec3 pos = fabricPlayer.position();
-        return new Vector3d(pos.x, pos.y, pos.z);
+        return new Vector3d(fabricPlayer.getX(), fabricPlayer.getY(), fabricPlayer.getZ());
     }
 
     @Override
@@ -135,5 +137,11 @@ public class FabricPlayer implements PlatformPlayer {
     public double getJumpVelocity() {
         return 0;
     }
+    @Override
+    public BoundingBox getBoundingBox() {
+        AABB boundingBox = fabricPlayer.getBoundingBox();
+        return new BoundingBox(boundingBox.minX, boundingBox.minY, boundingBox.minZ, boundingBox.maxX, boundingBox.minY, boundingBox.maxZ);
+    }
+
     // Implement other methods
 }

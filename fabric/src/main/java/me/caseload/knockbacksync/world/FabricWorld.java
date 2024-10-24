@@ -10,6 +10,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
@@ -25,7 +26,7 @@ public class FabricWorld implements PlatformWorld {
     @Override
     public WrappedBlockState getBlockStateAt(int x, int y, int z) {
         BlockState blockState = this.world.getBlockState(new BlockPos(x, y, z));
-        return WrappedBlockState.getByString(blockState.getBlock().getName().toString());
+        return WrappedBlockState.getByGlobalId(Block.BLOCK_STATE_REGISTRY.getId(blockState));
     }
 
     @Override
@@ -50,12 +51,13 @@ public class FabricWorld implements PlatformWorld {
 
         if (result.getType() == HitResult.Type.MISS) return null;
 
+        Vec3 hitLocation = result.getLocation();
         BlockPos blockPos = result.getBlockPos();
         return new RayTraceResult(
-                new Vector3d(result.getLocation().x, result.getLocation().y, result.getLocation().z),
+                new Vector3d(hitLocation.x, hitLocation.y, hitLocation.z),
                 BlockFace.getBlockFaceByValue(result.getDirection().ordinal()),
-                new Vector3i(result.getBlockPos().getX(), result.getBlockPos().getY(), result.getBlockPos().getZ()),
-                WrappedBlockState.getByString(world.getBlockState(blockPos).getBlock().toString())
+                new Vector3i(blockPos.getX(), blockPos.getY(), blockPos.getZ()),
+                getBlockStateAt(blockPos.getX(), blockPos.getY(), blockPos.getZ())
         );
     }
 }

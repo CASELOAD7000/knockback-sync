@@ -2,11 +2,11 @@ package me.caseload.knockbacksync.player;
 
 import com.github.retrooper.packetevents.PacketEvents;
 import com.github.retrooper.packetevents.manager.server.ServerVersion;
+import com.github.retrooper.packetevents.protocol.world.BoundingBox;
 import com.github.retrooper.packetevents.util.Vector3d;
 import me.caseload.knockbacksync.world.PlatformWorld;
 import me.caseload.knockbacksync.world.SpigotWorld;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
@@ -138,7 +138,7 @@ public class BukkitPlayer implements PlatformPlayer {
 
     @Override
     public Vector3d getLocation() {
-        Location location = bukkitPlayer.getLocation();
+        org.bukkit.Location location = bukkitPlayer.getLocation();
         return new Vector3d(location.getX(), location.getY(), location.getZ());
     }
 
@@ -154,7 +154,6 @@ public class BukkitPlayer implements PlatformPlayer {
         } else {
             try {
                 // Step 1: Get the CraftPlayer instance
-//            Object craftPlayer = craftPlayerClass.cast(bukkitPlayer);
                 // Step 2: Get the handle (NMS EntityPlayer)
                 Object entityPlayer = getHandleMethod.invoke(bukkitPlayer);
                 // Step 3: Invoke the getAttackStrengthScale method
@@ -202,5 +201,11 @@ public class BukkitPlayer implements PlatformPlayer {
         }
 
         return jumpVelocity;
+    }
+
+    @Override
+    public BoundingBox getBoundingBox() {
+        org.bukkit.util.BoundingBox boundingBox = bukkitPlayer.getBoundingBox();
+        return new BoundingBox(boundingBox.getMinX(), boundingBox.getMinY(), boundingBox.getMinZ(), boundingBox.getMaxX(), boundingBox.getMaxY(), boundingBox.getMaxZ());
     }
 }

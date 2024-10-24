@@ -7,6 +7,8 @@ import com.github.retrooper.packetevents.netty.channel.ChannelHelper;
 import com.github.retrooper.packetevents.protocol.ConnectionState;
 import com.github.retrooper.packetevents.protocol.player.ClientVersion;
 import com.github.retrooper.packetevents.protocol.player.User;
+import com.github.retrooper.packetevents.protocol.world.BoundingBox;
+import com.github.retrooper.packetevents.protocol.world.Location;
 import com.github.retrooper.packetevents.protocol.world.states.WrappedBlockState;
 import com.github.retrooper.packetevents.protocol.world.states.type.StateTypes;
 import com.github.retrooper.packetevents.util.Vector3d;
@@ -40,8 +42,8 @@ public class PlayerData {
     public final List<Pair<Integer, Long>> transactionsSent = new LinkedList<>();
     public final List<Pair<Long, Long>> keepaliveMap = new LinkedList<>();
 
-    private static final short MAIN_THREAD_TRANSACTION_ID = -1;
-    private static final short NETTY_THREAD_TRANSACTION_ID = -2;
+    private static final short MAIN_THREAD_TRANSACTION_ID = 31407;
+    private static final short NETTY_THREAD_TRANSACTION_ID = 31408;
 
     static {
         try {
@@ -215,10 +217,10 @@ public class PlayerData {
         for (Vector3d corner : getBBCorners()) {
             RayTraceResult result = world.rayTraceBlocks(corner, new Vector3d(0, -1, 0), 5, FluidHandling.NONE, true);
 
-            if (result == null || result.getHitPosition() == null)
+            if (result == null || result.getHitBlock() == null)
                 continue;
 
-            collisionDist = Math.min(collisionDist, corner.getY() - result.getHitPosition().getY());
+            collisionDist = Math.min(collisionDist, corner.getY() - result.getHitBlockPosition().getY());
         }
 
         return collisionDist - 1;
@@ -230,16 +232,16 @@ public class PlayerData {
      * @return An array of locations representing the corners of the bounding box.
      */
     private Vector3d[] getBBCorners() {
-        Vector3d playerPos = platformPlayer.getLocation();
-        double width = 0.6;  // typical player width
-//        double height = 1.8;  // typical player height
-        double adjustment = 0.01;
+        BoundingBox boundingBox = platformPlayer.getBoundingBox();
+        Vector3d location = platformPlayer.getLocation();
 
-        return new Vector3d[]{
-                new Vector3d(playerPos.getX() - width / 2 + adjustment, playerPos.getY(), playerPos.getZ() - width / 2 + adjustment),
-                new Vector3d(playerPos.getX() - width / 2 + adjustment, playerPos.getY(), playerPos.getZ() + width / 2 - adjustment),
-                new Vector3d(playerPos.getX() + width / 2 - adjustment, playerPos.getY(), playerPos.getZ() - width / 2 + adjustment),
-                new Vector3d(playerPos.getX() + width / 2 - adjustment, playerPos.getY(), playerPos.getZ() + width / 2 - adjustment)
+        double adjustment = 0.01; // To ensure the bounding box isn't clipping inside a wall
+
+        return new Vector3d[] {
+                new Vector3d(boundingBox.getMinX() + adjustment, location.getY(), boundingBox.getMinZ() + adjustment),
+                new Vector3d(boundingBox.getMinX() + adjustment, location.getY(), boundingBox.getMaxZ() - adjustment),
+                new Vector3d(boundingBox.getMaxX() - adjustment, location.getY(), boundingBox.getMinZ() + adjustment),
+                new Vector3d(boundingBox.getMaxX() - adjustment, location.getY(), boundingBox.getMaxZ() - adjustment)
         };
     }
 

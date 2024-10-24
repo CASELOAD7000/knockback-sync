@@ -3,7 +3,7 @@
 #########################################
 
 # Do not modify!
-config-version: 2
+config_version: 3
 
 # Plugin enabled state
 # Toggleable using /knockbacksync toggle
@@ -52,3 +52,142 @@ player_status_message: "&e%player%'s KnockbackSync status: "
 player_disabled_global_message: "&cDisabled (Global toggle is off)"
 enable_experimental_offground_message: "&aSuccessfully enabled offground experiment."
 disable_experimental_offground_message: "&cSuccessfully disabled offground experiment."
+
+# This is the rate the server will use for (amongst other things) sending packets about entities to players
+# In other words it defines how often clients get updated velocity for other entities in the world
+# Note that certain events mark velocity as dirty and causes it to be immediately updated for 1 tick regardless of the tick interval
+# These include but are not limited to jumping, taking knockback, swimming, and a target entity being affected by a special mob attack
+# Such as the enderdragon's huge knockback
+# If an entity below doesn't exist in the version of the game your server is running in, changing the config for it will do nothing
+entity_tick_intervals:
+  player: 1 # This is 2 by default in vanilla and paper
+  allay: 2
+  area_effect_cloud: Integer.MAX_VALUE
+  armadillo: 3
+  armor_stand: 3
+  arrow: 20
+  axolotl: 3
+  bat: 3
+  bee: 3
+  blaze: 3
+  block_display: 1
+  boat: 3
+  bogged: 3
+  breeze: 3
+  breeze_wind_charge: 10
+  camel: 3
+  cat: 3
+  cave_spider: 3
+  chest_boat: 3
+  chest_minecart: 3
+  chicken: 3
+  cod: 3
+  command_block_minecart: 3
+  cow: 3
+  creeper: 3
+  dolphin: 3
+  donkey: 3
+  dragon_fireball: 10
+  drowned: 3
+  egg: 10
+  elder_guardian: 3
+  end_crystal: Integer.MAX_VALUE
+  ender_dragon: 3
+  ender_pearl: 10
+  enderman: 3
+  endermite: 3
+  evoker: 3
+  evoker_fangs: 2
+  experience_bottle: 10
+  experience_orb: 20
+  eye_of_ender: 4
+  falling_block: 20
+  firework_rocket: 10
+  fox: 3
+  frog: 3
+  furnace_minecart: 3
+  ghast: 3
+  giant: 3
+  glow_item_frame: Integer.MAX_VALUE
+  glow_squid: 3
+  goat: 3
+  guardian: 3
+  hoglin: 3
+  hopper_minecart: 3
+  horse: 3
+  husk: 3
+  illusioner: 3
+  interaction: 3
+  iron_golem: 3
+  item: 20
+  item_display: 1
+  item_frame: Integer.MAX_VALUE
+  ominous_item_spawner: 3
+  fireball: 10
+  leash_knot: Integer.MAX_VALUE
+  lightning_bolt: Integer.MAX_VALUE
+  llama: 3
+  llama_spit: 10
+  magma_cube: 3
+  marker: 3
+  minecart: 3
+  mooshroom: 3
+  mule: 3
+  ocelot: 3
+  painting: Integer.MAX_VALUE
+  panda: 3
+  parrot: 3
+  phantom: 3
+  pig: 3
+  piglin: 3
+  piglin_brute: 3
+  pillager: 3
+  polar_bear: 3
+  potion: 10
+  pufferfish: 3
+  rabbit: 3
+  ravager: 3
+  salmon: 3
+  sheep: 3
+  shulker: 3
+  shulker_bullet: 3
+  silverfish: 3
+  skeleton: 3
+  skeleton_horse: 3
+  slime: 3
+  small_fireball: 10
+  sniffer: 3
+  snow_golem: 3
+  snowball: 10
+  spawner_minecart: 3
+  spectral_arrow: 20
+  spider: 3
+  squid: 3
+  stray: 3
+  strider: 3
+  tadpole: 3
+  text_display: 1
+  tnt: 10
+  tnt_minecart: 3
+  trader_llama: 3
+  trident: 20
+  tropical_fish: 3
+  turtle: 3
+  vex: 3
+  villager: 3
+  vindicator: 3
+  wandering_trader: 3
+  warden: 3
+  wind_charge: 10
+  witch: 3
+  wither: 3
+  wither_skeleton: 3
+  wither_skull: 10
+  wolf: 3
+  zoglin: 3
+  zombie: 3
+  zombie_horse: 3
+  zombie_villager: 3
+  zombified_piglin: 3
+  fishing_bobber: 5
+

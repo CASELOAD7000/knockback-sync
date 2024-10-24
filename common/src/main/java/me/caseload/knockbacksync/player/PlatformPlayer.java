@@ -1,5 +1,7 @@
 package me.caseload.knockbacksync.player;
 
+import com.github.retrooper.packetevents.protocol.world.BoundingBox;
+import com.github.retrooper.packetevents.protocol.world.Location;
 import com.github.retrooper.packetevents.util.Vector3d;
 import me.caseload.knockbacksync.world.PlatformWorld;
 import org.jetbrains.annotations.NotNull;
@@ -47,5 +49,7 @@ public interface PlatformPlayer {
     Vector3d getVelocity();
 
     double getJumpVelocity();
+
+    BoundingBox getBoundingBox();
     // Add more methods as needed
 }
