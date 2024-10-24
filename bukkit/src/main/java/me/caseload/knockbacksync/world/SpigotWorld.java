@@ -6,6 +6,7 @@ import com.github.retrooper.packetevents.protocol.world.BlockFace;
 import com.github.retrooper.packetevents.protocol.world.states.WrappedBlockState;
 import com.github.retrooper.packetevents.util.Vector3d;
 import com.github.retrooper.packetevents.util.Vector3i;
+import io.github.retrooper.packetevents.util.SpigotConversionUtil;
 import me.caseload.knockbacksync.world.raytrace.FluidHandling;
 import me.caseload.knockbacksync.world.raytrace.RayTraceResult;
 import org.bukkit.Bukkit;
@@ -79,7 +80,7 @@ public class SpigotWorld implements PlatformWorld {
     @Override
     public WrappedBlockState getBlockStateAt(int x, int y, int z) {
         Block block = world.getBlockAt(x, y, z);
-        return WrappedBlockState.getByString(block.getType().name());
+        return SpigotConversionUtil.fromBukkitBlockData(block.getBlockData());
     }
 
     @Override
@@ -105,7 +106,7 @@ public class SpigotWorld implements PlatformWorld {
                     new Vector3d(result.getHitPosition().getX(), result.getHitPosition().getY(), result.getHitPosition().getZ()),
                     getBlockFaceFrom(result.getHitBlockFace()),
                     new Vector3i(result.getHitBlock().getX(), result.getHitBlock().getY(), result.getHitBlock().getZ()),
-                    result.getHitBlock() != null ? WrappedBlockState.getByString(result.getHitBlock().getType().name()) : null
+                    result.getHitBlock() != null ? SpigotConversionUtil.fromBukkitBlockData(result.getHitBlock().getBlockData()) : null
             );
             // Only tested on 1.12.2
         } else {

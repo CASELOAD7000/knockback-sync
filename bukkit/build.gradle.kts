@@ -49,7 +49,7 @@ dependencies {
 
 tasks.withType<ShadowJar> {
     configurations = listOf(shadeThisThing)
-    isEnableRelocation = true
+    isEnableRelocation = false
     relocationPrefix = "${project.property("maven_group")}.${project.property("archives_base_name")}.shaded"
 }
 
