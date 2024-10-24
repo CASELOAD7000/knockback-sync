@@ -18,8 +18,8 @@ public class EntityTickManager {
     }
 
     @KBSyncEventHandler
-    public static void updateTickIntervals(ConfigReloadEvent configReloadEvent) {
-        ConfigWrapper configWrapper = configReloadEvent.getConfigManager().getConfigWrapper();
+    public static void updateTickIntervals(ConfigReloadEvent event) {
+        ConfigWrapper configWrapper = event.getConfigManager().getConfigWrapper();
         updateTickIntervals(configWrapper);
     }
 
@@ -27,7 +27,7 @@ public class EntityTickManager {
         customTickIntervals.clear();
         for (String entityKey : configWrapper.getKeys("entity_tick_intervals")) {
             try {
-                Optional<EntityType<?>> entityType = EntityType.byString(entityKey.toUpperCase());
+                Optional<EntityType<?>> entityType = EntityType.byString(entityKey.toLowerCase());
                 if (entityType.isPresent()) {
                     int interval = configWrapper.getInt("entity_tick_intervals." + entityKey, entityType.get().updateInterval());
                     customTickIntervals.put(entityType.get(), interval);
@@ -39,6 +39,6 @@ public class EntityTickManager {
     }
 
     public static int getCustomUpdateInterval(EntityType<?> entityType) {
-        return customTickIntervals.getOrDefault(entityType.getDescription().getString().toLowerCase(), entityType.updateInterval());
+        return customTickIntervals.getOrDefault(entityType, entityType.updateInterval());
     }
 }
