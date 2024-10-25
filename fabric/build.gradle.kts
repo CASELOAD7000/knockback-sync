@@ -42,7 +42,7 @@ dependencies {
     modImplementation("net.fabricmc.fabric-api:fabric-api:${rootProject.property("fabric_version")}")
 
     include(modImplementation("me.lucko:fabric-permissions-api:0.3.1")!!)
-    include(modImplementation("com.github.retrooper:packetevents-fabric:2.5.8")!!)
+    include(modImplementation("com.github.retrooper:packetevents-fabric:2.5.8-SNAPSHOT")!!)
     include(modImplementation("org.incendo:cloud-fabric:2.0.0-beta.9")!!)
 
     shadeThisThing(implementation("com.fasterxml.jackson.core:jackson-databind:2.17.2")!!)
