@@ -1,4 +1,4 @@
-package me.caseload.knockbacksync.manager;
+package me.caseload.knockbacksync.config;
 
 import lombok.Getter;
 import lombok.Setter;

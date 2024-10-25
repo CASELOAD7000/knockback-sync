@@ -5,6 +5,7 @@ import lombok.Setter;
 import me.caseload.knockbacksync.ConfigWrapper;
 import me.caseload.knockbacksync.Base;
 import me.caseload.knockbacksync.Platform;
+import me.caseload.knockbacksync.config.YamlConfiguration;
 import me.caseload.knockbacksync.runnable.PingRunnable;
 import me.caseload.knockbacksync.scheduler.AbstractTaskHandle;
 
@@ -18,7 +19,7 @@ import java.util.Map;
 @Setter
 public class ConfigManager {
 
-    public static final long CONFIG_VERSION = 2;
+    public static final long CONFIG_VERSION = 4;
 
     private boolean toggled;
     private boolean runnableEnabled;

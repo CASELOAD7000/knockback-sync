@@ -1,11 +1,11 @@
 package me.caseload.knockbacksync;
 
 import com.github.retrooper.packetevents.PacketEvents;
+import com.github.retrooper.packetevents.manager.server.ServerVersion;
 import io.github.retrooper.packetevents.factory.spigot.SpigotPacketEventsBuilder;
-import me.caseload.knockbacksync.listener.bukkit.BukkitPlayerDamageListener;
-import me.caseload.knockbacksync.listener.bukkit.BukkitPlayerJoinQuitListener;
-import me.caseload.knockbacksync.listener.bukkit.BukkitPlayerJumpListener;
-import me.caseload.knockbacksync.listener.bukkit.BukkitPlayerKnockbackListener;
+import me.caseload.knockbacksync.event.ConfigReloadEvent;
+import me.caseload.knockbacksync.event.KBSyncEventHandler;
+import me.caseload.knockbacksync.listener.bukkit.*;
 import me.caseload.knockbacksync.manager.ConfigManager;
 import me.caseload.knockbacksync.permission.PermissionChecker;
 import me.caseload.knockbacksync.permission.PluginPermissionChecker;
@@ -17,6 +17,9 @@ import me.caseload.knockbacksync.sender.Sender;
 import me.caseload.knockbacksync.stats.custom.BukkitStatsManager;
 import me.caseload.knockbacksync.stats.custom.PluginJarHashProvider;
 import me.caseload.knockbacksync.world.BukkitServer;
+import org.bukkit.Bukkit;
+import org.bukkit.World;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginManager;
@@ -27,6 +30,10 @@ import org.incendo.cloud.paper.LegacyPaperCommandManager;
 
 import java.io.File;
 import java.io.InputStream;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Map;
 import java.util.logging.Logger;
 
 public class BukkitBase extends Base {
@@ -35,6 +42,8 @@ public class BukkitBase extends Base {
     private final BukkitSenderFactory bukkitSenderFactory = new BukkitSenderFactory(this);
     private final PluginPermissionChecker permissionChecker = new PluginPermissionChecker();
 
+    private int playerUpdateInterval;
+
     public BukkitBase(JavaPlugin plugin) {
         this.plugin = plugin;
         super.configManager = new ConfigManager();
@@ -42,6 +51,7 @@ public class BukkitBase extends Base {
         super.statsManager = new BukkitStatsManager();
         super.platformServer = new BukkitServer();
         super.pluginJarHashProvider = new PluginJarHashProvider(this.getClass().getProtectionDomain().getCodeSource().getLocation());
+        this.playerUpdateInterval = this.getConfigManager().getConfigWrapper().getInt("entity_tick_intervals.player", 2);
     }
 
     @Override
@@ -72,6 +82,10 @@ public class BukkitBase extends Base {
         configManager.loadConfig(false);
         statsManager.init();
         checkForUpdates();
+        super.simpleEventBus.registerListeners(this);
+        if (PacketEvents.getAPI().getServerManager().getVersion().isNewerThanOrEquals(ServerVersion.V_1_20_5)) {
+            scheduler.runTaskTimerAsynchronously(this::setUpdateIntervals, 1, 1);
+        }
     }
 
     @Override
@@ -92,7 +106,8 @@ public class BukkitBase extends Base {
                 new BukkitPlayerDamageListener(),
                 new BukkitPlayerKnockbackListener(),
                 new BukkitPlayerJoinQuitListener(),
-                new BukkitPlayerJumpListener()
+                new BukkitPlayerJumpListener(),
+                new UpdateIntervalListener()
         );
     }
 
@@ -137,5 +152,44 @@ public class BukkitBase extends Base {
 
     public BukkitSenderFactory getSenderFactory() {
         return this.bukkitSenderFactory;
+    }
+
+    public void setUpdateIntervals() {
+        try {
+            for (World world : Bukkit.getWorlds()) {
+                Method getWorldHandleMethod = world.getClass().getMethod("getHandle");
+                Object serverLevel = getWorldHandleMethod.invoke(world);
+
+                // Get ChunkMap
+                Method getChunkSource = serverLevel.getClass().getMethod("getChunkSource");
+                Object chunkSource = getChunkSource.invoke(serverLevel);
+                Field chunkMapField = chunkSource.getClass().getDeclaredField("chunkMap");
+                chunkMapField.setAccessible(true);
+                Object chunkMap = chunkMapField.get(chunkSource);
+
+                // Get entityMap from ChunkMap
+                Field entityMapField = chunkMap.getClass().getDeclaredField("entityMap");
+                entityMapField.setAccessible(true);
+                Map<Integer, ?> entityMap = (Map<Integer, ?>) entityMapField.get(chunkMap);
+                for (Player player : Bukkit.getOnlinePlayers()) {
+                    Object trackedEntity = entityMap.get(player.getEntityId());
+
+                    Field serverEntityField = trackedEntity.getClass().getDeclaredField("serverEntity");
+                    serverEntityField.setAccessible(true);
+                    Object serverEntity = serverEntityField.get(trackedEntity);
+
+                    Field updateIntervalField = serverEntity.getClass().getDeclaredField("updateInterval");
+                    updateIntervalField.setAccessible(true);
+                    updateIntervalField.set(serverEntity, playerUpdateInterval);
+                }
+            }
+        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException | NoSuchFieldException e) {
+            throw new IllegalStateException("Unable to use reflection to modify updateIntervals" + e);
+        }
+    }
+
+    @KBSyncEventHandler
+    public void onConfigReload(ConfigReloadEvent event) {
+        playerUpdateInterval = event.getConfigManager().getConfigWrapper().getInt("entity_tick_intervals.player", 2);
     }
 }

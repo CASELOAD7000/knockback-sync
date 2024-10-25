@@ -59,9 +59,10 @@ disable_experimental_offground_message: "&cSuccessfully disabled offground exper
 # These include but are not limited to jumping, taking knockback, swimming, and a target entity being affected by a special mob attack
 # Such as the enderdragon's huge knockback
 # If an entity below doesn't exist in the version of the game your server is running in, changing the config for it will do nothing
-# THIS CURRENTLY ONLY WORKS ON FABRIC
+# Currently only modifying the player's tick interval is supported on Bukkit/Spigot/Paper + Folia
+# Modifying the tick interval of any entity is supported on Fabric.
 entity_tick_intervals:
-  player: 1 # This is 2 by default in vanilla and paper
+  player: 2 # This is 2 by default in vanilla and paper, change to 1 to test out the new feature
   allay: 2
   area_effect_cloud: Integer.MAX_VALUE
   armadillo: 3
