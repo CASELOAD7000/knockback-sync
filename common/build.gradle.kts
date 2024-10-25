@@ -17,8 +17,9 @@ dependencies {
 
     // Shaded in or bundled by platform-specific code
     implementation("com.github.retrooper:packetevents-api:2.5.0")
-    implementation("com.fasterxml.jackson.core:jackson-databind:2.17.2")
-    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.17.2")
+    implementation("org.yaml:snakeyaml:2.0")
+//    implementation("com.fasterxml.jackson.core:jackson-databind:2.17.2")
+//    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.17.2")
     implementation("org.kohsuke:github-api:1.326") {
         exclude(group = "commons-io", module = "commons-io")
         exclude(group = "org.apache.commons", module = "commons-lang3")

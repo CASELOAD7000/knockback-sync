@@ -1,7 +1,5 @@
 package me.caseload.knockbacksync.manager;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import lombok.Getter;
 import lombok.Setter;
 import me.caseload.knockbacksync.ConfigWrapper;
@@ -12,6 +10,7 @@ import me.caseload.knockbacksync.scheduler.AbstractTaskHandle;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -40,13 +39,13 @@ public class ConfigManager {
 
     private Map<String, Object> config;
     private File configFile;
-    private ObjectMapper mapper;
     private ConfigWrapper configWrapper; // Cache the ConfigWrapper instance
+    private YamlConfiguration yamlConfig;
 
     public ConfigManager() {
-        mapper = new ObjectMapper(new YAMLFactory());
         Base instance = Base.INSTANCE;
         configFile = new File(instance.getDataFolder(), "config.yml");
+        yamlConfig = new YamlConfiguration(configFile);
     }
 
     public ConfigWrapper getConfigWrapper() {
@@ -61,7 +60,8 @@ public class ConfigManager {
             if (!configFile.exists()) {
                 Base.INSTANCE.saveDefaultConfig();
             }
-            config = mapper.readValue(configFile, Map.class);
+            yamlConfig.load();
+            config = yamlConfig.getData();
             configWrapper = new ConfigWrapper(config);
         } catch (IOException e) {
             e.printStackTrace();
@@ -72,7 +72,8 @@ public class ConfigManager {
 
     public void saveConfig() {
         try {
-            mapper.writeValue(configFile, config);
+            yamlConfig.setData(config);
+            yamlConfig.save();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -115,7 +116,7 @@ public class ConfigManager {
         disableMessage = config.getString("disable_message", "&cSuccessfully disabled KnockbackSync.");
         playerEnableMessage = config.getString("player_enable_message", "&aSuccessfully enabled KnockbackSync for %player%.");
         playerDisableMessage = config.getString("player_disable_message", "&cSuccessfully disabled KnockbackSync for %player%.");
-        playerIneligibleMessage = config.getString("player_ineligible_message", "&c%player% is ineligible for KnockbackSync. If you believe this is an error, please open an issue on the github page.");
+        playerIneligibleMessage = config.getString("player_ineligible_message", "&c%player% is ineligible for KnockbackSync. If you believe this is in error, please contact your server administrators.");
     }
 
     public void updateConfig() {
@@ -123,13 +124,17 @@ public class ConfigManager {
         long oldConfigVersion = oldConfig.getLong("config_version", 0);
 
         if (oldConfigVersion < CONFIG_VERSION) {
-            // Backup old config
+            // Backup old config with comments
             File backupFile = new File(configFile.getParentFile(), "config-version-" + oldConfigVersion + ".yml");
-            if (configFile.renameTo(backupFile)) {
+            try {
+                Files.copy(configFile.toPath(), backupFile.toPath());
                 Base.INSTANCE.getLogger().info("Backed up old config to " + backupFile.getName());
-            } else {
-                Base.INSTANCE.getLogger().warning("Failed to backup old config");
+            } catch (IOException e) {
+                Base.INSTANCE.getLogger().warning("Failed to backup old config: " + e.getMessage());
             }
+
+            // Store old values
+            Map<String, Object> oldValues = new HashMap<>(config);
 
             // Create new config with default values
             Base.INSTANCE.saveDefaultConfig();

@@ -45,8 +45,9 @@ dependencies {
     include(modImplementation("com.github.retrooper:packetevents-fabric:2.5.8-SNAPSHOT")!!)
     include(modImplementation("org.incendo:cloud-fabric:2.0.0-beta.9")!!)
 
-    shadeThisThing(implementation("com.fasterxml.jackson.core:jackson-databind:2.17.2")!!)
-    shadeThisThing(implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.17.2")!!)
+    shadeThisThing(implementation("org.yaml:snakeyaml:2.0")!!)
+//    shadeThisThing(implementation("com.fasterxml.jackson.core:jackson-databind:2.17.2")!!)
+//    shadeThisThing(implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.17.2")!!)
     shadeThisThing(implementation("org.kohsuke:github-api:1.326")!!)
 
     compileOnly("org.geysermc.floodgate:api:2.0-SNAPSHOT")

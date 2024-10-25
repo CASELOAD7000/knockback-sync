@@ -15,17 +15,12 @@ package me.caseload.knockbacksync.stats.custom;
  * Violations will result in a ban of your plugin and account from bStats.
  */
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import me.caseload.knockbacksync.FabricLoaderMod;
 import me.caseload.knockbacksync.Base;
 import me.caseload.knockbacksync.stats.CustomChart;
 import me.caseload.knockbacksync.stats.JsonObjectBuilder;
 import net.fabricmc.loader.api.FabricLoader;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.UUID;
 import java.util.logging.Level;
 
 public class MetricsFabric implements Metrics {
@@ -40,34 +35,7 @@ public class MetricsFabric implements Metrics {
      */
     public MetricsFabric(int serviceId) {
         // Get the config file
-        File bStatsFolder = new File(FabricLoader.getInstance().getConfigDir().toString(), "bStats");
-        File configFile = new File(bStatsFolder, "config.yml");
-        ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
-        Config config;
-
-        try {
-            if (!configFile.exists()) {
-                bStatsFolder.mkdirs(); // Ensure the directory exists
-
-                config = new Config();
-                config.serverUuid = UUID.randomUUID().toString();
-
-                // Add header as a comment
-//                mapper.writeValue(configFile,
-//                        "# bStats (https://bStats.org) collects some basic information for plugin authors, like how\n"
-//                                + "# many people use their plugin and their total player count. It's recommended to keep bStats\n"
-//                                + "# enabled, but if you're not comfortable with this, you can turn this setting off. There is no\n"
-//                                + "# performance penalty associated with having metrics enabled, and data sent to bStats is fully\n"
-//                                + "# anonymous.\n");
-                mapper.writeValue(configFile, config); // Write the config object as YAML
-            } else {
-                config = mapper.readValue(configFile, Config.class);
-            }
-        } catch (IOException ignored) {
-            // Handle the exception appropriately (e.g., log an error)
-            config = new Config(); // Fallback to default values
-            config.serverUuid = UUID.randomUUID().toString();
-        }
+        BStatsConfig.Config config = BStatsConfig.loadConfig();
 
         // Load the data
         boolean enabled = config.enabled;
@@ -139,13 +107,5 @@ public class MetricsFabric implements Metrics {
         } else {
             return 0;
         }
-    }
-
-    private static class Config {
-        public boolean enabled = true;
-        public String serverUuid;
-        public boolean logFailedRequests = false;
-        public boolean logSentData = false;
-        public boolean logResponseStatusText = false;
     }
 }

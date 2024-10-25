@@ -36,8 +36,8 @@ dependencies {
     annotationProcessor("org.projectlombok:lombok:1.18.34")
 
     shadeThisThing(implementation("org.kohsuke:github-api:1.326")!!)
-    shadeThisThing(implementation("com.fasterxml.jackson.core:jackson-databind:2.17.2")!!)
-    shadeThisThing(implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.17.2")!!)
+//    shadeThisThing(implementation("com.fasterxml.jackson.core:jackson-databind:2.17.2")!!)
+//    shadeThisThing(implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.17.2")!!)
     shadeThisThing(implementation("com.github.retrooper:packetevents-spigot:2.5.0")!!)
 //    shadeThisThing(implementation("net.kyori:adventure-platform-bukkit:4.3.4")!!)
     shadeThisThing(implementation("org.incendo:cloud-paper:2.0.0-beta.10")!!)
