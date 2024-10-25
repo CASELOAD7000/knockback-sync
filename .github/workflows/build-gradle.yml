@@ -77,6 +77,8 @@ jobs:
 
       - name: Build with Gradle
         run: gradle clean build -x test
+        env:
+          GITHUB_REPOSITORY: ${{ github.repository }}
 
       - name: Rename shaded jar to overwrite non-shaded jar
         run: mv bukkit/build/libs/knockbacksync-bukkit-${{ env.NEW_VERSION }}-all.jar bukkit/build/libs/knockbacksync-bukkit-${{ env.NEW_VERSION }}.jar
@@ -115,7 +117,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           # Download the current dev-builds.txt
-          curl -L -o dev-builds.txt https://github.com/CASELOAD7000/knockback-sync/releases/latest/download/dev-builds.txt
+          curl -L -o dev-builds.txt https://github.com/${{ github.repository }}/releases/latest/download/dev-builds.txt
           
           # Create a copy of the original file
           cp dev-builds.txt dev-builds.txt.original
@@ -142,22 +144,22 @@ jobs:
             echo "Changes detected in dev-builds.txt, uploading new version."
           
             # Get the latest release ID
-            RELEASE_ID=$(curl -s "https://api.github.com/repos/CASELOAD7000/knockback-sync/releases/latest" | jq -r .id)
+            RELEASE_ID=$(curl -s "https://api.github.com/repos/${{ github.repository }}/knockback-sync/releases/latest" | jq -r .id)
           
             # Delete the old dev-builds.txt asset
             ASSET_ID=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
-              "https://api.github.com/repos/CASELOAD7000/knockback-sync/releases/$RELEASE_ID/assets" | \
+              "https://api.github.com/repos/${{ github.repository }}/knockback-sync/releases/$RELEASE_ID/assets" | \
               jq -r '.[] | select(.name == "dev-builds.txt") | .id')
             if [ ! -z "$ASSET_ID" ]; then
               curl -X DELETE -H "Authorization: token $GITHUB_TOKEN" \
-                "https://api.github.com/repos/CASELOAD7000/knockback-sync/releases/assets/$ASSET_ID"
+                "https://api.github.com/repos/${{ github.repository }}/knockback-sync/releases/assets/$ASSET_ID"
             fi
           
             # Upload the new dev-builds.txt
             curl -X POST -H "Authorization: token $GITHUB_TOKEN" \
               -H "Content-Type: application/octet-stream" \
               --data-binary @dev-builds.txt \
-              "https://uploads.github.com/repos/CASELOAD7000/knockback-sync/releases/$RELEASE_ID/assets?name=dev-builds.txt"
+              "https://uploads.github.com/repos/${{ github.repository }}/releases/$RELEASE_ID/assets?name=dev-builds.txt"
           fi
           
           # Clean up
@@ -184,7 +186,7 @@ jobs:
 
       - uses: Kir-Antipov/mc-publish@v3.3
         with:
-          modrinth-id: wGTbjSTq
+          modrinth-id: ${{ vars.MODRINTH_ID  }}
           modrinth-featured: true
           modrinth-unfeature-mode: subset
           modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
@@ -212,7 +214,7 @@ jobs:
 
       - uses: Kir-Antipov/mc-publish@v3.3
         with:
-          modrinth-id: wGTbjSTq
+          modrinth-id: ${{ vars.MODRINTH_ID }}
           modrinth-featured: true
           modrinth-unfeature-mode: subset
           modrinth-token: ${{ secrets.MODRINTH_TOKEN }}

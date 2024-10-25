@@ -3,6 +3,7 @@ package me.caseload.knockbacksync.stats.custom;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import me.caseload.knockbacksync.Base;
+import me.caseload.knockbacksync.common.BuildConfig;
 import me.caseload.knockbacksync.stats.SimplePie;
 import org.kohsuke.github.GHAsset;
 import org.kohsuke.github.GHRelease;
@@ -53,7 +54,7 @@ public class BuildTypePie extends SimplePie {
 
     private static void downloadBuildFiles() throws IOException {
         GitHub gitHub = GitHub.connectAnonymously();
-        GHRelease latestRelease = gitHub.getRepository("CASELOAD7000/knockback-sync")
+        GHRelease latestRelease = gitHub.getRepository(BuildConfig.GITHUB_REPO)
                 .getLatestRelease();
         List<GHAsset> assets = latestRelease.listAssets().toList();
         for (GHAsset asset : assets) {

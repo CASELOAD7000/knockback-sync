@@ -1,6 +1,6 @@
 plugins {
     id("fabric-loom")
-//    id("net.neoforged.moddev") version "1.0.11"
+    id("com.github.gmazzo.buildconfig") version "3.1.0"
 }
 
 dependencies {
@@ -34,4 +34,8 @@ repositories {
 
 tasks.named("remapJar").configure {
     enabled = false
+}
+
+buildConfig {
+    buildConfigField("String", "GITHUB_REPO", "\"${project.rootProject.ext["githubRepo"]}\"")
 }

@@ -8,6 +8,7 @@ plugins {
 
 val fullVersion = "1.3.5"
 val snapshot = true
+val githubRepo = System.getenv("GITHUB_REPOSITORY") ?: project.findProperty("githubRepo").toString()
 
 allprojects {
     fun getVersionMeta(includeHash: Boolean): String {
@@ -29,6 +30,7 @@ allprojects {
     group = "me.caseload.knockbacksync"
     version = "$fullVersion${getVersionMeta(true)}"
     ext["versionNoHash"] = "$fullVersion${getVersionMeta(false)}"
+    ext["githubRepo"] = githubRepo
 
     repositories {
         mavenLocal()
