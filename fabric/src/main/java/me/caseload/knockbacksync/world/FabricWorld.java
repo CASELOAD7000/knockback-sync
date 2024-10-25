@@ -15,6 +15,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.CollisionContext;
 
 public class FabricWorld implements PlatformWorld {
     private final Level world;
@@ -46,7 +47,7 @@ public class FabricWorld implements PlatformWorld {
                 fluidHandling == FluidHandling.NONE ? ClipContext.Fluid.NONE :
                         fluidHandling == FluidHandling.SOURCE_ONLY ? ClipContext.Fluid.SOURCE_ONLY :
                                 ClipContext.Fluid.ANY,
-                (Entity) null
+                CollisionContext.empty()
         ));
 
         if (result.getType() == HitResult.Type.MISS) return null;

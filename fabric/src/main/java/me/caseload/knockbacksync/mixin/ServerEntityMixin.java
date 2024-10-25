@@ -22,7 +22,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.Map;
 
 @Mixin(ServerEntity.class)
-public class ServerEntityMixin implements UpdateIntervalAccessor {
+public class ServerEntityMixin {
 
 
     @Shadow
@@ -48,23 +48,23 @@ public class ServerEntityMixin implements UpdateIntervalAccessor {
     }
 
     // Custom tick intervals
-    @Shadow
-    private int updateInterval;
+//    @Shadow
+//    private int updateInterval;
 
-    @Accessor("entity")
-    Entity getEntity() {
-        return null;
-    }
+//    @Accessor("entity")
+//    Entity getEntity() {
+//        return null;
+//    }
 
 //    @Invoker("sendChanges")
 //    void invokeSendChanges() {
 //
 //    }
 
-    @Override
-    public void setUpdateInterval(int interval) {
-        this.updateInterval = interval;
-    }
+//    @Override
+//    public void setUpdateInterval(int interval) {
+//        this.updateInterval = interval;
+//    }
 
 
     @KBSyncEventHandler
