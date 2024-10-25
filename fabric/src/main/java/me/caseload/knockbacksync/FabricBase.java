@@ -3,11 +3,13 @@ package me.caseload.knockbacksync;
 import com.github.retrooper.packetevents.PacketEvents;
 import io.github.retrooper.packetevents.factory.fabric.FabricPacketEventsBuilder;
 import lombok.Getter;
+import me.caseload.knockbacksync.entity.EntityTickManager;
 import me.caseload.knockbacksync.listener.fabric.FabricPlayerDamageListener;
 import me.caseload.knockbacksync.listener.fabric.FabricPlayerJoinQuitListener;
 import me.caseload.knockbacksync.listener.fabric.FabricPlayerKnockbackListener;
 import me.caseload.knockbacksync.listener.fabric.FabricTickRateChangeListener;
 import me.caseload.knockbacksync.manager.ConfigManager;
+import me.caseload.knockbacksync.mixin.ServerEntityMixin;
 import me.caseload.knockbacksync.permission.FabricPermissionChecker;
 import me.caseload.knockbacksync.permission.PermissionChecker;
 import me.caseload.knockbacksync.scheduler.FabricSchedulerAdapter;
@@ -81,6 +83,7 @@ public class FabricBase extends Base {
         new FabricPlayerDamageListener().register();
         new FabricPlayerKnockbackListener().register();
         new FabricTickRateChangeListener().register();
+        super.simpleEventBus.registerStaticListeners(EntityTickManager.class);
     }
 
     @Override

@@ -24,7 +24,6 @@ import java.util.Map;
 @Mixin(ServerEntity.class)
 public class ServerEntityMixin {
 
-
     @Shadow
     @Final
     private Entity entity;
@@ -65,13 +64,4 @@ public class ServerEntityMixin {
 //    public void setUpdateInterval(int interval) {
 //        this.updateInterval = interval;
 //    }
-
-
-    @KBSyncEventHandler
-    public void onConfigReload(ConfigReloadEvent event) {
-        Map<String, Integer> entityIntervals = CustomUpdateIntervals.loadEntityIntervalsFromConfig();
-        for (ServerLevel level : FabricLoaderMod.getServer().getAllLevels()) {
-            CustomUpdateIntervals.updateIntervals(level, entityIntervals);
-        }
-    }
 }

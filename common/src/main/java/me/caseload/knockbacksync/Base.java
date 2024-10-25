@@ -43,7 +43,7 @@ public abstract class Base {
     @Getter protected SchedulerAdapter scheduler;
     @Getter protected ConfigManager configManager;
     protected CommandManager<Sender> commandManager;
-    private final EventBus simpleEventBus = new OptimizedEventBus();
+    @Getter protected final EventBus simpleEventBus = new OptimizedEventBus();
 
     @Getter
     protected AbstractPlayerSelectorParser<Sender> playerSelectorParser;

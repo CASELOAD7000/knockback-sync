@@ -40,6 +40,7 @@ public class ReloadCommand implements BuilderCommand {
                             context.sender().sendMessage(reloadMessage);
                         })
         );
+        Base.INSTANCE.getSimpleEventBus().registerListeners(this);
     }
 
     @KBSyncEventHandler

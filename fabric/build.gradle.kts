@@ -45,10 +45,15 @@ dependencies {
     include(modImplementation("com.github.retrooper:packetevents-fabric:2.5.8-SNAPSHOT")!!)
     include(modImplementation("org.incendo:cloud-fabric:2.0.0-beta.9")!!)
 
-    shadeThisThing(implementation("org.yaml:snakeyaml:2.0")!!)
-//    shadeThisThing(implementation("com.fasterxml.jackson.core:jackson-databind:2.17.2")!!)
-//    shadeThisThing(implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.17.2")!!)
-    shadeThisThing(implementation("org.kohsuke:github-api:1.326")!!)
+    include(implementation("org.yaml:snakeyaml:2.0")!!)
+    include(implementation("org.kohsuke:github-api:1.326")!!)
+    // Required for org.kohsuke.github
+    include(implementation("com.fasterxml.jackson.core:jackson-databind:2.17.2")!!)
+    include(implementation("com.fasterxml.jackson.core:jackson-annotations:2.17.2")!!)
+    include(implementation("com.fasterxml.jackson.core:jackson-core:2.17.2")!!)
+    //    Not requires in modern Minecraft. May be needed if fabric version is backported to older versions
+    //    include(implementation("org.apache.commons:commons-lang3:3.17.0")!!)
+    //    include(implementation("commons-io:commons-io:2.16.1")!!)
 
     compileOnly("org.geysermc.floodgate:api:2.0-SNAPSHOT")
     compileOnly("org.projectlombok:lombok:1.18.34")
