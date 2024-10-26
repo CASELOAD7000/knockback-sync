@@ -116,6 +116,10 @@ public class PlayerData {
         return Math.max(1, ping - PING_OFFSET);
     }
 
+    public int getTick() {
+        return (int) Math.ceil(getEstimatedPing() / 50);
+    }
+
 //    public boolean isKeepAliveIDOurs(long id) {
 //        return id == lastKeepAliveID;
 //    }
@@ -194,13 +198,16 @@ public class PlayerData {
             return false; // prevent player from taking adjusted knockback when on ground serverside
 
         int tMax = verticalVelocity > 0 ? MathUtil.calculateTimeToMaxVelocity(verticalVelocity, gravityAttribute) : 0;
+        if (tMax == -1)
+            return false; // reached the max tick limit, not safe to predict
+
         double mH = verticalVelocity > 0 ? MathUtil.calculateDistanceTraveled(verticalVelocity, tMax, gravityAttribute) : 0;
         int tFall = MathUtil.calculateFallTime(verticalVelocity, mH + gDist, gravityAttribute);
 
         if (tFall == -1)
             return false; // reached the max tick limit, not safe to predict
 
-        return getEstimatedPing() >= tMax + tFall / TICK_RATE * 1000 && gDist <= 1.3;
+        return (tMax + tFall) - getTick() <= 0 && gDist <= 1.3;
     }
 
     /**

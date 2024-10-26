@@ -4,7 +4,7 @@ public class MathUtil {
 
     private static final double TERMINAL_VELOCITY = 3.92;
     private static final double MULTIPLIER = 0.98;
-    private static final int MAX_TICKS = 20;
+    private static final int MAX_TICKS = 30;
 
     public static double calculateDistanceTraveled(double velocity, int time, double acceleration) {
         double totalDistance = 0;
@@ -36,17 +36,20 @@ public class MathUtil {
         return ticks;
     }
 
-    public static int calculateTimeToMaxVelocity(double targetVerticalVelocity, double acceleration) {
-        double a = -acceleration * MULTIPLIER;
-        double b = acceleration + TERMINAL_VELOCITY * MULTIPLIER;
-        double c = -2 * targetVerticalVelocity;
+    public static int calculateTimeToMaxVelocity(double velocity, double acceleration) {
+        int ticks = 0;
 
-        double discriminant = b * b - 4 * a * c;
-        if (discriminant < 0)
-            return 0;
+        while (velocity > 0) {
+            if (ticks > MAX_TICKS)
+                return -1;
 
-        double positiveRoot = (-b + Math.sqrt(discriminant)) / (2 * a);
-        return (int) Math.ceil(positiveRoot * 20);
+            velocity -= acceleration;
+            velocity = Math.min(velocity, TERMINAL_VELOCITY);
+            velocity *= MULTIPLIER;
+            ticks++;
+        }
+
+        return ticks;
     }
 
     public static double clamp(double num, double min, double max) {

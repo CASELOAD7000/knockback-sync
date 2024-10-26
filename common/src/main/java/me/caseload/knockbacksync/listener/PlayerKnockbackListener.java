@@ -16,9 +16,9 @@ public abstract class PlayerKnockbackListener {
         if (playerData == null)
             return;
 
-        Integer damageTicks = playerData.getLastDamageTicks();
+/*        Integer damageTicks = playerData.getLastDamageTicks();
         if (damageTicks != null && damageTicks > 8)
-            return;
+            return;*/
 
         Double verticalVelocity = playerData.getVerticalVelocity();
         if (verticalVelocity == null || !playerData.isOnGround(velocity.getY()))
