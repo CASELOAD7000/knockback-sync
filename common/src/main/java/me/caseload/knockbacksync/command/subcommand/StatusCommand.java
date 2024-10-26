@@ -57,7 +57,7 @@ public class StatusCommand implements BuilderCommand {
                                     if (sender.hasPermission(STATUS_SELF_PERMISSION, true)) {
                                         // Show player status for the sender (no target specified)
                                         if (!sender.isConsole()) {
-                                            showPlayerStatus(sender, Base.INSTANCE.platformServer.getPlayer(sender.getUniqueId()));
+                                            showPlayerStatus(sender, Base.INSTANCE.getPlatformServer().getPlayer(sender.getUniqueId()));
                                         }
                                     } else {
                                         sender.sendMessage(ChatUtil.translateAlternateColorCodes('&', "&cYou do not have permisssion to check your knockbacksync status."));

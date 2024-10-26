@@ -18,6 +18,7 @@ import me.caseload.knockbacksync.stats.custom.BukkitStatsManager;
 import me.caseload.knockbacksync.stats.custom.PluginJarHashProvider;
 import me.caseload.knockbacksync.world.BukkitServer;
 import org.bukkit.Bukkit;
+import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
@@ -29,6 +30,9 @@ import org.incendo.cloud.paper.LegacyPaperCommandManager;
 
 import java.io.File;
 import java.io.InputStream;
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -43,6 +47,8 @@ public class BukkitBase extends Base {
 
     private int playerUpdateInterval;
 
+    private final MethodHandle tickRateMethodHandle;
+
     public BukkitBase(JavaPlugin plugin) {
         this.plugin = plugin;
         super.configManager = new ConfigManager();
@@ -51,6 +57,26 @@ public class BukkitBase extends Base {
         super.platformServer = new BukkitServer();
         super.pluginJarHashProvider = new PluginJarHashProvider(this.getClass().getProtectionDomain().getCodeSource().getLocation());
         this.playerUpdateInterval = this.getConfigManager().getConfigWrapper().getInt("entity_tick_intervals.player", 2);
+
+        MethodHandle handle = null;
+        try {
+            Server craftServer = Bukkit.getServer();
+            MethodHandles.Lookup lookup = MethodHandles.lookup();
+
+            // Get handle for getServerTickManager
+            MethodHandle getServerTickManager = lookup.findVirtual(craftServer.getClass(),
+                    "getServerTickManager", MethodType.methodType(Object.class));
+
+            Object serverTickManager = getServerTickManager.invoke(craftServer);
+
+            // Get handle for getTickRate
+            handle = lookup.findVirtual(serverTickManager.getClass(),
+                    "getTickRate", MethodType.methodType(float.class));
+
+        } catch (Throwable t) {
+            // If anything fails, handle will remain null
+        }
+        this.tickRateMethodHandle = handle;
     }
 
     @Override
@@ -141,6 +167,18 @@ public class BukkitBase extends Base {
     @Override
     public PermissionChecker getPermissionChecker() {
         return permissionChecker;
+    }
+
+    @Override
+    public float getTickRate() {
+        if (tickRateMethodHandle != null) {
+            try {
+                return (float) tickRateMethodHandle.invoke();
+            } catch (Throwable t) {
+                return 20.0f;
+            }
+        }
+        return 20.0f;
     }
 
     private void registerPluginListeners(Listener... listeners) {

@@ -220,6 +220,7 @@ public abstract class Base {
 
     public abstract PermissionChecker getPermissionChecker();
 
+    public abstract float getTickRate();
 }
 
 

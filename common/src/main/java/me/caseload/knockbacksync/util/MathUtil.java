@@ -1,6 +1,6 @@
 package me.caseload.knockbacksync.util;
 
-import static me.caseload.knockbacksync.player.PlayerData.TICK_RATE;
+import me.caseload.knockbacksync.Base;
 
 public class MathUtil {
 
@@ -12,7 +12,7 @@ public class MathUtil {
         final double gravity = 0.08;
         final double multiplier = 0.98;
 
-        int ticks = (int) Math.ceil(ping * TICK_RATE / 1000);
+        int ticks = (int) Math.ceil(ping * Base.INSTANCE.getTickRate() / 1000);
         while(ticks > 0) {
             verticalVelocity -= gravity;
             verticalVelocity *= multiplier;

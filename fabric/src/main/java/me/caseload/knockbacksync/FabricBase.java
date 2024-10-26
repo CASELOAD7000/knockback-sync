@@ -37,6 +37,7 @@ public class FabricBase extends Base {
     private final FabricPermissionChecker permissionChecker = new FabricPermissionChecker();
     @Getter
     private final FabricSenderFactory fabricSenderFactory = new FabricSenderFactory(this);
+    private float tickRate = 20.0F;
 
     public FabricBase() {
         super.configManager = new ConfigManager();
@@ -109,6 +110,15 @@ public class FabricBase extends Base {
     @Override
     public PermissionChecker getPermissionChecker() {
         return permissionChecker;
+    }
+
+    @Override
+    public float getTickRate() {
+        return this.tickRate;
+    }
+
+    public void setTickRate(float tickRate) {
+        this.tickRate = tickRate;
     }
 
     private URL getJarURL() {

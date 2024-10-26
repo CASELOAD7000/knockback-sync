@@ -42,7 +42,6 @@ public class PlayerData {
     private static final short NETTY_THREAD_TRANSACTION_ID = 31408;
     public static final long PING_OFFSET = 25;
 
-    public static float TICK_RATE = 20.0F;
     private static Field playerField;
 
     public final List<Pair<Integer, Long>> transactionsSent = new LinkedList<>();
@@ -130,7 +129,7 @@ public class PlayerData {
     }
 
     public int getTick() {
-        return (int) Math.ceil(getCompensatedPing() * TICK_RATE / 1000); // Multiply ping by seconds per tick
+        return (int) Math.ceil(getCompensatedPing() * Base.INSTANCE.getTickRate() / 1000); // Multiply ping by seconds per tick
     }
 
     public void sendPing(boolean async) {
