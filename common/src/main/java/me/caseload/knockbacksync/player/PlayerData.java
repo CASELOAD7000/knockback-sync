@@ -123,7 +123,7 @@ public class PlayerData {
     }
 
     public int getTick() {
-        return (int) Math.ceil(getCompensatedPing() / 50);
+        return (int) Math.ceil(getCompensatedPing() * TICK_RATE / 1000); // Multiply ping by seconds per tick
     }
 
 //    public boolean isKeepAliveIDOurs(long id) {
