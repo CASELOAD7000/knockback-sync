@@ -1,12 +1,7 @@
 package me.caseload.knockbacksync.mixin;
 
-import me.caseload.knockbacksync.FabricLoaderMod;
 import me.caseload.knockbacksync.callback.PlayerVelocityEvent;
-import me.caseload.knockbacksync.event.ConfigReloadEvent;
-import me.caseload.knockbacksync.event.KBSyncEventHandler;
-import me.caseload.knockbacksync.util.CustomUpdateIntervals;
 import net.minecraft.server.level.ServerEntity;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
@@ -14,12 +9,9 @@ import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import java.util.Map;
 
 @Mixin(ServerEntity.class)
 public class ServerEntityMixin {

@@ -19,9 +19,11 @@ import me.caseload.knockbacksync.util.data.Pair;
 import java.util.List;
 
 public class PingReceiveListener extends PacketListenerAbstract {
-// TODO supplment our own ping calculations with over keepalive sent by the server with
+// TODO supplement our own ping calculations with over keepalive sent by the server with
     @Override
     public void onPacketSend(PacketSendEvent event) {
+        if (!Base.INSTANCE.getConfigManager().isToggled()) return;
+
         PacketTypeCommon packetType = event.getPacketType();
         if (packetType.equals(PacketType.Play.Server.KEEP_ALIVE)) {
             WrapperPlayServerKeepAlive keepAlive = new WrapperPlayServerKeepAlive(event);
@@ -52,8 +54,9 @@ public class PingReceiveListener extends PacketListenerAbstract {
 
     @Override
     public void onPacketReceive(PacketReceiveEvent event) {
-        if (!Base.INSTANCE.getConfigManager().isToggled()) return;
-
+        // Do not immediately return if KB sync is disabled. This is because if we send a packet, disable the plugin
+        // And then receive a response we have to ensure that if the packet was sent by us we cancel it
+        // otherwise the server will likely kick the player
         PacketTypeCommon packetType = event.getPacketType();
         if (packetType == PacketType.Play.Client.KEEP_ALIVE) {
 
@@ -84,16 +87,6 @@ public class PingReceiveListener extends PacketListenerAbstract {
     }
 
     private <T extends Number> void handlePingCalculationPackets(PacketReceiveEvent event, PlayerData playerData, long id, List<Pair<T, Long>> packetSentList) {
-        long pingNanos = (System.nanoTime() - packetSentList.remove(0).getSecond());
-        double diffMillisDouble = pingNanos / 1_000_000.0;
-
-        playerData.setPreviousPing(playerData.getPing());
-        playerData.setPing(diffMillisDouble);
-
-        playerData.getJitterCalculator().addPing(pingNanos);
-        double jitter = playerData.getJitterCalculator().calculateJitter();
-        playerData.setJitter(jitter);
-
         // We can cancel for all 3 cases
         if (playerData.didWeSendThatPacket(id)) {
             // Pong not needed as vanilla ignores the packet, its needed for packet limiters
@@ -103,5 +96,17 @@ public class PingReceiveListener extends PacketListenerAbstract {
             // To stop MC from processing it and kicking the player
             event.setCancelled(true);
         }
+
+        if (!Base.INSTANCE.getConfigManager().isToggled()) return;
+
+        long pingNanos = (System.nanoTime() - packetSentList.remove(0).getSecond());
+        double diffMillisDouble = pingNanos / 1_000_000.0;
+
+        playerData.setPreviousPing(playerData.getPing());
+        playerData.setPing(diffMillisDouble);
+
+        playerData.getJitterCalculator().addPing(pingNanos);
+        double jitter = playerData.getJitterCalculator().calculateJitter();
+        playerData.setJitter(jitter);
     }
 }

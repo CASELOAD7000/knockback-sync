@@ -2,11 +2,8 @@ package me.caseload.knockbacksync.entity;
 
 import me.caseload.knockbacksync.Base;
 import me.caseload.knockbacksync.ConfigWrapper;
-import me.caseload.knockbacksync.FabricLoaderMod;
-import me.caseload.knockbacksync.event.ConfigReloadEvent;
+import me.caseload.knockbacksync.event.events.ConfigReloadEvent;
 import me.caseload.knockbacksync.event.KBSyncEventHandler;
-import me.caseload.knockbacksync.util.CustomUpdateIntervals;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntityType;
 
 import java.util.HashMap;

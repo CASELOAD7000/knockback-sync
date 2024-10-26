@@ -3,7 +3,7 @@ package me.caseload.knockbacksync;
 import com.github.retrooper.packetevents.PacketEvents;
 import com.github.retrooper.packetevents.manager.server.ServerVersion;
 import io.github.retrooper.packetevents.factory.spigot.SpigotPacketEventsBuilder;
-import me.caseload.knockbacksync.event.ConfigReloadEvent;
+import me.caseload.knockbacksync.event.events.ConfigReloadEvent;
 import me.caseload.knockbacksync.event.KBSyncEventHandler;
 import me.caseload.knockbacksync.listener.bukkit.*;
 import me.caseload.knockbacksync.manager.ConfigManager;

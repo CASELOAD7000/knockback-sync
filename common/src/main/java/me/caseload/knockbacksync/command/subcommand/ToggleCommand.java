@@ -2,6 +2,7 @@ package me.caseload.knockbacksync.command.subcommand;
 import me.caseload.knockbacksync.Base;
 import me.caseload.knockbacksync.command.generic.BuilderCommand;
 import me.caseload.knockbacksync.command.generic.PlayerSelector;
+import me.caseload.knockbacksync.event.events.ToggleOnOffEvent;
 import me.caseload.knockbacksync.manager.ConfigManager;
 import me.caseload.knockbacksync.manager.PlayerDataManager;
 import me.caseload.knockbacksync.permission.PermissionChecker;
@@ -73,6 +74,12 @@ public class ToggleCommand implements BuilderCommand {
 
     private static void toggleGlobalKnockback(ConfigManager configManager, Sender sender) {
         boolean toggledState = !configManager.isToggled();
+        ToggleOnOffEvent toggleOnOffEvent = new ToggleOnOffEvent(toggledState);
+        toggleOnOffEvent.post();
+        if (toggleOnOffEvent.isCancelled())
+            return;
+
+        toggledState = toggleOnOffEvent.getStatus();
         configManager.setToggled(toggledState);
 
         Base.INSTANCE.getConfigManager().getConfigWrapper().set("enabled", toggledState);

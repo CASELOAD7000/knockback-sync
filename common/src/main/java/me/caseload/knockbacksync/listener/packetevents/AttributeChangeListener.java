@@ -6,6 +6,7 @@ import com.github.retrooper.packetevents.protocol.attribute.Attributes;
 import com.github.retrooper.packetevents.protocol.packettype.PacketType;
 import com.github.retrooper.packetevents.protocol.player.ClientVersion;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerUpdateAttributes;
+import me.caseload.knockbacksync.Base;
 import me.caseload.knockbacksync.manager.PlayerDataManager;
 import me.caseload.knockbacksync.player.PlayerData;
 import me.caseload.knockbacksync.util.MathUtil;
@@ -29,6 +30,8 @@ public class AttributeChangeListener extends PacketListenerAbstract {
 
     @Override
     public void onPacketSend(PacketSendEvent event) {
+        if (!Base.INSTANCE.getConfigManager().isToggled()) return;
+
         if (event.getPacketType() == PacketType.Play.Server.UPDATE_ATTRIBUTES) {
 
             WrapperPlayServerUpdateAttributes packet = new WrapperPlayServerUpdateAttributes(event);
