@@ -1,6 +1,5 @@
 package me.caseload.knockbacksync.command.subcommand;
 
-import com.mojang.realmsclient.client.Ping;
 import me.caseload.knockbacksync.Base;
 import me.caseload.knockbacksync.ConfigWrapper;
 import me.caseload.knockbacksync.command.generic.BuilderCommand;
@@ -13,7 +12,6 @@ import me.caseload.knockbacksync.sender.Sender;
 import me.caseload.knockbacksync.util.ChatUtil;
 import org.incendo.cloud.CommandManager;
 import org.incendo.cloud.permission.PredicatePermission;
-import sun.security.krb5.Config;
 
 import java.util.UUID;
 import java.util.function.Predicate;
