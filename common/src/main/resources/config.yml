@@ -3,7 +3,7 @@
 #########################################
 
 # Do not modify!
-config_version: 3
+config_version: 4
 
 # Plugin enabled state
 # Toggleable using /knockbacksync toggle
@@ -18,7 +18,7 @@ notify_updates: true
 # Disabling this may lead to inaccuracies in calculations
 runnable:
   enabled: true       # Runnable enabled state
-  interval: 20         # The interval in ticks between sending out pings to players
+  interval: 5         # The interval in ticks between sending out pings to players
   combat_timer: 30    # The timer in ticks before being considered out of combat
 
 # The minimum change in ping required for it to be considered a lag spike.
