@@ -8,7 +8,6 @@ import com.github.retrooper.packetevents.protocol.ConnectionState;
 import com.github.retrooper.packetevents.protocol.player.ClientVersion;
 import com.github.retrooper.packetevents.protocol.player.User;
 import com.github.retrooper.packetevents.protocol.world.BoundingBox;
-import com.github.retrooper.packetevents.protocol.world.Location;
 import com.github.retrooper.packetevents.protocol.world.states.WrappedBlockState;
 import com.github.retrooper.packetevents.protocol.world.states.type.StateTypes;
 import com.github.retrooper.packetevents.util.Vector3d;
@@ -108,7 +107,7 @@ public class PlayerData {
      *
      * @return The compensated ping, with a minimum of 1.
      */
-    public double getEstimatedPing() {
+    public double getCompensatedPing() {
         double currentPing = (ping != null) ? ping : platformPlayer.getPing();
         double lastPing = (previousPing != null) ? previousPing : platformPlayer.getPing();
         double ping = (currentPing - lastPing > Base.INSTANCE.getConfigManager().getSpikeThreshold()) ? lastPing : currentPing;
@@ -116,8 +115,15 @@ public class PlayerData {
         return Math.max(1, ping - PING_OFFSET);
     }
 
+    public boolean isSpike() {
+        double currentPing = (ping != null) ? ping : platformPlayer.getPing();
+        double lastPing = (previousPing != null) ? previousPing : platformPlayer.getPing();
+
+        return (currentPing - lastPing) > Base.INSTANCE.getConfigManager().getSpikeThreshold();
+    }
+
     public int getTick() {
-        return (int) Math.ceil(getEstimatedPing() / 50);
+        return (int) Math.ceil(getCompensatedPing() * TICK_RATE / 1000); // Multiply ping by seconds per tick
     }
 
 //    public boolean isKeepAliveIDOurs(long id) {
