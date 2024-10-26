@@ -60,8 +60,6 @@ public class ConfigManager {
         try {
             if (!configFile.exists()) {
                 Base.INSTANCE.saveDefaultConfig();
-            } else {
-                updateConfig();
             }
             yamlConfig.load();
             config = yamlConfig.getData();
@@ -87,19 +85,21 @@ public class ConfigManager {
             reloadConfig();
         }
 
-        ConfigWrapper config = getConfigWrapper(); // Use cached ConfigWrapper
+        ConfigWrapper configWrapper = getConfigWrapper(); // Use cached ConfigWrapper
 
-        toggled = config.getBoolean("enabled", true);
+        updateConfig();
+
+        toggled = configWrapper.getBoolean("enabled", true);
 
         // Checks to see if the runnable was enabled...
         // and if we now want to disable it
-        boolean newRunnableEnabled = config.getBoolean("runnable.enabled", true);
+        boolean newRunnableEnabled = configWrapper.getBoolean("runnable.enabled", true);
         if (runnableEnabled && newRunnableEnabled && pingTask != null) { // null check for first startup
             pingTask.cancel();
         }
 
         runnableEnabled = newRunnableEnabled;
-        runnableInterval = config.getLong("runnable.interval", 5L);
+        runnableInterval = configWrapper.getLong("runnable.interval", 5L);
 
         if (runnableEnabled) {
             long initialDelay = 0L;
@@ -112,14 +112,14 @@ public class ConfigManager {
             pingTask = Base.INSTANCE.getScheduler().runTaskTimerAsynchronously(new PingRunnable(), initialDelay, pingTaskRunnableInterval);
         }
 
-        notifyUpdate = config.getBoolean("notify_updates", true);
-        combatTimer = config.getLong("runnable.timer", 30L);
-        spikeThreshold = config.getLong("spike_threshold", 20L);
-        enableMessage = config.getString("enable_message", "&aSuccessfully enabled KnockbackSync.");
-        disableMessage = config.getString("disable_message", "&cSuccessfully disabled KnockbackSync.");
-        playerEnableMessage = config.getString("player_enable_message", "&aSuccessfully enabled KnockbackSync for %player%.");
-        playerDisableMessage = config.getString("player_disable_message", "&cSuccessfully disabled KnockbackSync for %player%.");
-        playerIneligibleMessage = config.getString("player_ineligible_message", "&c%player% is ineligible for KnockbackSync. If you believe this is in error, please contact your server administrators.");
+        notifyUpdate = configWrapper.getBoolean("notify_updates", true);
+        combatTimer = configWrapper.getLong("runnable.timer", 30L);
+        spikeThreshold = configWrapper.getLong("spike_threshold", 20L);
+        enableMessage = configWrapper.getString("enable_message", "&aSuccessfully enabled KnockbackSync.");
+        disableMessage = configWrapper.getString("disable_message", "&cSuccessfully disabled KnockbackSync.");
+        playerEnableMessage = configWrapper.getString("player_enable_message", "&aSuccessfully enabled KnockbackSync for %player%.");
+        playerDisableMessage = configWrapper.getString("player_disable_message", "&cSuccessfully disabled KnockbackSync for %player%.");
+        playerIneligibleMessage = configWrapper.getString("player_ineligible_message", "&c%player% is ineligible for KnockbackSync. If you believe this is in error, please contact your server administrators.");
     }
 
     public void updateConfig() {
@@ -130,7 +130,7 @@ public class ConfigManager {
             // Backup old config with comments
             File backupFile = new File(configFile.getParentFile(), "config-version-" + oldConfigVersion + ".yml");
             try {
-                Files.copy(configFile.toPath(), backupFile.toPath());
+                Files.move(configFile.toPath(), backupFile.toPath());
                 Base.INSTANCE.getLogger().info("Backed up old config to " + backupFile.getName());
             } catch (IOException e) {
                 Base.INSTANCE.getLogger().warning("Failed to backup old config: " + e.getMessage());
@@ -158,12 +158,12 @@ public class ConfigManager {
     }
 
     private void transferAllSettings(ConfigWrapper oldConfig, ConfigWrapper newConfig) {
-        transferSettingsRecursive(oldConfig, newConfig, "");
+        transferSettingsRecursive(oldConfig, newConfig, ".");
     }
 
     private void transferSettingsRecursive(ConfigWrapper oldConfig, ConfigWrapper newConfig, String currentPath) {
         for (String key : oldConfig.getKeys(currentPath)) {
-            String fullPath = currentPath.isEmpty() ? key : currentPath + "." + key;
+            String fullPath = currentPath.isEmpty() || currentPath.equals(".") ? key : currentPath + "." + key;
             if (newConfig.contains(fullPath)) {
                 Object value = oldConfig.get(fullPath);
                 if (value instanceof Map) {
