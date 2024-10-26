@@ -19,7 +19,7 @@ import java.util.Map;
 @Setter
 public class ConfigManager {
 
-    public static final long CONFIG_VERSION = 4;
+    public static final long CONFIG_VERSION = 6;
 
     private boolean toggled;
     private boolean runnableEnabled;

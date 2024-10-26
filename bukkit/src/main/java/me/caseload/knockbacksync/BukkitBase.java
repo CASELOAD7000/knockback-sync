@@ -104,8 +104,6 @@ public class BukkitBase extends Base {
     public void enable() {
         super.enable();
         initializeScheduler();
-        saveDefaultConfig();
-        configManager.updateConfig();
         configManager.loadConfig(false);
         statsManager.init();
         checkForUpdates();
