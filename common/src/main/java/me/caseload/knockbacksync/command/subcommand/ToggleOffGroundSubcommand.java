@@ -10,8 +10,6 @@ import org.incendo.cloud.permission.PredicatePermission;
 import java.util.function.Predicate;
 
 public class ToggleOffGroundSubcommand implements BuilderCommand {
-
-    @Override
     public void register(CommandManager<Sender> manager) {
         manager.command(
             manager.commandBuilder("knockbacksync", "kbsync", "kbs")

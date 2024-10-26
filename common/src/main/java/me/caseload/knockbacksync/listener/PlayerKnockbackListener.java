@@ -21,12 +21,17 @@ public abstract class PlayerKnockbackListener {
             return;*/
 
         Double verticalVelocity = playerData.getVerticalVelocity();
-        if (verticalVelocity == null || !playerData.isOnGround(velocity.getY()))
-            return;
+        if(verticalVelocity == null) return;
 
-        // Since we're already changing types do we need to use withY to get a new object
-        // Or can we just go velocity.y = verticalVelocity ?
-        Vector3d adjustedVelocity = velocity.withY(verticalVelocity);
-        victim.setVelocity(adjustedVelocity); // Use PlatformPlayer's setVelocity
+        if (playerData.isOnGround(velocity.getY())) {
+            // Since we're already changing types do we need to use withY to get a new object
+            // Or can we just go velocity.y = verticalVelocity ?
+            Vector3d adjustedVelocity = velocity.withY(verticalVelocity);
+            victim.setVelocity(adjustedVelocity); // Use PlatformPlayer's setVelocity
+        } else if (!victim.isOnGround()) {
+            if(!playerData.getOffgroundSync()) return;
+            Vector3d adjustedVelocity = velocity.withY(playerData.compensateOffgroundVelocity());
+            victim.setVelocity(adjustedVelocity); // Use PlatformPlayer's setVelocity
+        }
     }
 }

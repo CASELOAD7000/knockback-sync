@@ -9,6 +9,7 @@ import me.caseload.knockbacksync.command.subcommand.PingCommand;
 import me.caseload.knockbacksync.command.subcommand.ReloadCommand;
 import me.caseload.knockbacksync.command.subcommand.StatusCommand;
 import me.caseload.knockbacksync.command.subcommand.ToggleCommand;
+import me.caseload.knockbacksync.command.subcommand.ToggleOffGroundSubcommand;
 import me.caseload.knockbacksync.event.Event;
 import me.caseload.knockbacksync.event.EventBus;
 import me.caseload.knockbacksync.event.OptimizedEventBus;
@@ -117,6 +118,7 @@ public abstract class Base {
                 new ReloadCommand(),
                 new PingCommand(),
                 new StatusCommand(),
+                new ToggleOffGroundSubcommand(),
                 new ToggleCommand()
         );
         list.forEach(command -> command.register(commandManager));

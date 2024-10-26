@@ -18,3 +18,5 @@ permissions:
     default: op
   knockbacksync.reload:
     default: op
+  knockbacksync.toggleoffground:
+    default: op

@@ -218,6 +218,22 @@ public class PlayerData {
         return (tMax + tFall) - getTick() <= 0 && gDist <= 1.3;
     }
 
+    public boolean getOffgroundSync() {
+        return Base.INSTANCE.getConfigManager().getConfigWrapper().getBoolean("enable_experimental_offground",
+                false);
+    }
+
+    /**
+     * Gets the compensated off-ground velocity.
+     * This is used to make knockback feel more accurate off-ground.
+     *
+     * @return Compensated Y axis velocity
+     */
+    public double compensateOffgroundVelocity() {
+        if(getPing() == null) return platformPlayer.getVelocity().y;
+        return MathUtil.getCompensatedVerticalVelocity(platformPlayer.getVelocity().y, getPing());
+    }
+
     /**
      * Ray traces from each corner of the player's bounding box to the ground,
      * returning the smallest distance, with a maximum limit of 5 blocks.
