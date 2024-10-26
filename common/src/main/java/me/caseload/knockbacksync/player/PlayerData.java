@@ -230,8 +230,9 @@ public class PlayerData {
      * @return Compensated Y axis velocity
      */
     public double compensateOffgroundVelocity() {
-        if(getPing() == null) return platformPlayer.getVelocity().y;
-        return MathUtil.getCompensatedVerticalVelocity(platformPlayer.getVelocity().y, getPing());
+        Double ping = getPing();
+        if(ping == null) return platformPlayer.getVelocity().y;
+        return MathUtil.getCompensatedVerticalVelocity(platformPlayer.getVelocity().y, ping);
     }
 
     /**
