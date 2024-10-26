@@ -63,7 +63,7 @@ public class StatusCommand implements BuilderCommand {
                                         sender.sendMessage(ChatUtil.translateAlternateColorCodes('&', "&cYou do not have permisssion to check your knockbacksync status."));
                                     }
                             } else {
-                                if (sender.hasPermission(STATUS_OTHER_PERMISSION)) {
+                                if (sender.hasPermission(STATUS_OTHER_PERMISSION, true)) {
                                     PlatformPlayer target = targetSelector.getSinglePlayer();
                                     showPlayerStatus(sender, target);
                                 } else {
