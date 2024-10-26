@@ -1,7 +1,11 @@
 package me.caseload.knockbacksync.command.subcommand;
 
 import me.caseload.knockbacksync.Base;
+import me.caseload.knockbacksync.ConfigWrapper;
 import me.caseload.knockbacksync.command.generic.BuilderCommand;
+import me.caseload.knockbacksync.event.KBSyncEventHandler;
+import me.caseload.knockbacksync.event.events.ConfigReloadEvent;
+import me.caseload.knockbacksync.manager.ConfigManager;
 import me.caseload.knockbacksync.sender.Sender;
 import me.caseload.knockbacksync.util.ChatUtil;
 import org.incendo.cloud.CommandManager;
@@ -11,7 +15,14 @@ import java.util.function.Predicate;
 
 public class ToggleOffGroundSubcommand implements BuilderCommand {
 
-    @Override
+    private String enableOffGroundSyncMessage;
+    private String disableOffGroundSyncMessage;
+    private boolean offGroundSyncEnabled;
+
+    public ToggleOffGroundSubcommand() {
+        loadConfigSettings();
+    }
+
     public void register(CommandManager<Sender> manager) {
         manager.command(
             manager.commandBuilder("knockbacksync", "kbsync", "kbs")
@@ -25,14 +36,24 @@ public class ToggleOffGroundSubcommand implements BuilderCommand {
                     return PredicatePermission.of(senderPredicate).testPermission(sender);
                 }))
                 .handler(commandContext -> {
-                    boolean toggledState = !Base.INSTANCE.getConfigManager().getConfigWrapper().getBoolean("enable_experimental_offground", false);
-                    Base.INSTANCE.getConfigManager().getConfigWrapper().set("enable_experimental_offground", toggledState);
+                    boolean toggledState = !offGroundSyncEnabled;
+                    Base.INSTANCE.getConfigManager().getConfigWrapper().set("enable_offground_synchronization", toggledState);
                     Base.INSTANCE.getConfigManager().saveConfig();
                     String message = ChatUtil.translateAlternateColorCodes('&',
-                            toggledState ?
-                                    Base.INSTANCE.getConfigManager().getConfigWrapper().getString("enable_experimental_offground_message", "&aSuccessfully enabled offground experiment.") :
-                                    Base.INSTANCE.getConfigManager().getConfigWrapper().getString("disable_experimental_offground_message", "&cSuccessfully disabled offground experiment."));
+                            toggledState ? enableOffGroundSyncMessage : disableOffGroundSyncMessage);
                     commandContext.sender().sendMessage(message);
                 }));
+    }
+
+    @KBSyncEventHandler
+    public void onConfigReloadEvent(ConfigReloadEvent event) {
+        loadConfigSettings();
+    }
+
+    private void loadConfigSettings() {
+        ConfigWrapper configWrapper = Base.INSTANCE.getConfigManager().getConfigWrapper();
+        offGroundSyncEnabled = configWrapper.getBoolean("enable_offground_synchronization", false);
+        enableOffGroundSyncMessage = configWrapper.getString("enable_offground_synchronization_message", "&aSuccessfully enabled offground experiment.");
+        disableOffGroundSyncMessage = configWrapper.getString("disable_offground_synchronization_message", "&cSuccessfully disabled offground experiment.");
     }
 }

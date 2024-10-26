@@ -1,10 +1,25 @@
 package me.caseload.knockbacksync.util;
 
+import static me.caseload.knockbacksync.player.PlayerData.TICK_RATE;
+
 public class MathUtil {
 
     private static final double TERMINAL_VELOCITY = 3.92;
     private static final double MULTIPLIER = 0.98;
     private static final int MAX_TICKS = 30;
+
+    public static double getCompensatedVerticalVelocity(double verticalVelocity, double ping) {
+        final double gravity = 0.08;
+        final double multiplier = 0.98;
+
+        int ticks = (int) Math.ceil(ping * TICK_RATE / 1000);
+        while(ticks > 0) {
+            verticalVelocity -= gravity;
+            verticalVelocity *= multiplier;
+            ticks--;
+        }
+        return verticalVelocity;
+    }
 
     public static double calculateDistanceTraveled(double velocity, int time, double acceleration) {
         double totalDistance = 0;

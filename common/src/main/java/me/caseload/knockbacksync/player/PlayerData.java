@@ -19,6 +19,7 @@ import lombok.Getter;
 import lombok.Setter;
 import me.caseload.knockbacksync.Base;
 import me.caseload.knockbacksync.event.KBSyncEventHandler;
+import me.caseload.knockbacksync.event.events.ConfigReloadEvent;
 import me.caseload.knockbacksync.event.events.ToggleOnOffEvent;
 import me.caseload.knockbacksync.manager.CombatManager;
 import me.caseload.knockbacksync.scheduler.AbstractTaskHandle;
@@ -80,6 +81,7 @@ public class PlayerData {
     @Nullable @Setter private Integer lastDamageTicks;
     @Setter private double gravityAttribute = 0.08;
     @Setter private double knockbackResistanceAttribute = 0.0;
+    private boolean offGroundSyncEnabled;
 
     public PlayerData(PlatformPlayer platformPlayer) {
         this.uuid = platformPlayer.getUUID();
@@ -100,6 +102,8 @@ public class PlayerData {
         }
 
         this.user = tempUser;
+        this.offGroundSyncEnabled = Base.INSTANCE.getConfigManager().getConfigWrapper().getBoolean("enable_offground_synchronization",
+                true);
     }
 
     /**
@@ -127,10 +131,6 @@ public class PlayerData {
     public int getTick() {
         return (int) Math.ceil(getCompensatedPing() * TICK_RATE / 1000); // Multiply ping by seconds per tick
     }
-
-//    public boolean isKeepAliveIDOurs(long id) {
-//        return id == lastKeepAliveID;
-//    }
 
     public void sendPing(boolean async) {
         if (user == null || user.getEncoderState() != ConnectionState.PLAY) return;
@@ -187,7 +187,7 @@ public class PlayerData {
      * @param verticalVelocity The Player's current vertical velocity.
      * @return <code>true</code> if the Player is on the ground; <code>false</code> otherwise.
      */
-    public boolean isOnGround(double verticalVelocity) {
+    public boolean isOnGroundClientSide(double verticalVelocity) {
         WrappedBlockState blockState = platformPlayer.getWorld().getBlockStateAt(platformPlayer.getLocation());
 
         if (platformPlayer.isGliding() ||
@@ -216,6 +216,27 @@ public class PlayerData {
             return false; // reached the max tick limit, not safe to predict
 
         return (tMax + tFall) - getTick() <= 0 && gDist <= 1.3;
+    }
+
+    /**
+     * Gets whether or not offGroundSynchronization is enabled for the player.
+     * @return <code>true</code> if enabled; <code>false</code> otherwise.
+     */
+    public boolean isOffGroundSyncEnabled() {
+        // TODO, per-player offground sync toggles?
+        return offGroundSyncEnabled;
+    }
+
+    /**
+     * Gets the compensated off-ground velocity.
+     * This is used to make knockback feel more accurate off-ground.
+     *
+     * @return Compensated Y axis velocity
+     */
+    public double getCompensatedOffGroundVelocity() {
+        Double ping = getPing();
+        if(ping == null) return platformPlayer.getVelocity().y;
+        return MathUtil.getCompensatedVerticalVelocity(platformPlayer.getVelocity().y, ping);
     }
 
     /**
@@ -272,7 +293,6 @@ public class PlayerData {
 
         if (!attacker.isSprinting()) {
             yAxis = 0.36080000519752503;
-//            double knockbackResistance = knockbackResistanceAttribute;
             double resistanceFactor = 0.04000000119 * knockbackResistanceAttribute * 10;
             yAxis -= resistanceFactor;
         }
@@ -333,5 +353,11 @@ public class PlayerData {
             transactionsSent.clear();
             keepaliveMap.clear();
         }
+    }
+
+    @KBSyncEventHandler
+    public void onConfigReloadEvent(ConfigReloadEvent event) {
+        this.offGroundSyncEnabled = Base.INSTANCE.getConfigManager().getConfigWrapper().getBoolean("enable_offground_synchronization",
+                true);
     }
 }

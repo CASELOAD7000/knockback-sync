@@ -3,7 +3,7 @@
 #########################################
 
 # Do not modify!
-config_version: 4
+config_version: 5
 
 # Plugin enabled state
 # Toggleable using /knockbacksync toggle
@@ -38,8 +38,8 @@ spike_threshold: 20
 # ping measured in ms with PING/TRANSACTION is typically within ± 5ms of actual but can be up to 50ms off
 ping_strategy: "KEEPALIVE"
 
-# This setting has yet to be implemented. Enable if you want it to be enabled as soon as the next update add support
-enable_experimental_offground: false
+# Whether to try to detect when player is offground and apply less kb
+enable_offground_synchronization: true
 
 enable_message: "&aSuccessfully enabled KnockbackSync."
 disable_message: "&cSuccessfully disabled KnockbackSync."
@@ -50,8 +50,8 @@ reload_message: "&aSuccessfully reloaded KnockbackSync config."
 global_status_message: "&eGlobal KnockbackSync status: "
 player_status_message: "&e%player%'s KnockbackSync status: "
 player_disabled_global_message: "&cDisabled (Global toggle is off)"
-enable_experimental_offground_message: "&aSuccessfully enabled offground experiment."
-disable_experimental_offground_message: "&cSuccessfully disabled offground experiment."
+enable_offground_synchronization_message: "&aSuccessfully enabled offground synchronization."
+disable_offground_synchronization_message: "&cSuccessfully disabled offground synchronization."
 
 # This is the rate the server will use for (amongst other things) sending packets about entities to players
 # In other words it defines how often clients get updated velocity for other entities in the world
