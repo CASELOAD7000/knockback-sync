@@ -44,7 +44,6 @@ public class ChatUtil {
             noun = playerData.getPlatformPlayer().getName() + "'s";
         }
 
-
         String rawReturnString = null;
         if (playerData.getPing() == null) {
             rawReturnString = String.format("Accurate ping unavailable. %s estimated ping is &b" + playerData.getPlatformPlayer().getPing() + "&rms.", noun);

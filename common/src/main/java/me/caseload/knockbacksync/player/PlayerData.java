@@ -106,6 +106,14 @@ public class PlayerData {
                 true);
     }
 
+    public double getNotNullPing() {
+        return ping != null ? ping : platformPlayer.getPing();
+    }
+
+    public double getNotNullPreviousPing() {
+        return previousPing != null ? previousPing : platformPlayer.getPing();
+    }
+
     /**
      * Calculates the player's ping with compensation for lag spikes.
      * A hardcoded offset is applied for several reasons,
@@ -114,22 +122,23 @@ public class PlayerData {
      * @return The compensated ping, with a minimum of 1.
      */
     public double getCompensatedPing() {
-        double currentPing = (ping != null) ? ping : platformPlayer.getPing();
-        double lastPing = (previousPing != null) ? previousPing : platformPlayer.getPing();
-        double ping = (currentPing - lastPing > Base.INSTANCE.getConfigManager().getSpikeThreshold()) ? lastPing : currentPing;
+        double ping = getNotNullPing();
+        double previousPing = getNotNullPreviousPing();
+        double spikeCompensatedPing = (ping - previousPing > Base.INSTANCE.getConfigManager().getSpikeThreshold()) ? previousPing : ping;
 
-        return Math.max(1, ping - PING_OFFSET);
+        return Math.max(1, spikeCompensatedPing - PING_OFFSET);
+    }
+
+    public int getCompensatedTicks() {
+        return (int) Math.ceil(getCompensatedPing() * TICK_RATE / 1000); // Multiply ping by seconds per tick
+    }
+
+    public int getTicks() {
+        return (int) Math.ceil(getNotNullPing() * TICK_RATE / 1000); // Multiply ping by seconds per tick
     }
 
     public boolean isSpike() {
-        double currentPing = (ping != null) ? ping : platformPlayer.getPing();
-        double lastPing = (previousPing != null) ? previousPing : platformPlayer.getPing();
-
-        return (currentPing - lastPing) > Base.INSTANCE.getConfigManager().getSpikeThreshold();
-    }
-
-    public int getTick() {
-        return (int) Math.ceil(getCompensatedPing() * TICK_RATE / 1000); // Multiply ping by seconds per tick
+        return (getNotNullPing() - getNotNullPreviousPing()) > Base.INSTANCE.getConfigManager().getSpikeThreshold();
     }
 
     public void sendPing(boolean async) {
@@ -187,35 +196,18 @@ public class PlayerData {
      * @param verticalVelocity The Player's current vertical velocity.
      * @return <code>true</code> if the Player is on the ground; <code>false</code> otherwise.
      */
-    public boolean isOnGroundClientSide(double verticalVelocity) {
-        WrappedBlockState blockState = platformPlayer.getWorld().getBlockStateAt(platformPlayer.getLocation());
-
-        if (platformPlayer.isGliding() ||
-                blockState.getType() == StateTypes.WATER ||
-                blockState.getType() == StateTypes.LAVA ||
-                blockState.getType() == StateTypes.COBWEB ||
-                blockState.getType() == StateTypes.SCAFFOLDING) {
-            return false;
-        }
-
-        if (ping == null || ping < PING_OFFSET)
-            return false;
-
-        double gDist = getDistanceToGround();
-        if (gDist <= 0)
-            return false; // prevent player from taking adjusted knockback when on ground serverside
-
+    public boolean isOnGroundClientSide(double verticalVelocity, double distanceToGround) {
         int tMax = verticalVelocity > 0 ? MathUtil.calculateTimeToMaxVelocity(verticalVelocity, gravityAttribute) : 0;
         if (tMax == -1)
             return false; // reached the max tick limit, not safe to predict
 
         double mH = verticalVelocity > 0 ? MathUtil.calculateDistanceTraveled(verticalVelocity, tMax, gravityAttribute) : 0;
-        int tFall = MathUtil.calculateFallTime(verticalVelocity, mH + gDist, gravityAttribute);
+        int tFall = MathUtil.calculateFallTime(verticalVelocity, mH + distanceToGround, gravityAttribute);
 
         if (tFall == -1)
             return false; // reached the max tick limit, not safe to predict
 
-        return (tMax + tFall) - getTick() <= 0 && gDist <= 1.3;
+        return (tMax + tFall) - getCompensatedTicks() <= 0 && distanceToGround <= 1.3;
     }
 
     /**
@@ -234,9 +226,7 @@ public class PlayerData {
      * @return Compensated Y axis velocity
      */
     public double getCompensatedOffGroundVelocity() {
-        Double ping = getPing();
-        if(ping == null) return platformPlayer.getVelocity().y;
-        return MathUtil.getCompensatedVerticalVelocity(platformPlayer.getVelocity().y, ping);
+        return MathUtil.getCompensatedVerticalVelocity(platformPlayer.getVelocity().getY(), getGravityAttribute(), getTicks());
     }
 
     /**
