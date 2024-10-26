@@ -191,7 +191,7 @@ public class BukkitPlayer implements PlatformPlayer {
     }
 
     @Override
-    public double getJumpVelocity() {
+    public double getJumpPower() {
         double jumpVelocity = 0.42;
 
         PotionEffect jumpEffect = bukkitPlayer.getPotionEffect(PotionEffectType.JUMP);

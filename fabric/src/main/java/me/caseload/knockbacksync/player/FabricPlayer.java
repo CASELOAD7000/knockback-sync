@@ -136,7 +136,7 @@ public class FabricPlayer implements PlatformPlayer {
     }
 
     @Override
-    public double getJumpVelocity() {
+    public double getJumpPower() {
         double jumpVelocity = 0.42;
         MobEffectInstance jumpEffect = fabricPlayer.getEffect(MobEffects.JUMP);
         if (jumpEffect != null) {
