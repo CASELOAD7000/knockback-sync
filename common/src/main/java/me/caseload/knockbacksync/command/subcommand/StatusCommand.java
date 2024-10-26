@@ -23,9 +23,13 @@ public class StatusCommand implements BuilderCommand {
     private static final String STATUS_SELF_PERMISSION = "knockbacksync.status.self";
     private static final String STATUS_OTHER_PERMISSION = "knockbacksync.status.other";
 
-    private String globalStatusMessage;
-    private String playerStatusMessage;
-    private String playerDisabledGlobalMessage;
+    private String globalStatusEnabledMessage;
+    private String globalStatusDisabledMessage;
+    private String playerStatusEnabledMessage;
+    private String playerStatusDisabledMessage;
+    private String playerStatusGlobalDisabledMessage;
+    private String noSelfPermissionMessage;
+    private String noOtherPermissionMessage;
 
     public StatusCommand() {
         updateConfigValues();
@@ -49,10 +53,9 @@ public class StatusCommand implements BuilderCommand {
                             if (targetSelector == null) {
                                 // Show global status
                                 boolean globalStatus = configManager.isToggled();
-                                sender.sendMessage(ChatUtil.translateAlternateColorCodes('&', globalStatusMessage) +
-                                        (globalStatus
-                                                ? ChatUtil.translateAlternateColorCodes('&', "&aEnabled")
-                                                : ChatUtil.translateAlternateColorCodes('&', "&cDisabled")));
+                                sender.sendMessage(ChatUtil.translateAlternateColorCodes('&',
+                                        (globalStatus ? globalStatusEnabledMessage : globalStatusDisabledMessage))
+                                );
 
                                     if (sender.hasPermission(STATUS_SELF_PERMISSION, true)) {
                                         // Show player status for the sender (no target specified)
@@ -60,14 +63,14 @@ public class StatusCommand implements BuilderCommand {
                                             showPlayerStatus(sender, Base.INSTANCE.getPlatformServer().getPlayer(sender.getUniqueId()));
                                         }
                                     } else {
-                                        sender.sendMessage(ChatUtil.translateAlternateColorCodes('&', "&cYou do not have permisssion to check your knockbacksync status."));
+                                        sender.sendMessage(ChatUtil.translateAlternateColorCodes('&', noSelfPermissionMessage));
                                     }
                             } else {
                                 if (sender.hasPermission(STATUS_OTHER_PERMISSION, true)) {
                                     PlatformPlayer target = targetSelector.getSinglePlayer();
                                     showPlayerStatus(sender, target);
                                 } else {
-                                    sender.sendMessage(ChatUtil.translateAlternateColorCodes('&', "&cYou do not have permission to check the status of other players!"));
+                                    sender.sendMessage(ChatUtil.translateAlternateColorCodes('&', noOtherPermissionMessage));
                                 }
                             }
                         })
@@ -80,16 +83,13 @@ public class StatusCommand implements BuilderCommand {
         UUID uuid = target.getUUID();
         boolean playerStatus = PlayerDataManager.containsPlayerData(uuid);
 
-        String statusMessage = ChatUtil.translateAlternateColorCodes('&', playerStatusMessage.replace("%player%", target.getName()));
-
+        String statusMessage;
         if (!globalStatus) {
-            sender.sendMessage(statusMessage + ChatUtil.translateAlternateColorCodes('&', playerDisabledGlobalMessage));
+            statusMessage = playerStatusGlobalDisabledMessage.replace("%player%", target.getName());
         } else {
-            sender.sendMessage(statusMessage +
-                    (playerStatus
-                            ? ChatUtil.translateAlternateColorCodes('&', "&aEnabled")
-                            : ChatUtil.translateAlternateColorCodes('&', "&cDisabled")));
+           statusMessage = (playerStatus ? this.playerStatusEnabledMessage : this.playerStatusDisabledMessage).replace("%player%", target.getName());
         }
+        sender.sendMessage(ChatUtil.translateAlternateColorCodes('&', statusMessage));
     }
 
     @KBSyncEventHandler
@@ -99,8 +99,19 @@ public class StatusCommand implements BuilderCommand {
 
     private void updateConfigValues() {
         ConfigWrapper config = configManager.getConfigWrapper();
-        this.globalStatusMessage = config.getString("global_status_message", "&eGlobal KnockbackSync status: ");
-        this.playerStatusMessage = config.getString("player_status_message", "&e%player%'s KnockbackSync status: ");
-        this.playerDisabledGlobalMessage = config.getString("player_disabled_global_message", "&cDisabled (Global toggle is off)");
+        this.globalStatusEnabledMessage = config.getString("messages.status.global.enabled",
+                "&eGlobal KnockbackSync status: &aEnabled");
+        this.globalStatusDisabledMessage = config.getString("messages.status.global.disabled",
+                "&eGlobal KnockbackSync status: &cDisabled");
+        this.playerStatusEnabledMessage = config.getString("messages.status.player.enabled",
+                "&e%player%'s KnockbackSync status: &aEnabled");
+        this.playerStatusDisabledMessage = config.getString("messages.status.player.disabled",
+                "&e%player%'s KnockbackSync status: &cDisabled");
+        this.playerStatusGlobalDisabledMessage = config.getString("messages.status.player.global_disabled",
+                "&e%player%'s KnockbackSync status: &cDisabled (Global toggle is off)");
+        this.noSelfPermissionMessage = config.getString("messages.status.permission.no_self",
+                "&cYou do not have permission to check your knockbacksync status.");
+        this.noOtherPermissionMessage = config.getString("messages.status.permission.no_other",
+                "&cYou do not have permission to check the status of other players!");
     }
 }

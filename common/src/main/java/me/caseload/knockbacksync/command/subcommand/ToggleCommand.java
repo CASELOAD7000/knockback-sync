@@ -1,5 +1,6 @@
 package me.caseload.knockbacksync.command.subcommand;
 import me.caseload.knockbacksync.Base;
+import me.caseload.knockbacksync.ConfigWrapper;
 import me.caseload.knockbacksync.command.generic.BuilderCommand;
 import me.caseload.knockbacksync.command.generic.PlayerSelector;
 import me.caseload.knockbacksync.event.events.ToggleOnOffEvent;
@@ -24,6 +25,26 @@ public class ToggleCommand implements BuilderCommand {
     private static final String TOGGLE_SELF_PERMISSION = "knockbacksync.toggle.self";
     private static final String TOGGLE_OTHER_PERMISSION = "knockbacksync.toggle.other";
 
+    private String noGlobalPermissionMessage;
+    private String noSelfPermissionMessage;
+    private String noOtherPermissionMessage;
+    private String serverDisabledMessage;
+
+    public ToggleCommand() {
+        loadConfig();
+    }
+
+    private void loadConfig() {
+        ConfigWrapper configWrapper = configManager.getConfigWrapper();
+        noGlobalPermissionMessage = configWrapper.getString("messages.toggle.permission.no_global",
+                "&cYou don't have permission to toggle the global setting.");
+        noSelfPermissionMessage = configWrapper.getString("messages.toggle.permission.no_self",
+                "&cYou do not have permission to toggle your knockback.");
+        noOtherPermissionMessage = configWrapper.getString("messages.toggle.permission.no_other",
+                "&cYou do not have permission to toggle the knockback of other player's.");
+        serverDisabledMessage = configWrapper.getString("messages.toggle.server_disabled",
+                "&cKnockbacksync is currently disabled on this server. Contact your server administrator for more information.");
+    }
 
     @Override
     public void register(CommandManager<Sender> manager) {
@@ -48,21 +69,21 @@ public class ToggleCommand implements BuilderCommand {
                         if (permissionChecker.hasPermission(sender, TOGGLE_GLOBAL_PERMISSION, false)) {
                             toggleGlobalKnockback(configManager, sender);
                         } else {
-                            sender.sendMessage(ChatUtil.translateAlternateColorCodes('&', "&cYou don't have permission to toggle the global setting."));
+                            sender.sendMessage(ChatUtil.translateAlternateColorCodes('&', noGlobalPermissionMessage));
                         }
                     } else {
                         PlatformPlayer target = targetSelector.getSinglePlayer();
                         boolean senderIsTarget = sender.getUniqueId() == target.getUUID();
                         if (!senderIsTarget && !permissionChecker.hasPermission(sender, TOGGLE_OTHER_PERMISSION, false)) {
-                            sender.sendMessage("You do not have permission to toggle the knockback of other player's.");
+                            sender.sendMessage(ChatUtil.translateAlternateColorCodes('&', noOtherPermissionMessage));
                             return;
                         } else if (senderIsTarget && !permissionChecker.hasPermission(sender, TOGGLE_SELF_PERMISSION, true)) {
-                            sender.sendMessage("You do not have permission to toggle your knockback.");
+                            sender.sendMessage(ChatUtil.translateAlternateColorCodes('&', noSelfPermissionMessage));
                             return;
                         }
 
                         if (!configManager.isToggled()) {
-                            sender.sendMessage(ChatUtil.translateAlternateColorCodes('&', "&cKnockbacksync is currently disabled on this server. Contact your server administrator for more information."));
+                            sender.sendMessage(ChatUtil.translateAlternateColorCodes('&', serverDisabledMessage));
                         } else {
                             togglePlayerKnockback(target, configManager, sender);
                         }

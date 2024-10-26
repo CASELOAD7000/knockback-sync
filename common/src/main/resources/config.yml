@@ -3,7 +3,7 @@
 #########################################
 
 # Do not modify!
-config_version: 5
+config_version: 6
 
 # Plugin enabled state
 # Toggleable using /knockbacksync toggle
@@ -41,23 +41,11 @@ ping_strategy: "KEEPALIVE"
 # Whether to try to detect when player is offground and apply less kb
 enable_offground_synchronization: true
 
-enable_message: "&aSuccessfully enabled KnockbackSync."
-disable_message: "&cSuccessfully disabled KnockbackSync."
-player_enable_message: "&aSuccessfully enabled KnockbackSync for %player%."
-player_disable_message: "&aSuccessfully &cdisabled &aKnockbackSync for %player%."
-player_ineligible_message: '&c%player% is ineligible for KnockbackSync. If you believe this is in error, please contact your server administrators.'
-reload_message: "&aSuccessfully reloaded KnockbackSync config."
-global_status_message: "&eGlobal KnockbackSync status: "
-player_status_message: "&e%player%'s KnockbackSync status: "
-player_disabled_global_message: "&cDisabled (Global toggle is off)"
-enable_offground_synchronization_message: "&aSuccessfully enabled offground synchronization."
-disable_offground_synchronization_message: "&cSuccessfully disabled offground synchronization."
-
 # This is the rate the server will use for (amongst other things) sending packets about entities to players
 # In other words it defines how often clients get updated velocity for other entities in the world
 # Note that certain events mark velocity as dirty and causes it to be immediately updated for 1 tick regardless of the tick interval
 # These include but are not limited to jumping, taking knockback, swimming, and a target entity being affected by a special mob attack
-# Such as the enderdragon's huge knockback
+# Such as the Ender Dragon's knockback attacks
 # If an entity below doesn't exist in the version of the game your server is running in, changing the config for it will do nothing
 # Currently only modifying the player's tick interval is supported on Bukkit/Spigot/Paper + Folia
 # Modifying the tick interval of any entity is supported on Fabric.
@@ -193,3 +181,52 @@ entity_tick_intervals:
   zombified_piglin: 3
   fishing_bobber: 5
 
+messages:
+  toggle:
+    global:
+      enable: "&aSuccessfully enabled KnockbackSync."
+      disable: "&cSuccessfully disabled KnockbackSync."
+    player:
+      enable: "&aSuccessfully enabled KnockbackSync for %player%."
+      disable: "&aSuccessfully &cdisabled &aKnockbackSync for %player%."
+      ineligible: "&c%player% is ineligible for KnockbackSync. If you believe this is in error, please contact your server administrators."
+    permission:
+      no_global: "&cYou don't have permission to toggle the global setting."
+      no_self: "&cYou do not have permission to toggle your knockback."
+      no_other: "&cYou do not have permission to toggle the knockback of other player's."
+    self:
+      enable: "&aSuccessfully enabled KnockbackSync."
+      disable: "&cSuccessfully disabled KnockbackSync."
+    other:
+      enable: "&aSuccessfully enabled KnockbackSync for %player%."
+      disable: "&aSuccessfully &cdisabled &aKnockbackSync for %player%."
+      ineligible: "&c%player% is ineligible for KnockbackSync. If you believe this is in error, please contact your server administrators."
+  server_disabled: "&cKnockbacksync is currently disabled on this server. Contact your server administrator for more information."
+  offground:
+    enable: "&aSuccessfully enabled offground synchronization."
+    disable: "&cSuccessfully disabled offground synchronization."
+  reload:
+    success: "&aSuccessfully reloaded KnockbackSync."
+  status:
+    global:
+      enabled: "&eGlobal KnockbackSync status: &aEnabled"
+      disabled: "&eGlobal KnockbackSync status: &cDisabled"
+    player:
+      enabled: "&e%player%'s KnockbackSync status: &aEnabled"
+      disabled: "&e%player%'s KnockbackSync status: &cDisabled"
+      global_disabled: "&e%player%'s KnockbackSync status: &cDisabled (Global toggle is off)"
+    permission:
+      no_self: "&cYou do not have permission to check your knockbacksync status."
+      no_other: "&cYou do not have permission to check the status of other players!"
+  console:
+    must_specify_player: "&cYou must specify a player to use the knockbacksync ping command from the console."
+  disabled:
+    self: "&cKnockback synchronization is currently disabled for you!"
+    target: "&cKnockback synchronization is currently disabled for the target player."
+  ping:
+    self:
+      unavailable: "Accurate ping unavailable. Your estimated ping is &b%ping%&rms."
+      available: "Your real ping is &b%ping%&rms. Jitter: &b%jitter%&rms. Spike: &b%spike%&r. Compensated ping: &b%compensated%&rms."
+    other:
+      unavailable: "Accurate ping unavailable. %player%'s estimated ping is &b%ping%&rms."
+      available: "%player%'s real ping is &b%ping%&rms. Jitter: &b%jitter%&rms. Spike: &b%spike%&r. Compensated ping: &b%compensated%&rms."

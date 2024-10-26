@@ -115,11 +115,11 @@ public class ConfigManager {
         notifyUpdate = configWrapper.getBoolean("notify_updates", true);
         combatTimer = configWrapper.getLong("runnable.timer", 30L);
         spikeThreshold = configWrapper.getLong("spike_threshold", 20L);
-        enableMessage = configWrapper.getString("enable_message", "&aSuccessfully enabled KnockbackSync.");
-        disableMessage = configWrapper.getString("disable_message", "&cSuccessfully disabled KnockbackSync.");
-        playerEnableMessage = configWrapper.getString("player_enable_message", "&aSuccessfully enabled KnockbackSync for %player%.");
-        playerDisableMessage = configWrapper.getString("player_disable_message", "&cSuccessfully disabled KnockbackSync for %player%.");
-        playerIneligibleMessage = configWrapper.getString("player_ineligible_message", "&c%player% is ineligible for KnockbackSync. If you believe this is in error, please contact your server administrators.");
+        enableMessage = configWrapper.getString("messages.toggle.global.enable", "&aSuccessfully enabled KnockbackSync.");
+        disableMessage = configWrapper.getString("messages.toggle.global.disable", "&cSuccessfully disabled KnockbackSync.");
+        playerEnableMessage = configWrapper.getString("messages.toggle.player.enable", "&aSuccessfully enabled KnockbackSync for %player%.");
+        playerDisableMessage = configWrapper.getString("messages.toggle.player.disable", "&aSuccessfully &cdisabled &aKnockbackSync for %player%.");
+        playerIneligibleMessage = configWrapper.getString("messages.toggle.player.ineligible", "&c%player% is ineligible for KnockbackSync. If you believe this is in error, please contact your server administrators.");
     }
 
     public void updateConfig() {

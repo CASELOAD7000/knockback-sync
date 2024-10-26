@@ -15,9 +15,9 @@ import java.util.function.Predicate;
 
 public class ToggleOffGroundSubcommand implements BuilderCommand {
 
-    private String enableOffGroundSyncMessage;
-    private String disableOffGroundSyncMessage;
     private boolean offGroundSyncEnabled;
+    private String offGroundSyncEnableMessage;
+    private String offGroundSyncDisableMessage;
 
     public ToggleOffGroundSubcommand() {
         loadConfigSettings();
@@ -40,7 +40,7 @@ public class ToggleOffGroundSubcommand implements BuilderCommand {
                     Base.INSTANCE.getConfigManager().getConfigWrapper().set("enable_offground_synchronization", toggledState);
                     Base.INSTANCE.getConfigManager().saveConfig();
                     String message = ChatUtil.translateAlternateColorCodes('&',
-                            toggledState ? enableOffGroundSyncMessage : disableOffGroundSyncMessage);
+                            toggledState ? offGroundSyncEnableMessage : offGroundSyncDisableMessage);
                     commandContext.sender().sendMessage(message);
                 }));
     }
@@ -52,8 +52,10 @@ public class ToggleOffGroundSubcommand implements BuilderCommand {
 
     private void loadConfigSettings() {
         ConfigWrapper configWrapper = Base.INSTANCE.getConfigManager().getConfigWrapper();
-        offGroundSyncEnabled = configWrapper.getBoolean("enable_offground_synchronization", false);
-        enableOffGroundSyncMessage = configWrapper.getString("enable_offground_synchronization_message", "&aSuccessfully enabled offground experiment.");
-        disableOffGroundSyncMessage = configWrapper.getString("disable_offground_synchronization_message", "&cSuccessfully disabled offground experiment.");
+        this.offGroundSyncEnabled = configWrapper.getBoolean("settings.offground.enabled", false);
+        this.offGroundSyncEnableMessage = configWrapper.getString("messages.offground.enable",
+                "&aSuccessfully enabled offground synchronization.");
+        this.offGroundSyncDisableMessage = configWrapper.getString("messages.offground.disable",
+                "&cSuccessfully disabled offground synchronization.");
     }
 }
