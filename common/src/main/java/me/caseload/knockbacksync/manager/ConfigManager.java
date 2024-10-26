@@ -60,8 +60,6 @@ public class ConfigManager {
         try {
             if (!configFile.exists()) {
                 Base.INSTANCE.saveDefaultConfig();
-            } else {
-                updateConfig();
             }
             yamlConfig.load();
             config = yamlConfig.getData();
