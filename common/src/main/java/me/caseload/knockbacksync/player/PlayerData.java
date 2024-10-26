@@ -296,10 +296,8 @@ public class PlayerData {
         CombatManager.addPlayer(uuid);
     }
 
-    public void quitCombat(boolean cancelTask) {
-        if (cancelTask)
-            combatTask.cancel();
-
+    public void quitCombat() {
+        combatTask.cancel(); // should do nothing
         combatTask = null;
         CombatManager.removePlayer(uuid);
     }
@@ -307,7 +305,7 @@ public class PlayerData {
     @NotNull
     private AbstractTaskHandle newCombatTask() {
         return Base.INSTANCE.getScheduler().runTaskLaterAsynchronously(
-                () -> quitCombat(false), Base.INSTANCE.getConfigManager().getCombatTimer());
+                this::quitCombat, Base.INSTANCE.getConfigManager().getCombatTimer());
     }
 
     public ClientVersion getClientVersion() {
