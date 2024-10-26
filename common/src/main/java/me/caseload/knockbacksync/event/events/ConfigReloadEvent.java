@@ -1,6 +1,7 @@
-package me.caseload.knockbacksync.event;
+package me.caseload.knockbacksync.event.events;
 
 import lombok.Getter;
+import me.caseload.knockbacksync.event.Event;
 import me.caseload.knockbacksync.manager.ConfigManager;
 
 @Getter

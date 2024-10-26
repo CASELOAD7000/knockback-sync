@@ -1,5 +1,6 @@
 package me.caseload.knockbacksync.manager;
 
+import me.caseload.knockbacksync.Base;
 import me.caseload.knockbacksync.player.PlayerData;
 import me.caseload.knockbacksync.util.FloodgateUtil;
 import me.caseload.knockbacksync.util.GeyserUtil;
@@ -18,12 +19,16 @@ public class PlayerDataManager {
     }
 
     public static void addPlayerData(@NotNull UUID uuid, @NotNull PlayerData playerData) {
-        if (!shouldExempt(uuid))
+        if (!shouldExempt(uuid)) {
             playerDataMap.put(uuid, playerData);
+            Base.INSTANCE.getSimpleEventBus().registerListeners(playerData);
+        }
     }
 
     public static void removePlayerData(@NotNull UUID uuid) {
-        playerDataMap.remove(uuid);
+        PlayerData playerData = playerDataMap.remove(uuid);
+        if (playerData != null)
+            Base.INSTANCE.getSimpleEventBus().unregisterListeners(playerData);
     }
 
     public static boolean containsPlayerData(@NotNull UUID uuid) {

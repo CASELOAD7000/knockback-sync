@@ -18,6 +18,8 @@ import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerWi
 import lombok.Getter;
 import lombok.Setter;
 import me.caseload.knockbacksync.Base;
+import me.caseload.knockbacksync.event.KBSyncEventHandler;
+import me.caseload.knockbacksync.event.events.ToggleOnOffEvent;
 import me.caseload.knockbacksync.manager.CombatManager;
 import me.caseload.knockbacksync.scheduler.AbstractTaskHandle;
 import me.caseload.knockbacksync.util.MathUtil;
@@ -325,5 +327,13 @@ public class PlayerData {
 
     public boolean didWeSendThatPacket(long receivedId) {
         return receivedId == NETTY_THREAD_TRANSACTION_ID || receivedId == MAIN_THREAD_TRANSACTION_ID;
+    }
+
+    @KBSyncEventHandler
+    public void onToggledEvent(ToggleOnOffEvent event) {
+        if (event.getStatus() == false) {
+            transactionsSent.clear();
+            keepaliveMap.clear();
+        }
     }
 }
