@@ -35,24 +35,24 @@ public abstract class Base {
     public static Logger LOGGER;
     public static Base INSTANCE;
 
-    public final Platform platform;
-    public StatsManager statsManager;
-    public PlatformServer platformServer;
+    @Getter private final Platform platform;
+    @Getter protected StatsManager statsManager;
+    @Getter protected PlatformServer platformServer;
     @Getter protected PluginJarHashProvider pluginJarHashProvider;
     @Getter protected SchedulerAdapter scheduler;
     @Getter protected ConfigManager configManager;
-    protected CommandManager<Sender> commandManager;
-    @Getter protected final EventBus simpleEventBus = new OptimizedEventBus();
+    @Getter protected CommandManager<Sender> commandManager;
+    @Getter protected final EventBus eventBus = new OptimizedEventBus();
 
     @Getter
     protected AbstractPlayerSelectorParser<Sender> playerSelectorParser;
 
     protected Base() {
-        this.platform = getPlatform();
+        this.platform = detectPlatform();
         INSTANCE = this;
     }
 
-    private Platform getPlatform() {
+    private Platform detectPlatform() {
         final Map<String, Platform> platforms = Collections.unmodifiableMap(new HashMap<String, Platform>() {{
             put("io.papermc.paper.threadedregions.RegionizedServer", Platform.FOLIA);
             put("org.bukkit.Bukkit", Platform.BUKKIT);
@@ -107,7 +107,7 @@ public abstract class Base {
                 new AttributeChangeListener(),
                 new PingReceiveListener()
         );
-        Event.setEventBus(simpleEventBus);
+        Event.setEventBus(eventBus);
     }
 
     protected abstract void registerPlatformListeners();

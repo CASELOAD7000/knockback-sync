@@ -38,18 +38,19 @@ import java.util.*;
 public class PlayerData {
 
     // Please read the GitHub FAQ before adjusting.
+    private static final short MAIN_THREAD_TRANSACTION_ID = 31407;
+    private static final short NETTY_THREAD_TRANSACTION_ID = 31408;
     public static final long PING_OFFSET = 25;
+
     public static float TICK_RATE = 20.0F;
     private static Field playerField;
+
     public final List<Pair<Integer, Long>> transactionsSent = new LinkedList<>();
     public final List<Pair<Long, Long>> keepaliveMap = new LinkedList<>();
 
-    private static final short MAIN_THREAD_TRANSACTION_ID = 31407;
-    private static final short NETTY_THREAD_TRANSACTION_ID = 31408;
-
     static {
         try {
-            switch (Base.INSTANCE.platform) {
+            switch (Base.INSTANCE.getPlatform()) {
                 case BUKKIT:
                 case FOLIA:
                     Class<?> bukkitPlayerClass = Class.forName("me.caseload.knockbacksync.player.BukkitPlayer");
@@ -60,7 +61,7 @@ public class PlayerData {
                     playerField = fabricPlayerClass.getDeclaredField("fabricPlayer");
                     break;
                 default:
-                    throw new IllegalStateException("Unexpected platform: " + Base.INSTANCE.platform);
+                    throw new IllegalStateException("Unexpected platform: " + Base.INSTANCE.getPlatform());
             }
         } catch (Exception e) {
             e.printStackTrace();

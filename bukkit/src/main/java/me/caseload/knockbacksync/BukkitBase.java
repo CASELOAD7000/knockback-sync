@@ -83,7 +83,7 @@ public class BukkitBase extends Base {
         configManager.loadConfig(false);
         statsManager.init();
         checkForUpdates();
-        super.simpleEventBus.registerListeners(this);
+        super.eventBus.registerListeners(this);
         if (PacketEvents.getAPI().getServerManager().getVersion().isNewerThanOrEquals(ServerVersion.V_1_20_5)) {
             scheduler.runTaskTimerAsynchronously(this::setUpdateIntervals, 1, 1);
         }
@@ -91,7 +91,7 @@ public class BukkitBase extends Base {
 
     @Override
     public void initializeScheduler() {
-        switch (platform) {
+        switch (getPlatform()) {
             case BUKKIT:
                 super.scheduler = new BukkitSchedulerAdapter(this.plugin);
                 break;

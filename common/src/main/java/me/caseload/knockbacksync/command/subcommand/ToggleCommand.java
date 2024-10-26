@@ -107,7 +107,7 @@ public class ToggleCommand implements BuilderCommand {
         if (hasPlayerData)
             PlayerDataManager.removePlayerData(uuid);
         else {
-            PlayerDataManager.addPlayerData(uuid, new PlayerData(Base.INSTANCE.platformServer.getPlayer(uuid)));
+            PlayerDataManager.addPlayerData(uuid, new PlayerData(Base.INSTANCE.getPlatformServer().getPlayer(uuid)));
         }
 
         String message = ChatUtil.translateAlternateColorCodes('&',

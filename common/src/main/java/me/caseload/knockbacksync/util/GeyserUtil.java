@@ -19,7 +19,7 @@ public class GeyserUtil {
     public static boolean isGeyserPlayer(UUID uuid) {
         if (!CHECKED_FOR_GEYSER) {
             try {
-                switch (Base.INSTANCE.platform) {
+                switch (Base.INSTANCE.getPlatform()) {
                     case BUKKIT:
                     case FOLIA:
                         ClassLoader classLoader = PacketEvents.getAPI().getPlugin().getClass().getClassLoader();
@@ -40,7 +40,7 @@ public class GeyserUtil {
         if (GEYSER_PRESENT) {
             if (GEYSER_API_CLASS == null) {
                 try {
-                    switch (Base.INSTANCE.platform) {
+                    switch (Base.INSTANCE.getPlatform()) {
                         case BUKKIT:
                         case FOLIA:
                             ClassLoader classLoader = PacketEvents.getAPI().getPlugin().getClass().getClassLoader();

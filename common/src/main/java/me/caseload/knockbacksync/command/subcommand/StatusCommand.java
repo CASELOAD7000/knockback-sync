@@ -72,7 +72,7 @@ public class StatusCommand implements BuilderCommand {
                             }
                         })
         );
-        Base.INSTANCE.getSimpleEventBus().registerListeners(this);
+        Base.INSTANCE.getEventBus().registerListeners(this);
     }
 
     private void showPlayerStatus(Sender sender, PlatformPlayer target) {

@@ -15,7 +15,7 @@ public class PlayerVersionsPie extends AdvancedPie {
     public PlayerVersionsPie() {
         super("player_version", () -> {
             Map<String, Integer> valueMap = new HashMap<>();
-            for (PlatformPlayer player : Base.INSTANCE.platformServer.getOnlinePlayers()) {
+            for (PlatformPlayer player : Base.INSTANCE.getPlatformServer().getOnlinePlayers()) {
                 PlayerData playerData = PlayerDataManager.getPlayerData(player.getUUID());
                 valueMap.put(playerData.getClientVersion().toString(), valueMap.getOrDefault(playerData.getClientVersion().toString(), 0) + 1);
             }

@@ -21,14 +21,14 @@ public class PlayerDataManager {
     public static void addPlayerData(@NotNull UUID uuid, @NotNull PlayerData playerData) {
         if (!shouldExempt(uuid)) {
             playerDataMap.put(uuid, playerData);
-            Base.INSTANCE.getSimpleEventBus().registerListeners(playerData);
+            Base.INSTANCE.getEventBus().registerListeners(playerData);
         }
     }
 
     public static void removePlayerData(@NotNull UUID uuid) {
         PlayerData playerData = playerDataMap.remove(uuid);
         if (playerData != null)
-            Base.INSTANCE.getSimpleEventBus().unregisterListeners(playerData);
+            Base.INSTANCE.getEventBus().unregisterListeners(playerData);
     }
 
     public static boolean containsPlayerData(@NotNull UUID uuid) {

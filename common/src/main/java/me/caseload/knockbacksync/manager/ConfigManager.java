@@ -105,7 +105,7 @@ public class ConfigManager {
             long initialDelay = 0L;
             long pingTaskRunnableInterval = runnableInterval;
             // Folia does not allow 0 ticks of wait time
-            if (Base.INSTANCE.platform == Platform.FOLIA) {
+            if (Base.INSTANCE.getPlatform() == Platform.FOLIA) {
                 initialDelay = 1L;
                 pingTaskRunnableInterval = Math.max(pingTaskRunnableInterval, 1L);
             }
