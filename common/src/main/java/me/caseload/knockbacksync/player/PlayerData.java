@@ -235,7 +235,7 @@ public class PlayerData {
             if (result == null || result.getHitBlock() == null)
                 continue;
 
-            collisionDist = Math.min(collisionDist, corner.getY() - result.getHitBlockPosition().getY());
+            collisionDist = Math.min(collisionDist, corner.getY() - result.getHitPosition().getY());
         }
 
         return collisionDist - 1;
