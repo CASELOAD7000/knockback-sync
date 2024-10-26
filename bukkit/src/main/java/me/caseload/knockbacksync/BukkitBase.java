@@ -172,6 +172,8 @@ public class BukkitBase extends Base {
                 Map<Integer, ?> entityMap = (Map<Integer, ?>) entityMapField.get(chunkMap);
                 for (Player player : Bukkit.getOnlinePlayers()) {
                     Object trackedEntity = entityMap.get(player.getEntityId());
+                    if (trackedEntity == null) // Players are removed from the entityMap when they die (and don't respawn)
+                        continue;
 
                     Field serverEntityField = trackedEntity.getClass().getDeclaredField("serverEntity");
                     serverEntityField.setAccessible(true);
