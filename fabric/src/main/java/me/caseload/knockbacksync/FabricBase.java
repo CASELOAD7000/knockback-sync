@@ -1,7 +1,7 @@
 package me.caseload.knockbacksync;
 
 import com.github.retrooper.packetevents.PacketEvents;
-import io.github.retrooper.packetevents.factory.fabric.FabricPacketEventsBuilder;
+import io.github.retrooper.packetevents.factory.fabric.FabricPacketEventsAPI;
 import lombok.Getter;
 import me.caseload.knockbacksync.entity.EntityTickManager;
 import me.caseload.knockbacksync.listener.fabric.FabricPlayerDamageListener;
@@ -17,6 +17,7 @@ import me.caseload.knockbacksync.sender.FabricSenderFactory;
 import me.caseload.knockbacksync.stats.custom.FabricStatsManager;
 import me.caseload.knockbacksync.stats.custom.PluginJarHashProvider;
 import me.caseload.knockbacksync.world.FabricServer;
+import net.fabricmc.api.EnvType;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import org.incendo.cloud.execution.ExecutionCoordinator;
@@ -67,9 +68,16 @@ public class FabricBase extends Base {
     }
 
     @Override
-    public void load() {
-        PacketEvents.setAPI(FabricPacketEventsBuilder.build("knockbacksync"));
-        PacketEvents.getAPI().load();
+    public void load() {}
+
+    @Override
+    public void initializePacketEvents() {
+        PacketEvents.setAPI(new FabricPacketEventsAPI("knockbacksync", EnvType.SERVER));
+        PacketEvents.getAPI().getSettings()
+                .checkForUpdates(false)
+                .debug(false);
+
+        PacketEvents.getAPI().init();
     }
 
     @Override
