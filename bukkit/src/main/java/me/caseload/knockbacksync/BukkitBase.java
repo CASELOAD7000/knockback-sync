@@ -170,6 +170,8 @@ public class BukkitBase extends Base {
                 Map<Integer, ?> entityMap = (Map<Integer, ?>) entityMapField.get(chunkMap);
                 for (Player player : Bukkit.getOnlinePlayers()) {
                     Object trackedEntity = entityMap.get(player.getEntityId());
+                    if (trackedEntity == null)
+                        continue;
 
                     Field serverEntityField = trackedEntity.getClass().getDeclaredField("serverEntity");
                     serverEntityField.setAccessible(true);
