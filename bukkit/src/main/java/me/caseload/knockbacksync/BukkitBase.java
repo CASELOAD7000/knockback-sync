@@ -106,8 +106,7 @@ public class BukkitBase extends Base {
                 new BukkitPlayerDamageListener(),
                 new BukkitPlayerKnockbackListener(),
                 new BukkitPlayerJoinQuitListener(),
-                new BukkitPlayerJumpListener(),
-                new UpdateIntervalListener()
+                new BukkitPlayerJumpListener()
         );
     }
 
