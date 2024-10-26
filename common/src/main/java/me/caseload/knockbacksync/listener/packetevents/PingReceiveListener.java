@@ -19,7 +19,7 @@ import me.caseload.knockbacksync.util.data.Pair;
 import java.util.List;
 
 public class PingReceiveListener extends PacketListenerAbstract {
-// TODO supplement our own ping calculations with over keepalive sent by the server with
+
     @Override
     public void onPacketSend(PacketSendEvent event) {
         if (!Base.INSTANCE.getConfigManager().isToggled()) return;
