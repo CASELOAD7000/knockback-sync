@@ -29,7 +29,7 @@ public abstract class PlayerKnockbackListener {
             Vector3d adjustedVelocity = velocity.withY(verticalVelocity);
             victim.setVelocity(adjustedVelocity); // Use PlatformPlayer's setVelocity
         } else {
-            if(!playerData.getOffgroundSync()) return;
+            if(!PlayerData.getOffgroundSync()) return;
             Vector3d adjustedVelocity = velocity.withY(playerData.compensateOffgroundVelocity());
             victim.setVelocity(adjustedVelocity); // Use PlatformPlayer's setVelocity
         }

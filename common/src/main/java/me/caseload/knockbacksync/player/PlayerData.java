@@ -218,7 +218,7 @@ public class PlayerData {
         return (tMax + tFall) - getTick() <= 0 && gDist <= 1.3;
     }
 
-    public boolean getOffgroundSync() {
+    public static boolean getOffgroundSync() {
         return Base.INSTANCE.getConfigManager().getConfigWrapper().getBoolean("enable_experimental_offground",
                 false);
     }
