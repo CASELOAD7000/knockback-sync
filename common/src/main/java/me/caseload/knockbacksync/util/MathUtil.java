@@ -1,5 +1,7 @@
 package me.caseload.knockbacksync.util;
 
+import me.caseload.knockbacksync.player.PlayerData;
+
 import me.caseload.knockbacksync.Base;
 
 public class MathUtil {
@@ -8,17 +10,14 @@ public class MathUtil {
     private static final double MULTIPLIER = 0.98;
     private static final int MAX_TICKS = 30;
 
-    public static double getCompensatedVerticalVelocity(double verticalVelocity, double ping) {
-        final double gravity = 0.08;
-        final double multiplier = 0.98;
-
-        int ticks = (int) Math.ceil(ping * Base.INSTANCE.getTickRate() / 1000);
-        while(ticks > 0) {
-            verticalVelocity -= gravity;
-            verticalVelocity *= multiplier;
+    public static double getCompensatedVerticalVelocity(double velocity, double acceleration, int ticks) {
+        while (ticks > 0) {
+            velocity -= acceleration;
+            velocity *= MULTIPLIER;
             ticks--;
         }
-        return verticalVelocity;
+
+        return velocity;
     }
 
     public static double calculateDistanceTraveled(double velocity, int time, double acceleration) {
