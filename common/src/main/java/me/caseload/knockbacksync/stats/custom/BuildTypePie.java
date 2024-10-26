@@ -20,7 +20,6 @@ public class BuildTypePie extends SimplePie {
     private static final String RELEASES_FILE = "releases.txt";
     private static final String DEV_BUILDS_FILE = "dev-builds.txt";
     private static final File dataFolder = Base.INSTANCE.getDataFolder();
-    public static URL jarUrl;
     private static String cachedBuildType = null;
 
     public BuildTypePie() {

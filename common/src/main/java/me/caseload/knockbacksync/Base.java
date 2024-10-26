@@ -26,9 +26,7 @@ import org.kohsuke.github.GitHub;
 
 import java.io.File;
 import java.io.InputStream;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Logger;
 
 // Base class
@@ -54,11 +52,11 @@ public abstract class Base {
     }
 
     private Platform getPlatform() {
-        final Map<String, Platform> platforms = Map.of(
-                "io.papermc.paper.threadedregions.RegionizedServer", Platform.FOLIA,
-                "org.bukkit.Bukkit", Platform.BUKKIT,
-                "net.fabricmc.loader.api.FabricLoader", Platform.FABRIC
-        );
+        final Map<String, Platform> platforms = Collections.unmodifiableMap(new HashMap<String, Platform>() {{
+            put("io.papermc.paper.threadedregions.RegionizedServer", Platform.FOLIA);
+            put("org.bukkit.Bukkit", Platform.BUKKIT);
+            put("net.fabricmc.loader.api.FabricLoader", Platform.FABRIC);
+        }});
 
         return platforms.entrySet().stream()
                 .filter(entry -> isClassPresent(entry.getKey()))
