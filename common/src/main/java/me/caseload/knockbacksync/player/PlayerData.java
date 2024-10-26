@@ -18,6 +18,7 @@ import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerWi
 import lombok.Getter;
 import lombok.Setter;
 import me.caseload.knockbacksync.Base;
+import me.caseload.knockbacksync.command.subcommand.ToggleOffGroundSubcommand;
 import me.caseload.knockbacksync.event.KBSyncEventHandler;
 import me.caseload.knockbacksync.event.events.ConfigReloadEvent;
 import me.caseload.knockbacksync.event.events.ToggleOnOffEvent;
@@ -81,7 +82,6 @@ public class PlayerData {
     @Nullable @Setter private Integer lastDamageTicks;
     @Setter private double gravityAttribute = 0.08;
     @Setter private double knockbackResistanceAttribute = 0.0;
-    private boolean offGroundSyncEnabled;
 
     public PlayerData(PlatformPlayer platformPlayer) {
         this.uuid = platformPlayer.getUUID();
@@ -102,8 +102,6 @@ public class PlayerData {
         }
 
         this.user = tempUser;
-        this.offGroundSyncEnabled = Base.INSTANCE.getConfigManager().getConfigWrapper().getBoolean("enable_offground_synchronization",
-                true);
     }
 
     public double getNotNullPing() {
@@ -216,7 +214,7 @@ public class PlayerData {
      */
     public boolean isOffGroundSyncEnabled() {
         // TODO, per-player offground sync toggles?
-        return offGroundSyncEnabled;
+        return ToggleOffGroundSubcommand.offGroundSyncEnabled;
     }
 
     /**
@@ -343,11 +341,5 @@ public class PlayerData {
             transactionsSent.clear();
             keepaliveMap.clear();
         }
-    }
-
-    @KBSyncEventHandler
-    public void onConfigReloadEvent(ConfigReloadEvent event) {
-        this.offGroundSyncEnabled = Base.INSTANCE.getConfigManager().getConfigWrapper().getBoolean("enable_offground_synchronization",
-                true);
     }
 }

@@ -15,7 +15,7 @@ import java.util.function.Predicate;
 
 public class ToggleOffGroundSubcommand implements BuilderCommand {
 
-    private boolean offGroundSyncEnabled;
+    public static boolean offGroundSyncEnabled;
     private String offGroundSyncEnableMessage;
     private String offGroundSyncDisableMessage;
 
@@ -36,11 +36,11 @@ public class ToggleOffGroundSubcommand implements BuilderCommand {
                     return PredicatePermission.of(senderPredicate).testPermission(sender);
                 }))
                 .handler(commandContext -> {
-                    boolean toggledState = !offGroundSyncEnabled;
-                    Base.INSTANCE.getConfigManager().getConfigWrapper().set("enable_offground_synchronization", toggledState);
+                    offGroundSyncEnabled = !offGroundSyncEnabled;
+                    Base.INSTANCE.getConfigManager().getConfigWrapper().set("enable_offground_synchronization", offGroundSyncEnabled);
                     Base.INSTANCE.getConfigManager().saveConfig();
                     String message = ChatUtil.translateAlternateColorCodes('&',
-                            toggledState ? offGroundSyncEnableMessage : offGroundSyncDisableMessage);
+                            offGroundSyncEnabled ? offGroundSyncEnableMessage : offGroundSyncDisableMessage);
                     commandContext.sender().sendMessage(message);
                 }));
     }
@@ -52,7 +52,7 @@ public class ToggleOffGroundSubcommand implements BuilderCommand {
 
     private void loadConfigSettings() {
         ConfigWrapper configWrapper = Base.INSTANCE.getConfigManager().getConfigWrapper();
-        this.offGroundSyncEnabled = configWrapper.getBoolean("settings.offground.enabled", false);
+        this.offGroundSyncEnabled = configWrapper.getBoolean("settings.offground.enabled", true);
         this.offGroundSyncEnableMessage = configWrapper.getString("messages.offground.enable",
                 "&aSuccessfully enabled offground synchronization.");
         this.offGroundSyncDisableMessage = configWrapper.getString("messages.offground.disable",
