@@ -105,8 +105,7 @@ public class BukkitBase extends Base {
         registerPluginListeners(
                 new BukkitPlayerDamageListener(),
                 new BukkitPlayerKnockbackListener(),
-                new BukkitPlayerJoinQuitListener(),
-                new UpdateIntervalListener()
+                new BukkitPlayerJoinQuitListener()
         );
     }
 
