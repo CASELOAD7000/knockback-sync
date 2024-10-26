@@ -25,6 +25,8 @@ public class StatusCommand implements BuilderCommand {
 
     private String globalStatusEnabledMessage;
     private String globalStatusDisabledMessage;
+    private String globalOffGroundStatusEnabledMessage;
+    private String globalOffGroundStatusDisabledMessage;
     private String playerStatusEnabledMessage;
     private String playerStatusDisabledMessage;
     private String playerStatusGlobalDisabledMessage;
@@ -54,8 +56,10 @@ public class StatusCommand implements BuilderCommand {
                                 // Show global status
                                 boolean globalStatus = configManager.isToggled();
                                 sender.sendMessage(ChatUtil.translateAlternateColorCodes('&',
-                                        (globalStatus ? globalStatusEnabledMessage : globalStatusDisabledMessage))
-                                );
+                                        (globalStatus ? globalStatusEnabledMessage : globalStatusDisabledMessage)
+                                        + "\n"
+                                        + (globalStatus ? globalOffGroundStatusEnabledMessage : globalOffGroundStatusDisabledMessage)
+                                ));
 
                                     if (sender.hasPermission(STATUS_SELF_PERMISSION, true)) {
                                         // Show player status for the sender (no target specified)
@@ -100,9 +104,13 @@ public class StatusCommand implements BuilderCommand {
     private void updateConfigValues() {
         ConfigWrapper config = configManager.getConfigWrapper();
         this.globalStatusEnabledMessage = config.getString("messages.status.global.enabled",
-                "&eGlobal KnockbackSync status: &aEnabled");
+                "&KnockbackSync global status: &aEnabled");
         this.globalStatusDisabledMessage = config.getString("messages.status.global.disabled",
-                "&eGlobal KnockbackSync status: &cDisabled");
+                "&KnockbackSync global status: &cDisabled");
+        this.globalOffGroundStatusEnabledMessage = config.getString("messages.status.offground.enabled",
+                "&eKnockbackSync off-ground status: &aEnabled");
+        this.globalOffGroundStatusDisabledMessage = config.getString("messages.status.offground.disabled",
+                "&eKnockbackSync off-ground status: &cDisabled");
         this.playerStatusEnabledMessage = config.getString("messages.status.player.enabled",
                 "&e%player%'s KnockbackSync status: &aEnabled");
         this.playerStatusDisabledMessage = config.getString("messages.status.player.disabled",

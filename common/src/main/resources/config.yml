@@ -209,8 +209,11 @@ messages:
     success: "&aSuccessfully reloaded KnockbackSync."
   status:
     global:
-      enabled: "&eGlobal KnockbackSync status: &aEnabled"
-      disabled: "&eGlobal KnockbackSync status: &cDisabled"
+      enabled: "&KnockbackSync global status: &aEnabled"
+      disabled: "&KnockbackSync global status: &cDisabled"
+    offground:
+      enabled: "&eKnockbackSync off-ground status: &aEnabled"
+      disabled: "&eKnockbackSync off-ground status: &cDisabled"
     player:
       enabled: "&e%player%'s KnockbackSync status: &aEnabled"
       disabled: "&e%player%'s KnockbackSync status: &cDisabled"
