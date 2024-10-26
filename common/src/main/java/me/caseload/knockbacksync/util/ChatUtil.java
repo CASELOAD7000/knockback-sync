@@ -47,9 +47,9 @@ public class ChatUtil {
 
         String rawReturnString = null;
         if (playerData.getPing() == null) {
-            rawReturnString = String.format("Pong not received. %s estimated ping is &b" + playerData.getPlatformPlayer().getPing() + "&rms.", noun);
+            rawReturnString = String.format("Accurate ping unavailable. %s estimated ping is &b" + playerData.getPlatformPlayer().getPing() + "&rms.", noun);
         } else {
-            rawReturnString = String.format("%s last ping packet took &b%.3f&rms. Jitter: &b%.3f&rms.", noun, playerData.getPing(), playerData.getJitter());
+            rawReturnString = String.format("%s real ping is &b%.3f&rms. Jitter: &b%.3f&rms. Spike: &b%s&r. Compensated ping: &b%s&r.", noun, playerData.getPing(), playerData.getJitter(), playerData.isSpike(), playerData.getCompensatedPing());
         }
         return ChatUtil.translateAlternateColorCodes('&', rawReturnString);
     }
