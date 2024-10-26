@@ -20,7 +20,9 @@ public class FabricPlayerKnockbackListener extends PlayerKnockbackListener {
             if (!lastDamageSource.is(DamageTypes.PLAYER_ATTACK))
                 return InteractionResult.PASS;
 
-            onPlayerVelocity(new FabricPlayer(player), new Vector3d(velocity.x, velocity.y, velocity.z));
+            FabricPlayer fabricPlayer = new FabricPlayer(player);
+            if(fabricPlayer.isOnGround()) return InteractionResult.PASS; // do not modify velocity if already on ground server-side
+            onPlayerVelocity(fabricPlayer, new Vector3d(velocity.x, velocity.y, velocity.z));
             // This SHOULD mean we return original velocity for Fabric (no modification here)
             // But since we set it ourselves due to following bukkit's design patterns and doing victim
             // We return a pass so velocity isn't set twice

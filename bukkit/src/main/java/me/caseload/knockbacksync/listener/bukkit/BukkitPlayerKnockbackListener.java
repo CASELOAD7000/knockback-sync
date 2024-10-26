@@ -35,6 +35,8 @@ public class BukkitPlayerKnockbackListener extends PlayerKnockbackListener imple
             return;
 
         Vector vector = victim.getVelocity();
-        onPlayerVelocity(new BukkitPlayer(victim), new Vector3d(vector.getX(), vector.getY(), vector.getZ()));
+        BukkitPlayer bukkitPlayer = new BukkitPlayer(victim);
+        if(bukkitPlayer.isOnGround()) return; // do not modify velocity if already on ground server-side
+        onPlayerVelocity(bukkitPlayer, new Vector3d(vector.getX(), vector.getY(), vector.getZ()));
     }
 }
