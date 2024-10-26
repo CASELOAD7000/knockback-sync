@@ -22,10 +22,6 @@ public class FabricLoaderMod implements PreLaunchEntrypoint, ModInitializer {
     @Override
     public void onInitialize() {
         core.enable();
-        core.initializeScheduler();
-        core.configManager.loadConfig(false);
-        core.statsManager.init();
-        core.checkForUpdates();
         ServerLifecycleEvents.SERVER_STOPPING.register((server) -> {
             core.scheduler.shutdown();
             core.statsManager.getMetrics().shutdown();
