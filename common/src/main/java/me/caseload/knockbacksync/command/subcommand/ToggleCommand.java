@@ -33,7 +33,7 @@ public class ToggleCommand implements BuilderCommand {
                     .permission((sender -> {
                         Predicate<Sender> senderPredicate = (s) -> {
                             return s.hasPermission(TOGGLE_GLOBAL_PERMISSION, false)
-                                    || sender.hasPermission(TOGGLE_SELF_PERMISSION, true)
+                                    || sender.hasPermission(TOGGLE_SELF_PERMISSION, false)
                                     || sender.hasPermission(TOGGLE_OTHER_PERMISSION, false);
                         };
 
