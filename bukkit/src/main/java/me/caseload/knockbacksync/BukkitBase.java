@@ -53,7 +53,7 @@ public class BukkitBase extends Base {
         this.plugin = plugin;
         super.configManager = new ConfigManager();
         super.playerSelectorParser = new BukkitPlayerSelectorParser<>();
-        super.statsManager = new BukkitStatsManager();
+        super.statsManager = new BukkitStatsManager(plugin);
         super.platformServer = new BukkitServer();
         super.pluginJarHashProvider = new PluginJarHashProvider(this.getClass().getProtectionDomain().getCodeSource().getLocation());
         this.playerUpdateInterval = this.getConfigManager().getConfigWrapper().getInt("entity_tick_intervals.player", 2);

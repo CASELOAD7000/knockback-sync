@@ -34,12 +34,11 @@ import java.util.logging.Level;
 public class MetricsBukkit implements Metrics {
 
     private final Plugin plugin;
-
     private final MetricsBase metricsBase;
 
 
-    public MetricsBukkit(int serviceId) {
-        this.plugin = BukkitLoaderPlugin.getPlugin(BukkitLoaderPlugin.class);
+    public MetricsBukkit(Plugin plugin, int serviceId) {
+        this.plugin = plugin;
         // Get the config file
         File bStatsFolder = new File(plugin.getDataFolder().getParentFile(), "bStats");
         File configFile = new File(bStatsFolder, "config.yml");
