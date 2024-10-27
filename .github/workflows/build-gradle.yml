@@ -35,14 +35,14 @@ jobs:
       - name: Checkout packetevents repository
         uses: actions/checkout@v3
         with:
-          repository: Axionize/packetevents
-          ref: 2.0-fabric-serverside-fix
+          repository: booky10/packetevents
+          ref: fix/fabric-module
           path: packetevents
 
       - name: Update version in packetevents
         run: |
           cd packetevents
-          sed -i 's/val fullVersion = ".*"/val fullVersion = "2.5.8"/' build.gradle.kts
+          sed -i 's/val fullVersion = ".*"/val fullVersion = "2.6.0"/' build.gradle.kts
 
       - name: Build packetevents with Gradle
         run: |

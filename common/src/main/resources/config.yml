@@ -209,8 +209,8 @@ messages:
     success: "&aSuccessfully reloaded KnockbackSync."
   status:
     global:
-      enabled: "&KnockbackSync global status: &aEnabled"
-      disabled: "&KnockbackSync global status: &cDisabled"
+      enabled: "&eKnockbackSync global status: &aEnabled"
+      disabled: "&eKnockbackSync global status: &cDisabled"
     offground:
       enabled: "&eKnockbackSync off-ground status: &aEnabled"
       disabled: "&eKnockbackSync off-ground status: &cDisabled"

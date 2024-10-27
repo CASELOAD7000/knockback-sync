@@ -103,10 +103,6 @@ public class BukkitBase extends Base {
     @Override
     public void enable() {
         super.enable();
-        initializeScheduler();
-        configManager.loadConfig(false);
-        statsManager.init();
-        checkForUpdates();
         super.eventBus.registerListeners(this);
         if (PacketEvents.getAPI().getServerManager().getVersion().isNewerThanOrEquals(ServerVersion.V_1_20_5)) {
             scheduler.runTaskTimerAsynchronously(this::setUpdateIntervals, 1, 1);

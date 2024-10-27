@@ -92,6 +92,10 @@ public abstract class Base {
         registerCommonListeners();
         registerPlatformListeners();
         registerCommands();
+        initializeScheduler();
+        configManager.loadConfig(false);
+        statsManager.init();
+        checkForUpdates();
     }
 
     public abstract void initializeScheduler();
