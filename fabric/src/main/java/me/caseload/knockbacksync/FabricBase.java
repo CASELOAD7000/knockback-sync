@@ -73,6 +73,20 @@ public class FabricBase extends Base {
     }
 
     @Override
+    public void enable() {
+        super.enable();
+    }
+
+    @Override
+    public void initializePacketEvents() {
+        PacketEvents.getAPI().getSettings()
+                .checkForUpdates(false)
+                .debug(false);
+
+        PacketEvents.getAPI().init();
+    }
+
+    @Override
     public void initializeScheduler() {
         scheduler = new FabricSchedulerAdapter();
     }

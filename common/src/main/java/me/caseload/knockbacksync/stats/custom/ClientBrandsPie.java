@@ -11,18 +11,18 @@ import me.caseload.knockbacksync.stats.AdvancedPie;
 import java.util.HashMap;
 import java.util.Map;
 
-public class PlayerVersionsPie extends AdvancedPie {
+public class ClientBrandsPie extends AdvancedPie {
 
     // Gets the client versions of players online
-    public PlayerVersionsPie() {
-        super("player_version", () -> {
+    public ClientBrandsPie() {
+        super("client_brands", () -> {
             Map<String, Integer> valueMap = new HashMap<>();
             for (PlatformPlayer player : Base.INSTANCE.getPlatformServer().getOnlinePlayers()) {
                 User user = player.getUser();
                 if (user == null || user.getClientVersion() == null) {
-                    valueMap.put(ClientVersion.UNKNOWN.toString(), valueMap.getOrDefault(ClientVersion.UNKNOWN.toString(), 0) + 1);
+                    valueMap.put("vanilla", valueMap.getOrDefault("vanilla", 0) + 1);
                 } else {
-                    valueMap.put(user.getClientVersion().toString(), valueMap.getOrDefault(user.getClientVersion().toString(), 0) + 1);
+                    valueMap.put(player.getClientBrand(), valueMap.getOrDefault(player.getClientBrand(), 0) + 1);
                 }
             }
             return valueMap;

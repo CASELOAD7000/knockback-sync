@@ -1,5 +1,7 @@
 package me.caseload.knockbacksync.player;
 
+import com.github.retrooper.packetevents.PacketEvents;
+import com.github.retrooper.packetevents.protocol.player.User;
 import com.github.retrooper.packetevents.protocol.world.BoundingBox;
 import com.github.retrooper.packetevents.protocol.world.Location;
 import com.github.retrooper.packetevents.util.Vector3d;
@@ -150,6 +152,11 @@ public class FabricPlayer implements PlatformPlayer {
     public BoundingBox getBoundingBox() {
         AABB boundingBox = fabricPlayer.getBoundingBox();
         return new BoundingBox(boundingBox.minX, boundingBox.minY, boundingBox.minZ, boundingBox.maxX, boundingBox.minY, boundingBox.maxZ);
+    }
+
+    @Override
+    public User getUser() {
+        return PacketEvents.getAPI().getPlayerManager().getUser(fabricPlayer);
     }
 
     // Implement other methods

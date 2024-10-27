@@ -1,5 +1,6 @@
 package me.caseload.knockbacksync.player;
 
+import com.github.retrooper.packetevents.protocol.player.User;
 import com.github.retrooper.packetevents.protocol.world.BoundingBox;
 import com.github.retrooper.packetevents.util.Vector3d;
 import me.caseload.knockbacksync.world.PlatformWorld;
@@ -50,5 +51,11 @@ public interface PlatformPlayer {
     double getJumpPower();
 
     BoundingBox getBoundingBox();
+
+    User getUser();
+
+    void setClientBrand(String brand);
+
+    String getClientBrand();
     // Add more methods as needed
 }

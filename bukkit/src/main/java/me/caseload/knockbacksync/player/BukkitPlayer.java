@@ -2,6 +2,7 @@ package me.caseload.knockbacksync.player;
 
 import com.github.retrooper.packetevents.PacketEvents;
 import com.github.retrooper.packetevents.manager.server.ServerVersion;
+import com.github.retrooper.packetevents.protocol.player.User;
 import com.github.retrooper.packetevents.protocol.world.BoundingBox;
 import com.github.retrooper.packetevents.util.Vector3d;
 import me.caseload.knockbacksync.world.PlatformWorld;
@@ -21,6 +22,7 @@ import java.util.UUID;
 
 public class BukkitPlayer implements PlatformPlayer {
     public final Player bukkitPlayer;
+    private String clientBrand = "vanilla";
 
     // Reflection variables
     private static Class<?> craftPlayerClass;
@@ -207,5 +209,20 @@ public class BukkitPlayer implements PlatformPlayer {
     public BoundingBox getBoundingBox() {
         org.bukkit.util.BoundingBox boundingBox = bukkitPlayer.getBoundingBox();
         return new BoundingBox(boundingBox.getMinX(), boundingBox.getMinY(), boundingBox.getMinZ(), boundingBox.getMaxX(), boundingBox.getMaxY(), boundingBox.getMaxZ());
+    }
+
+    @Override
+    public User getUser() {
+        return PacketEvents.getAPI().getPlayerManager().getUser(bukkitPlayer);
+    }
+
+    @Override
+    public void setClientBrand(String brand) {
+        this.clientBrand = brand;
+    }
+
+    @Override
+    public String getClientBrand() {
+        return this.clientBrand;
     }
 }

@@ -14,11 +14,13 @@ import me.caseload.knockbacksync.event.Event;
 import me.caseload.knockbacksync.event.EventBus;
 import me.caseload.knockbacksync.event.OptimizedEventBus;
 import me.caseload.knockbacksync.listener.packetevents.AttributeChangeListener;
+import me.caseload.knockbacksync.listener.packetevents.ClientBrandListener;
 import me.caseload.knockbacksync.listener.packetevents.PingReceiveListener;
 import me.caseload.knockbacksync.manager.ConfigManager;
 import me.caseload.knockbacksync.permission.PermissionChecker;
 import me.caseload.knockbacksync.scheduler.SchedulerAdapter;
 import me.caseload.knockbacksync.sender.Sender;
+import me.caseload.knockbacksync.stats.custom.ClientBrandsPie;
 import me.caseload.knockbacksync.stats.custom.PluginJarHashProvider;
 import me.caseload.knockbacksync.stats.custom.StatsManager;
 import me.caseload.knockbacksync.world.PlatformServer;
@@ -105,7 +107,8 @@ public abstract class Base {
     protected void registerCommonListeners() {
         PacketEvents.getAPI().getEventManager().registerListeners(
                 new AttributeChangeListener(),
-                new PingReceiveListener()
+                new PingReceiveListener(),
+                new ClientBrandListener()
         );
         Event.setEventBus(eventBus);
     }
