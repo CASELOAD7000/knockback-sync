@@ -15,7 +15,7 @@ import java.util.function.Predicate;
 
 public class ToggleOffGroundSubcommand implements BuilderCommand {
 
-    public static boolean offGroundSyncEnabled;
+    public static boolean offGroundSyncEnabled = true;
     private String offGroundSyncEnableMessage;
     private String offGroundSyncDisableMessage;
 
@@ -52,7 +52,7 @@ public class ToggleOffGroundSubcommand implements BuilderCommand {
 
     private void loadConfigSettings() {
         ConfigWrapper configWrapper = Base.INSTANCE.getConfigManager().getConfigWrapper();
-        this.offGroundSyncEnabled = configWrapper.getBoolean("settings.offground.enabled", true);
+        offGroundSyncEnabled = configWrapper.getBoolean("settings.offground.enabled", true);
         this.offGroundSyncEnableMessage = configWrapper.getString("messages.offground.enable",
                 "&aSuccessfully enabled offground synchronization.");
         this.offGroundSyncDisableMessage = configWrapper.getString("messages.offground.disable",

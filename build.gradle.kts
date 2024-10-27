@@ -44,6 +44,7 @@ allprojects {
         }
         maven("https://libraries.minecraft.net/")
         maven("https://maven.neoforged.net/releases")
+        maven("https://repo.codemc.io/repository/maven-snapshots/")
     }
 }
 

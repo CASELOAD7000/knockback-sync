@@ -31,29 +31,6 @@ jobs:
         with:
           gradle-version: "8.10" # Quotes required to prevent YAML converting to number
 
-      # Temporary workaround to packetevents bugs, use custom fork build
-      - name: Checkout packetevents repository
-        uses: actions/checkout@v3
-        with:
-          repository: booky10/packetevents
-          ref: fix/fabric-module
-          path: packetevents
-
-      - name: Update version in packetevents
-        run: |
-          cd packetevents
-          sed -i 's/val fullVersion = ".*"/val fullVersion = "2.6.0"/' build.gradle.kts
-
-      - name: Build packetevents with Gradle
-        run: |
-          cd packetevents
-          gradle build -x test
-
-      - name: Publish packetevents to Maven Local
-        run: |
-          cd packetevents
-          gradle publishToMavenLocal
-
       - name: Generate build number
         id: buildnumber
         uses: einaregilsson/build-number@v3
