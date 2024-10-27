@@ -1,7 +1,6 @@
 package me.caseload.knockbacksync;
 
 import com.github.retrooper.packetevents.PacketEvents;
-import com.github.retrooper.packetevents.manager.server.ServerVersion;
 import io.github.retrooper.packetevents.factory.fabric.FabricPacketEventsAPI;
 import lombok.Getter;
 import me.caseload.knockbacksync.entity.EntityTickManager;
@@ -69,7 +68,10 @@ public class FabricBase extends Base {
     }
 
     @Override
-    public void load() {}
+    public void load() {
+        PacketEvents.setAPI(new FabricPacketEventsAPI("knockbacksync", EnvType.SERVER));
+        PacketEvents.getAPI().load();
+    }
 
     @Override
     public void enable() {
@@ -78,7 +80,6 @@ public class FabricBase extends Base {
 
     @Override
     public void initializePacketEvents() {
-        PacketEvents.setAPI(new FabricPacketEventsAPI("knockbacksync", EnvType.SERVER));
         PacketEvents.getAPI().getSettings()
                 .checkForUpdates(false)
                 .debug(false);
