@@ -27,6 +27,7 @@ import java.util.UUID;
 
 public class FabricPlayer implements PlatformPlayer {
     public final ServerPlayer fabricPlayer;
+    private String clientBrand = "fabric";
 
     public FabricPlayer(ServerPlayer player) {
         this.fabricPlayer = player;
@@ -159,5 +160,13 @@ public class FabricPlayer implements PlatformPlayer {
         return PacketEvents.getAPI().getPlayerManager().getUser(fabricPlayer);
     }
 
-    // Implement other methods
+    @Override
+    public void setClientBrand(String brand) {
+        this.clientBrand = brand;
+    }
+
+    @Override
+    public String getClientBrand() {
+        return this.clientBrand;
+    }
 }
