@@ -42,7 +42,7 @@ jobs:
       - name: Update version in packetevents
         run: |
           cd packetevents
-          sed -i 's/val fullVersion = ".*"/val fullVersion = "2.5.1"/' build.gradle.kts
+          sed -i 's/val fullVersion = ".*"/val fullVersion = "2.6.0"/' build.gradle.kts
 
       - name: Build packetevents with Gradle
         run: |

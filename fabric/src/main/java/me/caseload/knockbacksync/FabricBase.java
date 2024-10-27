@@ -1,6 +1,7 @@
 package me.caseload.knockbacksync;
 
 import com.github.retrooper.packetevents.PacketEvents;
+import com.github.retrooper.packetevents.manager.server.ServerVersion;
 import io.github.retrooper.packetevents.factory.fabric.FabricPacketEventsAPI;
 import lombok.Getter;
 import me.caseload.knockbacksync.entity.EntityTickManager;
@@ -69,6 +70,11 @@ public class FabricBase extends Base {
 
     @Override
     public void load() {}
+
+    @Override
+    public void enable() {
+        super.enable();
+    }
 
     @Override
     public void initializePacketEvents() {
