@@ -82,7 +82,7 @@ public class PlayerData {
 
             // Step 4: Get the getPlayer method from PlayerDataManager
             Class<?> playerDataManagerClass = grimPlayerDataManager.getClass();
-            getGrimPlayerFromUserMethod = playerDataManagerClass.getDeclaredMethod("getPlayer", User.class);
+            getGrimPlayerFromUserMethod = playerDataManagerClass.getDeclaredMethod("getPlayer", Class.forName("org.bukkit.entity.Player"));
         } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException | InvocationTargetException | NoSuchFieldException e) {
             e.printStackTrace();
         }
@@ -217,7 +217,7 @@ public class PlayerData {
         try {
             if (getGrimPlayerFromUserMethod != null) {
                 // Step 5: Invoke getPlayer to get PlayerData
-                Object playerData = getGrimPlayerFromUserMethod.invoke(grimPlayerDataManager, this.user);
+                Object playerData = getGrimPlayerFromUserMethod.invoke(grimPlayerDataManager, playerField.get(platformPlayer));
 
                 // Step 6: Access the 'onGround' field in PlayerData
                 Field onGroundField = playerData.getClass().getDeclaredField("onGround");
