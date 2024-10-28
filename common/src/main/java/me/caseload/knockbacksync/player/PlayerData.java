@@ -33,6 +33,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.*;
 
 @Getter
@@ -47,6 +49,9 @@ public class PlayerData {
 
     public final List<Pair<Integer, Long>> transactionsSent = new LinkedList<>();
     public final List<Pair<Long, Long>> keepaliveMap = new LinkedList<>();
+
+    private static Object grimPlayerDataManager = null;
+    private static Method getGrimPlayerFromUserMethod = null;
 
     static {
         try {
@@ -63,10 +68,24 @@ public class PlayerData {
                 default:
                     throw new IllegalStateException("Unexpected platform: " + Base.INSTANCE.getPlatform());
             }
-        } catch (Exception e) {
+            playerField.setAccessible(true);
+
+            // Step 1: Get the GrimAPI enum class dynamically
+            Class<?> grimAPIClass = Class.forName("ac.grim.grimac.GrimAPI");
+
+            // Step 2: Access the INSTANCE of GrimAPI (it's a singleton enum)
+            Object grimAPIInstance = Enum.valueOf((Class<? extends Enum>) grimAPIClass, "INSTANCE");
+
+            // Step 3: Get the PlayerDataManager instance
+            Method getPlayerDataManagerMethod = grimAPIClass.getDeclaredMethod("getPlayerDataManager");
+            grimPlayerDataManager = getPlayerDataManagerMethod.invoke(grimAPIInstance);
+
+            // Step 4: Get the getPlayer method from PlayerDataManager
+            Class<?> playerDataManagerClass = grimPlayerDataManager.getClass();
+            getGrimPlayerFromUserMethod = playerDataManagerClass.getDeclaredMethod("getPlayer", User.class);
+        } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException | InvocationTargetException | NoSuchFieldException e) {
             e.printStackTrace();
         }
-        playerField.setAccessible(true); // May not be needed since it's already public
     }
 
     public final User user;
@@ -195,17 +214,35 @@ public class PlayerData {
      * @return <code>true</code> if the Player is on the ground; <code>false</code> otherwise.
      */
     public boolean isOnGroundClientSide(double verticalVelocity, double distanceToGround) {
+        try {
+            if (getGrimPlayerFromUserMethod != null) {
+                // Step 5: Invoke getPlayer to get PlayerData
+                Object playerData = getGrimPlayerFromUserMethod.invoke(grimPlayerDataManager, this.user);
+
+                // Step 6: Access the 'onGround' field in PlayerData
+                Field onGroundField = playerData.getClass().getDeclaredField("onGround");
+                onGroundField.setAccessible(true);  // Bypass private access
+
+                System.out.println(this.platformPlayer.getName() + " is located at " + platformPlayer.getX() +  ", " + platformPlayer.getY() + ", " + platformPlayer.getZ() + " serverside");
+                System.out.println("Grim onGround for player " + this.platformPlayer.getName() + " is " + onGroundField.get(playerData));
+
+                // Step 7: Get the value of the 'onGround' field
+                return (boolean) onGroundField.get(playerData);
+            }
+        } catch (NoSuchFieldException | IllegalAccessException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
         int tMax = verticalVelocity > 0 ? MathUtil.calculateTimeToMaxVelocity(verticalVelocity, gravityAttribute) : 0;
-        if (tMax == -1)
-            return false; // reached the max tick limit, not safe to predict
+            if (tMax == -1)
+                return false; // reached the max tick limit, not safe to predict
 
-        double mH = verticalVelocity > 0 ? MathUtil.calculateDistanceTraveled(verticalVelocity, tMax, gravityAttribute) : 0;
-        int tFall = MathUtil.calculateFallTime(verticalVelocity, mH + distanceToGround, gravityAttribute);
+            double mH = verticalVelocity > 0 ? MathUtil.calculateDistanceTraveled(verticalVelocity, tMax, gravityAttribute) : 0;
+            int tFall = MathUtil.calculateFallTime(verticalVelocity, mH + distanceToGround, gravityAttribute);
 
-        if (tFall == -1)
-            return false; // reached the max tick limit, not safe to predict
+            if (tFall == -1)
+                return false; // reached the max tick limit, not safe to predict
 
-        return (tMax + tFall) - getCompensatedTicks() <= 0 && distanceToGround <= 1.3;
+            return (tMax + tFall) - getCompensatedTicks() <= 0 && distanceToGround <= 1.3;
     }
 
     /**
