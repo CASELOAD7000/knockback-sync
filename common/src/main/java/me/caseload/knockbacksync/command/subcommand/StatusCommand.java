@@ -60,7 +60,7 @@ public class StatusCommand implements BuilderCommand {
                                                 (globalStatus ? globalStatusEnabledMessage : globalStatusDisabledMessage))
                                         + "\n"
                                         + ChatUtil.translateAlternateColorCodes('&',
-                                                globalStatus ? globalOffGroundStatusEnabledMessage : globalOffGroundStatusDisabledMessage)
+                                                ToggleOffGroundSubcommand.offGroundSyncEnabled ? globalOffGroundStatusEnabledMessage : globalOffGroundStatusDisabledMessage)
                                 );
 
                                     if (sender.hasPermission(STATUS_SELF_PERMISSION, true)) {
