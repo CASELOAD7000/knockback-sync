@@ -17,6 +17,7 @@ import me.caseload.knockbacksync.player.PlayerData;
 import me.caseload.knockbacksync.util.data.Pair;
 
 import java.util.List;
+import java.util.Queue;
 
 public class PingReceiveListener extends PacketListenerAbstract {
 
@@ -86,7 +87,7 @@ public class PingReceiveListener extends PacketListenerAbstract {
         }
     }
 
-    private <T extends Number> void handlePingCalculationPackets(PacketReceiveEvent event, PlayerData playerData, long id, List<Pair<T, Long>> packetSentList) {
+    private <T extends Number> void handlePingCalculationPackets(PacketReceiveEvent event, PlayerData playerData, long id, Queue<Pair<T, Long>> packetSentList) {
         // We can cancel for all 3 cases
         if (playerData.didWeSendThatPacket(id)) {
             // Pong not needed as vanilla ignores the packet, its needed for packet limiters
@@ -99,7 +100,11 @@ public class PingReceiveListener extends PacketListenerAbstract {
 
         if (!Base.INSTANCE.getConfigManager().isToggled()) return;
 
-        long pingNanos = (System.nanoTime() - packetSentList.remove(0).getSecond());
+        Pair<T, Long> longPair = packetSentList.poll();
+        if (longPair == null) {
+            throw new IllegalStateException("packetSentList was empty. Knockbacksync should continue to function but ping measurements may be inaccurate due to conflicts with other plugins.");
+        }
+        long pingNanos = (System.nanoTime() - longPair.getSecond());
         double diffMillisDouble = pingNanos / 1_000_000.0;
 
         playerData.setPreviousPing(playerData.getPing());

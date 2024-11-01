@@ -34,6 +34,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Field;
 import java.util.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 @Getter
 public class PlayerData {
@@ -45,8 +46,8 @@ public class PlayerData {
 
     private static Field playerField;
 
-    public final List<Pair<Integer, Long>> transactionsSent = new LinkedList<>();
-    public final List<Pair<Long, Long>> keepaliveMap = new LinkedList<>();
+    public final Queue<Pair<Integer, Long>> transactionsSent = new ConcurrentLinkedQueue<>();
+    public final Queue<Pair<Long, Long>> keepaliveMap = new ConcurrentLinkedQueue<>();
 
     static {
         try {
