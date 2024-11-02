@@ -1,15 +1,8 @@
 plugins {
-    id("fabric-loom")
     id("com.github.gmazzo.buildconfig") version "3.1.0"
 }
 
 dependencies {
-    minecraft("com.mojang:minecraft:1.16.5")
-    mappings(loom.layered {
-        officialMojangMappings()
-        parchment("org.parchmentmc.data:parchment-1.16.5:2022.03.06")
-    })
-
     // True compileOnly deps
     compileOnly("org.geysermc.floodgate:api:2.0-SNAPSHOT")
     compileOnly("org.projectlombok:lombok:1.18.34")
@@ -27,14 +20,6 @@ dependencies {
 
     implementation("org.incendo:cloud-core:2.0.0")
     implementation("org.incendo:cloud-minecraft-extras:2.0.0-beta.10")
-}
-
-repositories {
-    maven("https://maven.neoforged.net/releases")
-}
-
-tasks.named("remapJar").configure {
-    enabled = false
 }
 
 buildConfig {
