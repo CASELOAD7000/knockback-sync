@@ -6,15 +6,11 @@ import com.github.retrooper.packetevents.protocol.packettype.PacketTypeCommon;
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientKeepAlive;
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPong;
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientWindowConfirmation;
-import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerKeepAlive;
-import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerPing;
-import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerWindowConfirmation;
 import me.caseload.knockbacksync.Base;
 import me.caseload.knockbacksync.manager.PlayerDataManager;
 import me.caseload.knockbacksync.player.PlayerData;
 import me.caseload.knockbacksync.util.data.Pair;
 
-import java.util.List;
 import java.util.Queue;
 
 public class PingReceiveListener extends PacketListenerAbstract {
