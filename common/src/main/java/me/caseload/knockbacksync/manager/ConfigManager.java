@@ -19,12 +19,13 @@ import java.util.Map;
 @Setter
 public class ConfigManager {
 
-    public static final long CONFIG_VERSION = 6;
+    public static final long CONFIG_VERSION = 7;
 
     private boolean toggled;
     private boolean runnableEnabled;
     private boolean updateAvailable;
     private boolean notifyUpdate;
+    private boolean autoUpdate;
 
     private long runnableInterval;
     private long combatTimer;
@@ -113,6 +114,7 @@ public class ConfigManager {
         }
 
         notifyUpdate = configWrapper.getBoolean("notify_updates", true);
+        autoUpdate = configWrapper.getBoolean("auto_update", true);
         combatTimer = configWrapper.getLong("runnable.timer", 30L);
         spikeThreshold = configWrapper.getLong("spike_threshold", 20L);
         enableMessage = configWrapper.getString("messages.toggle.global.enable", "&aSuccessfully enabled KnockbackSync.");

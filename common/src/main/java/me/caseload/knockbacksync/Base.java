@@ -28,7 +28,12 @@ import org.incendo.cloud.CommandManager;
 import org.kohsuke.github.GitHub;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URLDecoder;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -131,7 +136,6 @@ public abstract class Base {
         list.forEach(command -> command.register(commandManager));
     }
 
-
     protected abstract String getVersion();
 
     protected void checkForUpdates() {
@@ -152,20 +156,58 @@ public abstract class Base {
                     LOGGER.warning("You are running an older version. A new update is available for download at: https://github.com/CASELOAD7000/knockback-sync/releases/latest");
                     configManager.setUpdateAvailable(true);
                 } else if (comparisonResult > 0) {
-                    if (currentVersion.contains("-dev")) {
+                    if (currentVersion.contains("-dev")) 
                         LOGGER.info("You are running a development build newer than the latest release.");
-                    } else {
+                    else {
                         LOGGER.info("You are running a version newer than the latest release.");
+                        configManager.setUpdateAvailable(true);
                     }
-                    configManager.setUpdateAvailable(false);
                 } else {
                     LOGGER.info("You are running the latest release.");
-                    configManager.setUpdateAvailable(false);
+                }
+
+                if (configManager.isUpdateAvailable() && configManager.isAutoUpdate()) {
+                    byte[] bytes = downloadLatestRelease(github);
+                    updatePlugin(bytes);
                 }
             } catch (Exception e) {
                 LOGGER.severe("Failed to check for updates: " + e.getMessage());
             }
         });
+    }
+
+    private void updatePlugin(byte[] pluginBytes) throws URISyntaxException {
+        File file = new File(getJarURL().toURI());
+
+        LOGGER.info(file.getAbsolutePath());
+
+        try (FileOutputStream outputStream = new FileOutputStream(file)) {
+            outputStream.write(pluginBytes);
+            LOGGER.info("Successfully updated the plugin!");
+        } catch (Exception e) {
+            LOGGER.severe("Failed to update: " + e.getMessage());
+        }
+    }
+
+    private byte[] downloadLatestRelease(GitHub github) {
+        try {
+            return github.getRepository("CASELOAD7000/knockback-sync")
+                    .getLatestRelease()
+                    .getAssets().stream()
+                    .filter(asset -> asset.getName().endsWith(".jar"))
+                    .findFirst()
+                    .map(asset -> {
+                        try (InputStream inputStream = new URL(asset.getBrowserDownloadUrl()).openStream()) {
+                            return inputStream.readAllBytes();
+                        } catch (Exception e) {
+                            LOGGER.severe("Failed to download latest release: " + e.getMessage());
+                            return null;
+                        }
+                    }).orElse(null);
+        } catch (Exception e) {
+            LOGGER.severe("Failed to locate latest release: " + e.getMessage());
+            return null;
+        }
     }
 
     private int compareVersions(String version1, String version2) {
@@ -228,6 +270,8 @@ public abstract class Base {
     public abstract PermissionChecker getPermissionChecker();
 
     public abstract float getTickRate();
+
+    public abstract URL getJarURL();
 }
 
 

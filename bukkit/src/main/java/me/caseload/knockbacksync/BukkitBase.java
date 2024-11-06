@@ -36,6 +36,8 @@ import java.lang.invoke.MethodType;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.URL;
+import java.nio.file.Paths;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -173,6 +175,18 @@ public class BukkitBase extends Base {
             }
         }
         return 20.0f;
+    }
+
+    public URL getJarURL() {
+        try {
+            String path = getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
+            File pluginJarFile = new File(path);
+
+            return Paths.get(getDataFolder().getParentFile().getAbsolutePath(), pluginJarFile.getName()).toUri().toURL();
+        } catch (Exception e) {
+            LOGGER.severe("Couldn't find plugin file: " + e.getMessage());
+            return null;
+        }
     }
 
     private void registerPluginListeners(Listener... listeners) {
