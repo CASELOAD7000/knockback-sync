@@ -20,12 +20,13 @@ public class PingSendListener extends PacketListenerAbstract {
 
     public PingSendListener() {
         // See all actually outgoing, not cancelled, ping packets
-        super(PacketListenerPriority.LOWEST);
+        super(PacketListenerPriority.MONITOR);
     }
 
     @Override
     public void onPacketSend(PacketSendEvent event) {
         if (!Base.INSTANCE.getConfigManager().isToggled()) return;
+        if (event.isCancelled()) return;
 
         PacketTypeCommon packetType = event.getPacketType();
         if (packetType.equals(PacketType.Play.Server.KEEP_ALIVE)) {
