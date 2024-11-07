@@ -160,14 +160,22 @@ public abstract class Base {
                         LOGGER.info("You are running a development build newer than the latest release.");
                     else {
                         LOGGER.info("You are running a version newer than the latest release.");
+                        configManager.setUpdateAvailable(true);
                     }
                 } else {
                     LOGGER.info("You are running the latest release.");
                 }
 
                 if (configManager.isUpdateAvailable() && configManager.isAutoUpdate()) {
+                    LOGGER.info("Updating...");
                     byte[] bytes = downloadLatestRelease(github);
                     updatePlugin(bytes);
+
+                    if (hasRestartScript())
+                        scheduler.runTask(this::restartServer);
+                    else {
+                        // Yeah
+                    }
                 }
             } catch (Exception e) {
                 LOGGER.severe("Failed to check for updates: " + e.getMessage());
@@ -271,6 +279,10 @@ public abstract class Base {
     public abstract float getTickRate();
 
     public abstract URL getJarURL();
+
+    public abstract void restartServer();
+
+    public abstract boolean hasRestartScript();
 }
 
 

@@ -15,9 +15,8 @@ enabled: true
 notify_updates: true
 
 # Automatically updates the plugin
-# It is STRONGLY recommended to keep this feature enabled,
-# as updates may include crucial fixes and enhancements.
-auto_update: true
+# Only servers with restart compatibility can use this feature
+auto_update: false
 
 # Grabs the ping of combat-tagged players every x ticks
 # Disabling this may lead to inaccuracies in calculations

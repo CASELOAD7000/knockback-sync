@@ -141,4 +141,12 @@ public class FabricBase extends Base {
         }
         return jarUrl;
     }
+
+    public void restartServer() {
+
+    }
+
+    public boolean hasRestartScript() {
+        return false;
+    }
 }

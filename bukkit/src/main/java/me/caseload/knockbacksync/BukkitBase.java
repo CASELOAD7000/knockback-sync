@@ -20,6 +20,8 @@ import me.caseload.knockbacksync.world.BukkitServer;
 import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.bukkit.World;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginManager;
@@ -37,6 +39,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -238,5 +241,22 @@ public class BukkitBase extends Base {
     @KBSyncEventHandler
     public void onConfigReload(ConfigReloadEvent event) {
         playerUpdateInterval = event.getConfigManager().getConfigWrapper().getInt("entity_tick_intervals.player", 2);
+    }
+
+    public void restartServer() {
+        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "restart");
+    }
+
+    public boolean hasRestartScript() {
+        File spigotFile = new File("spigot.yml");
+        if (!spigotFile.exists())
+            return false;
+
+        FileConfiguration spigotConfig = YamlConfiguration.loadConfiguration(spigotFile);
+        String scriptValue = spigotConfig.getString("settings.restart-script");
+        if (scriptValue == null || scriptValue.isEmpty())
+            return false;
+
+        return Paths.get(scriptValue).toAbsolutePath().normalize().toFile().exists();
     }
 }
