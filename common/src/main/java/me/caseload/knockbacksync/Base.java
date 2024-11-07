@@ -160,7 +160,6 @@ public abstract class Base {
                         LOGGER.info("You are running a development build newer than the latest release.");
                     else {
                         LOGGER.info("You are running a version newer than the latest release.");
-                        configManager.setUpdateAvailable(true);
                     }
                 } else {
                     LOGGER.info("You are running the latest release.");
