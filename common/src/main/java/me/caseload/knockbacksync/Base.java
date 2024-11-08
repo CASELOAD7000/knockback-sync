@@ -185,8 +185,6 @@ public abstract class Base {
     private void updatePlugin(byte[] pluginBytes) throws URISyntaxException {
         File file = new File(getJarURL().toURI());
 
-        LOGGER.info(file.getAbsolutePath());
-
         try (FileOutputStream outputStream = new FileOutputStream(file)) {
             outputStream.write(pluginBytes);
             LOGGER.info("Successfully updated the plugin!");
@@ -200,7 +198,9 @@ public abstract class Base {
             return github.getRepository("CASELOAD7000/knockback-sync")
                     .getLatestRelease()
                     .getAssets().stream()
-                    .filter(asset -> asset.getName().endsWith(".jar"))
+                    .filter(asset -> asset.getName().endsWith(".jar")
+                            && asset.getName().contains(platform.equals(Platform.FABRIC)
+                            ? "fabric" : "bukkit"))
                     .findFirst()
                     .map(asset -> {
                         try (InputStream inputStream = new URL(asset.getBrowserDownloadUrl()).openStream()) {
