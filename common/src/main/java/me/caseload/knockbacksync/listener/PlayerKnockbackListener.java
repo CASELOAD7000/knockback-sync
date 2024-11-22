@@ -18,10 +18,6 @@ public abstract class PlayerKnockbackListener {
         if (victimPlayerData == null)
             return;
 
-/*        Integer damageTicks = playerData.getLastDamageTicks();
-        if (damageTicks != null && damageTicks > 8)
-            return;*/
-
         if (victimPlayerData.getNotNullPing() < PlayerData.PING_OFFSET)
             return;
 
@@ -38,10 +34,13 @@ public abstract class PlayerKnockbackListener {
             return;
 
         Vector3d adjustedVelocity;
-        if (victimPlayerData.isOnGroundClientSide(velocity.getY(), distanceToGround))
+        if (victimPlayerData.isOnGroundClientSide(velocity.getY(), distanceToGround)) {
+            Integer damageTicks = victimPlayerData.getLastDamageTicks();
+            if (damageTicks != null && damageTicks > 8)
+                return;
+
             adjustedVelocity = velocity.withY(victimPlayerData.getVerticalVelocity()); // Should be impossible to produce a NPE in this context
-            // Todo FIX
-            // This can be spoofed! Clients can just say they're onGround to take less KB!
+        }
         else if (victimPlayerData.isOffGroundSyncEnabled())
             adjustedVelocity = velocity.withY(victimPlayerData.getCompensatedOffGroundVelocity());
         else

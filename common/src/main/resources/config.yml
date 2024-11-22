@@ -3,7 +3,7 @@
 #########################################
 
 # Do not modify!
-config_version: 6
+config_version: 7
 
 # Plugin enabled state
 # Toggleable using /knockbacksync toggle
@@ -13,6 +13,10 @@ enabled: true
 # Notify staff about update availability
 # Required permission: knockbacksync.update
 notify_updates: true
+
+# Automatically updates the plugin
+# Only servers with restart compatibility can use this feature
+auto_update: false
 
 # Grabs the ping of combat-tagged players every x ticks
 # Disabling this may lead to inaccuracies in calculations

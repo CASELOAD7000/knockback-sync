@@ -127,7 +127,7 @@ public class FabricBase extends Base {
         this.tickRate = tickRate;
     }
 
-    private URL getJarURL() {
+    public URL getJarURL() {
         URL jarUrl = null;
         Optional<ModContainer> modContainer = FabricLoader.getInstance().getModContainer("knockbacksync");
         if (modContainer.isPresent()) {
@@ -140,5 +140,13 @@ public class FabricBase extends Base {
             }
         }
         return jarUrl;
+    }
+
+    public void restartServer() {
+
+    }
+
+    public boolean hasRestartScript() {
+        return false;
     }
 }
