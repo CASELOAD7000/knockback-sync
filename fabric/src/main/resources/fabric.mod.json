@@ -18,7 +18,7 @@
     "knockbacksync.mixins.json"
   ],
   "depends": {
-    "fabricloader": ">=${loader_version}",
+    "fabricloader": ">=0.15.11",
     "fabric": "*",
     "minecraft": "~${minecraft_version}",
     "packetevents": "*"
