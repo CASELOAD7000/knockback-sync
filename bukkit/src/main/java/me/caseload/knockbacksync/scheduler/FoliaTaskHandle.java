@@ -17,7 +17,8 @@ public class FoliaTaskHandle implements AbstractTaskHandle {
             MethodHandles.Lookup lookup = MethodHandles.lookup();
 
             GET_OWNING_PLUGIN = lookup.findVirtual(scheduledTaskClass, "getOwningPlugin", MethodType.methodType(Plugin.class));
-            CANCEL = lookup.findVirtual(scheduledTaskClass, "cancel", MethodType.methodType(void.class));
+            CANCEL = lookup.findVirtual(scheduledTaskClass, "cancel", MethodType.methodType(
+                    Class.forName("io.papermc.paper.threadedregions.scheduler.ScheduledTask$CancelledState")));
         } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException e) {
             throw new RuntimeException("Failed to initialize FoliaTaskHandle reflection", e);
         }
