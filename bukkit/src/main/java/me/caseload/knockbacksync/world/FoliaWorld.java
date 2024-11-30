@@ -50,11 +50,6 @@ public class FoliaWorld extends SpigotWorld {
     }
 
     @Override
-    public WrappedBlockState getBlockStateAt(Vector3d loc) {
-        return getBlockStateAt((int) Math.floor(loc.x), (int) Math.floor(loc.y), (int) Math.floor(loc.z)); // Corrected to loc.y
-    }
-
-    @Override
     public RayTraceResult rayTraceBlocks(Vector3d start, Vector3d direction, double maxDistance, FluidHandling fluidHandling, boolean ignorePassableBlocks) {
         Location location = new Location(super.world, start.getX(), start.getY(), start.getZ());
         CompletableFuture<RayTraceResult> future = new CompletableFuture<>();

@@ -85,7 +85,7 @@ public class SpigotWorld implements PlatformWorld {
 
     @Override
     public WrappedBlockState getBlockStateAt(Vector3d loc) {
-        return getBlockStateAt((int) Math.floor(loc.x), (int) Math.floor(loc.x), (int) Math.floor(loc.x));
+        return getBlockStateAt((int) Math.floor(loc.x), (int) Math.floor(loc.y), (int) Math.floor(loc.z));
     }
 
     @Override
