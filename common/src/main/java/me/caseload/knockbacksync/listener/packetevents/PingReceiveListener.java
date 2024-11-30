@@ -15,6 +15,10 @@ import java.util.Queue;
 
 public class PingReceiveListener extends PacketListenerAbstract {
 
+    public PingReceiveListener() {
+        super(PacketListenerPriority.LOWEST);
+    }
+
     @Override
     public void onPacketReceive(PacketReceiveEvent event) {
         // Do not immediately return if KB sync is disabled. This is because if we send a packet, disable the plugin
