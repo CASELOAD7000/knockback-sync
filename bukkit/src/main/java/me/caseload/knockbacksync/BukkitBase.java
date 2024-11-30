@@ -3,6 +3,7 @@ package me.caseload.knockbacksync;
 import com.github.retrooper.packetevents.PacketEvents;
 import com.github.retrooper.packetevents.manager.server.ServerVersion;
 import io.github.retrooper.packetevents.factory.spigot.SpigotPacketEventsBuilder;
+import lombok.Getter;
 import me.caseload.knockbacksync.event.events.ConfigReloadEvent;
 import me.caseload.knockbacksync.event.KBSyncEventHandler;
 import me.caseload.knockbacksync.listener.bukkit.*;
@@ -39,14 +40,13 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Map;
 import java.util.logging.Logger;
 
 public class BukkitBase extends Base {
 
-    private final JavaPlugin plugin;
+    @Getter private final JavaPlugin plugin;
     private final BukkitSenderFactory bukkitSenderFactory = new BukkitSenderFactory(this);
     private final PluginPermissionChecker permissionChecker = new PluginPermissionChecker();
 

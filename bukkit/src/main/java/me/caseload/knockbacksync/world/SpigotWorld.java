@@ -18,7 +18,7 @@ import org.bukkit.util.Vector;
 import java.lang.reflect.Method;
 
 public class SpigotWorld implements PlatformWorld {
-    private final World world;
+    protected final World world;
 
     // Reflection variables
     private static Class<?> craftWorldClass;
@@ -58,7 +58,7 @@ public class SpigotWorld implements PlatformWorld {
         this.world = world;
     }
 
-    private static BlockFace getBlockFaceFrom(org.bukkit.block.BlockFace direction) {
+    protected static BlockFace getBlockFaceFrom(org.bukkit.block.BlockFace direction) {
         switch (direction) {
             case NORTH:
                 return BlockFace.NORTH;

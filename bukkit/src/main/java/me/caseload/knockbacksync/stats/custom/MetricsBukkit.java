@@ -15,7 +15,6 @@ package me.caseload.knockbacksync.stats.custom;
  * Violations will result in a ban of your plugin and account from bStats.
  */
 
-import me.caseload.knockbacksync.BukkitLoaderPlugin;
 import me.caseload.knockbacksync.Base;
 import me.caseload.knockbacksync.stats.CustomChart;
 import me.caseload.knockbacksync.stats.JsonObjectBuilder;
