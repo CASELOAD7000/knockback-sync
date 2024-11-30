@@ -109,7 +109,7 @@ public class BukkitBase extends Base {
     public void enable() {
         super.enable();
         super.eventBus.registerListeners(this);
-        if (PacketEvents.getAPI().getServerManager().getVersion().isNewerThanOrEquals(ServerVersion.V_1_20_5)) {
+        if (PacketEvents.getAPI().getServerManager().getVersion().isNewerThanOrEquals(ServerVersion.V_1_20_5) && this.getPlatform() == Platform.BUKKIT) {
             scheduler.runTaskTimerAsynchronously(this::setUpdateIntervals, 1, 1);
         }
     }
