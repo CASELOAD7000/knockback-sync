@@ -7,6 +7,8 @@ import com.github.retrooper.packetevents.protocol.world.states.WrappedBlockState
 import com.github.retrooper.packetevents.util.Vector3d;
 import com.github.retrooper.packetevents.util.Vector3i;
 import io.github.retrooper.packetevents.util.SpigotConversionUtil;
+import me.caseload.knockbacksync.async.AsyncOperation;
+import me.caseload.knockbacksync.async.SyncOperation;
 import me.caseload.knockbacksync.world.raytrace.FluidHandling;
 import me.caseload.knockbacksync.world.raytrace.RayTraceResult;
 import org.bukkit.Bukkit;
@@ -78,18 +80,18 @@ public class SpigotWorld implements PlatformWorld {
     }
 
     @Override
-    public WrappedBlockState getBlockStateAt(int x, int y, int z) {
+    public AsyncOperation<WrappedBlockState> getBlockStateAt(int x, int y, int z) {
         Block block = world.getBlockAt(x, y, z);
-        return SpigotConversionUtil.fromBukkitBlockData(block.getBlockData());
+        return new SyncOperation<>(SpigotConversionUtil.fromBukkitBlockData(block.getBlockData()));
     }
 
     @Override
-    public WrappedBlockState getBlockStateAt(Vector3d loc) {
+    public AsyncOperation<WrappedBlockState> getBlockStateAt(Vector3d loc) {
         return getBlockStateAt((int) Math.floor(loc.x), (int) Math.floor(loc.y), (int) Math.floor(loc.z));
     }
 
     @Override
-    public RayTraceResult rayTraceBlocks(Vector3d start, Vector3d direction, double maxDistance, FluidHandling fluidHandling, boolean ignorePassableBlocks) {
+    public AsyncOperation<RayTraceResult> rayTraceBlocks(Vector3d start, Vector3d direction, double maxDistance, FluidHandling fluidHandling, boolean ignorePassableBlocks) {
         if (PacketEvents.getAPI().getServerManager().getVersion().isNewerThan(ServerVersion.V_1_12_2)) {
             Vector startVec = new Vector(start.getX(), start.getY(), start.getZ());
             Vector directionVec = new Vector(direction.getX(), direction.getY(), direction.getZ());
@@ -102,12 +104,12 @@ public class SpigotWorld implements PlatformWorld {
 
             if (result == null) return null;
 
-            return new RayTraceResult(
+            return new SyncOperation<>(new RayTraceResult(
                     new Vector3d(result.getHitPosition().getX(), result.getHitPosition().getY(), result.getHitPosition().getZ()),
                     getBlockFaceFrom(result.getHitBlockFace()),
                     new Vector3i(result.getHitBlock().getX(), result.getHitBlock().getY(), result.getHitBlock().getZ()),
                     result.getHitBlock() != null ? SpigotConversionUtil.fromBukkitBlockData(result.getHitBlock().getBlockData()) : null
-            );
+            ));
             // Only tested on 1.12.2
         } else {
             try {
@@ -130,14 +132,14 @@ public class SpigotWorld implements PlatformWorld {
                 Object hitDirection = hitResult.getClass().getField("direction").get(hitResult);
                 Object hitBlock = hitResult.getClass().getField("e").get(hitResult); // e = BlockHitResult
 
-                return new RayTraceResult(
+                return new SyncOperation<>(new RayTraceResult(
                         hitPosition,
                         getHitBlockFace(hitDirection),
                         new Vector3i((int) hitBlock.getClass().getField("x").get(hitBlock),
                                 (int) hitBlock.getClass().getField("y").get(hitBlock),
                                 (int) hitBlock.getClass().getField("z").get(hitBlock)),
                         hitBlock != null ? WrappedBlockState.getByString(hitBlock.getClass().getField("type").get(hitBlock).toString()) : null
-                );
+                ));
             } catch (Exception e) {
                 e.printStackTrace();
                 return null; // Return null if there was an error during ray tracing

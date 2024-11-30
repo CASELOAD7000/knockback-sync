@@ -8,6 +8,8 @@ import me.caseload.knockbacksync.manager.PlayerDataManager;
 import me.caseload.knockbacksync.player.PlatformPlayer;
 import me.caseload.knockbacksync.player.PlayerData;
 
+import java.util.concurrent.CompletableFuture;
+
 public abstract class PlayerKnockbackListener {
 
     public void onPlayerVelocity(PlatformPlayer victim, Vector3d velocity) {
@@ -21,31 +23,35 @@ public abstract class PlayerKnockbackListener {
         if (victimPlayerData.getNotNullPing() < PlayerData.PING_OFFSET)
             return;
 
-        double distanceToGround = victimPlayerData.getDistanceToGround();
-        if (distanceToGround <= 0)
-            return; // minecraft already does the work for us
+        victimPlayerData.getDistanceToGround().asFuture()
+            .thenCompose(distanceToGround -> {
+                if (distanceToGround <= 0)
+                    return CompletableFuture.completedFuture(null);
 
-        WrappedBlockState blockState = victim.getWorld().getBlockStateAt(victim.getLocation());
-        if (victim.isGliding() ||
-                blockState.getType() == StateTypes.WATER ||
-                blockState.getType() == StateTypes.LAVA ||
-                blockState.getType() == StateTypes.COBWEB ||
-                blockState.getType() == StateTypes.SCAFFOLDING)
-            return;
+                return victim.getWorld().getBlockStateAt(victim.getLocation()).asFuture()
+                        .thenAccept(blockState -> {
+                            if (victim.isGliding() ||
+                                    blockState.getType() == StateTypes.WATER ||
+                                    blockState.getType() == StateTypes.LAVA ||
+                                    blockState.getType() == StateTypes.COBWEB ||
+                                    blockState.getType() == StateTypes.SCAFFOLDING)
+                                return;
 
-        Vector3d adjustedVelocity;
-        if (victimPlayerData.isOnGroundClientSide(velocity.getY(), distanceToGround)) {
-            Integer damageTicks = victimPlayerData.getLastDamageTicks();
-            if (damageTicks != null && damageTicks > 8)
-                return;
+                            Vector3d adjustedVelocity;
+                            if (victimPlayerData.isOnGroundClientSide(velocity.getY(), distanceToGround)) {
+                                Integer damageTicks = victimPlayerData.getLastDamageTicks();
+                                if (damageTicks != null && damageTicks > 8)
+                                    return;
 
-            adjustedVelocity = velocity.withY(victimPlayerData.getVerticalVelocity()); // Should be impossible to produce a NPE in this context
-        }
-        else if (victimPlayerData.isOffGroundSyncEnabled())
-            adjustedVelocity = velocity.withY(victimPlayerData.getCompensatedOffGroundVelocity());
-        else
-            return;
+                                adjustedVelocity = velocity.withY(victimPlayerData.getVerticalVelocity());
+                            }
+                            else if (victimPlayerData.isOffGroundSyncEnabled())
+                                adjustedVelocity = velocity.withY(victimPlayerData.getCompensatedOffGroundVelocity());
+                            else
+                                return;
 
-        victim.setVelocity(adjustedVelocity);
+                            victim.setVelocity(adjustedVelocity);
+                        });
+            });
     }
 }

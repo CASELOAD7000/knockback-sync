@@ -4,6 +4,8 @@ import com.github.retrooper.packetevents.protocol.world.BlockFace;
 import com.github.retrooper.packetevents.protocol.world.states.WrappedBlockState;
 import com.github.retrooper.packetevents.util.Vector3d;
 import com.github.retrooper.packetevents.util.Vector3i;
+import me.caseload.knockbacksync.async.AsyncOperation;
+import me.caseload.knockbacksync.async.SyncOperation;
 import me.caseload.knockbacksync.world.raytrace.FluidHandling;
 import me.caseload.knockbacksync.world.raytrace.RayTraceResult;
 import net.minecraft.core.BlockPos;
@@ -17,6 +19,8 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 
+import java.util.concurrent.CompletableFuture;
+
 public class FabricWorld implements PlatformWorld {
     private final Level world;
 
@@ -25,18 +29,18 @@ public class FabricWorld implements PlatformWorld {
     }
 
     @Override
-    public WrappedBlockState getBlockStateAt(int x, int y, int z) {
+    public AsyncOperation<WrappedBlockState> getBlockStateAt(int x, int y, int z) {
         BlockState blockState = this.world.getBlockState(new BlockPos(x, y, z));
-        return WrappedBlockState.getByGlobalId(Block.BLOCK_STATE_REGISTRY.getId(blockState));
+        return new SyncOperation<>(WrappedBlockState.getByGlobalId(Block.BLOCK_STATE_REGISTRY.getId(blockState)));
     }
 
     @Override
-    public WrappedBlockState getBlockStateAt(Vector3d loc) {
+    public AsyncOperation<WrappedBlockState> getBlockStateAt(Vector3d loc) {
         return getBlockStateAt((int) Math.floor(loc.x), (int) Math.floor(loc.x), (int) Math.floor(loc.x));
     }
 
     @Override
-    public RayTraceResult rayTraceBlocks(Vector3d start, Vector3d direction, double maxDistance, FluidHandling fluidHandling, boolean ignorePassableBlocks) {
+    public AsyncOperation<RayTraceResult> rayTraceBlocks(Vector3d start, Vector3d direction, double maxDistance, FluidHandling fluidHandling, boolean ignorePassableBlocks) {
         Vec3 startVec = new Vec3(start.getX(), start.getY(), start.getZ());
         Vec3 endVec = startVec.add(direction.getX() * maxDistance, direction.getY() * maxDistance, direction.getZ() * maxDistance);
 
@@ -50,15 +54,21 @@ public class FabricWorld implements PlatformWorld {
                 CollisionContext.empty()
         ));
 
-        if (result.getType() == HitResult.Type.MISS) return null;
+        if (result.getType() == HitResult.Type.MISS) {
+            return new SyncOperation<>(null);
+        }
 
         Vec3 hitLocation = result.getLocation();
         BlockPos blockPos = result.getBlockPos();
-        return new RayTraceResult(
+
+        // Since we're in Fabric, we can just get the block state synchronously
+        WrappedBlockState blockState = getBlockStateAt(blockPos.getX(), blockPos.getY(), blockPos.getZ()).asFuture().join();
+
+        return new SyncOperation<>(new RayTraceResult(
                 new Vector3d(hitLocation.x, hitLocation.y, hitLocation.z),
                 BlockFace.getBlockFaceByValue(result.getDirection().ordinal()),
                 new Vector3i(blockPos.getX(), blockPos.getY(), blockPos.getZ()),
-                getBlockStateAt(blockPos.getX(), blockPos.getY(), blockPos.getZ())
-        );
+                blockState
+        ));
     }
 }
