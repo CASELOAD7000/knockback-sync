@@ -5,6 +5,9 @@ import com.github.retrooper.packetevents.manager.server.ServerVersion;
 import com.github.retrooper.packetevents.protocol.player.User;
 import com.github.retrooper.packetevents.protocol.world.BoundingBox;
 import com.github.retrooper.packetevents.util.Vector3d;
+import me.caseload.knockbacksync.Base;
+import me.caseload.knockbacksync.Platform;
+import me.caseload.knockbacksync.world.FoliaWorld;
 import me.caseload.knockbacksync.world.PlatformWorld;
 import me.caseload.knockbacksync.world.SpigotWorld;
 import org.bukkit.Bukkit;
@@ -135,7 +138,7 @@ public class BukkitPlayer implements PlatformPlayer {
 
     @Override
     public PlatformWorld getWorld() {
-        return new SpigotWorld(bukkitPlayer.getWorld());
+        return Base.INSTANCE.getPlatform() == Platform.FOLIA ? new FoliaWorld(bukkitPlayer.getWorld()) : new SpigotWorld(bukkitPlayer.getWorld());
     }
 
     @Override
