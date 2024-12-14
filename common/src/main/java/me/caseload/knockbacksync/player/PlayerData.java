@@ -16,9 +16,6 @@ import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerWi
 import lombok.Getter;
 import lombok.Setter;
 import me.caseload.knockbacksync.Base;
-import me.caseload.knockbacksync.async.AsyncOperation;
-import me.caseload.knockbacksync.async.FoliaOperation;
-import me.caseload.knockbacksync.async.SyncOperation;
 import me.caseload.knockbacksync.command.subcommand.ToggleOffGroundSubcommand;
 import me.caseload.knockbacksync.event.KBSyncEventHandler;
 import me.caseload.knockbacksync.event.events.ToggleOnOffEvent;
@@ -34,7 +31,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Field;
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 @Getter
@@ -235,34 +231,22 @@ public class PlayerData {
      *
      * @return The distance to the ground in blocks
      */
-    public AsyncOperation<Double> getDistanceToGround() {
+    public double getDistanceToGround() {
+        double collisionDist = 5;
+
         PlatformWorld world = platformPlayer.getWorld();
-        Vector3d[] corners = getBBCorners();
 
-        // Start with the first corner
-        CompletableFuture<Double> future = processCorner(world, corners, 0, 5.0);
+        for (Vector3d corner : getBBCorners()) {
+            RayTraceResult result = world.rayTraceBlocks(corner, new Vector3d(0, -1, 0), 5, FluidHandling.NONE, true);
 
-        return new FoliaOperation<>(future);
-    }
+            if (result == null || result.getHitBlock() == null)
+                continue;
 
-    private CompletableFuture<Double> processCorner(PlatformWorld world, Vector3d[] corners, int index, double currentMin) {
-        if (index >= corners.length) {
-            return CompletableFuture.completedFuture(currentMin - 1);
+            collisionDist = Math.min(collisionDist, corner.getY() - result.getHitBlockPosition().getY());
         }
 
-        return world.rayTraceBlocks(corners[index], new Vector3d(0, -1, 0), 5, FluidHandling.NONE, true)
-                .asFuture()
-                .thenCompose(result -> {
-                    double newMin = currentMin;
-                    if (result != null && result.getHitBlock() != null) {
-                        newMin = Math.min(currentMin, corners[index].getY() - result.getHitBlockPosition().getY());
-                    }
-
-                    // Process next corner
-                    return processCorner(world, corners, index + 1, newMin);
-                });
+        return collisionDist - 1;
     }
-
 
     /**
      * Gets the corners of the Player's bounding box.
