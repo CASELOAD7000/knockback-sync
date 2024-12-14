@@ -54,7 +54,6 @@ public class FoliaWorld extends SpigotWorld {
         Location location = new Location(super.world, start.getX(), start.getY(), start.getZ());
         CompletableFuture<RayTraceResult> future = new CompletableFuture<>();
 
-        // Yes this code is bad; I know it's bad. We did not design this plugin around Folia, too bad!
         scheduler.execute(plugin, location, () -> {
                 // Existing 1.13+ code using world.rayTraceBlocks
                 Vector startVec = new Vector(start.getX(), start.getY(), start.getZ());
