@@ -5,6 +5,9 @@ import com.github.retrooper.packetevents.manager.server.ServerVersion;
 import com.github.retrooper.packetevents.protocol.player.User;
 import com.github.retrooper.packetevents.protocol.world.BoundingBox;
 import com.github.retrooper.packetevents.util.Vector3d;
+import me.caseload.knockbacksync.BukkitBase;
+import me.caseload.knockbacksync.Platform;
+import me.caseload.knockbacksync.world.FoliaWorld;
 import me.caseload.knockbacksync.world.PlatformWorld;
 import me.caseload.knockbacksync.world.SpigotWorld;
 import org.bukkit.Bukkit;
@@ -33,7 +36,7 @@ public class BukkitPlayer implements PlatformPlayer {
     // 1.12.2 support
     static {
         try {
-            // Check the current server versio
+            // Check the current server version
 
             // If the version is greater than 1.14.4, use the Player method directly
             if (currentVersion.isOlderThan(ServerVersion.V_1_15)) {
@@ -135,7 +138,7 @@ public class BukkitPlayer implements PlatformPlayer {
 
     @Override
     public PlatformWorld getWorld() {
-        return new SpigotWorld(bukkitPlayer.getWorld());
+        return BukkitBase.INSTANCE.getPlatform() == Platform.FOLIA ? new FoliaWorld(bukkitPlayer.getWorld()): new SpigotWorld(bukkitPlayer.getWorld());
     }
 
     @Override

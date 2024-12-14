@@ -18,7 +18,7 @@ import org.bukkit.util.Vector;
 import java.lang.reflect.Method;
 
 public class SpigotWorld implements PlatformWorld {
-    private final World world;
+    protected final World world;
 
     // Reflection variables
     private static Class<?> craftWorldClass;
