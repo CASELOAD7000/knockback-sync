@@ -8,9 +8,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class OptimizedEventBus implements EventBus {
-    private final Map<Class<? extends Event>, List<OptimizedListener>> listenerMap = new HashMap<>();
+    private final Map<Class<? extends Event>, List<OptimizedListener>> listenerMap = new ConcurrentHashMap<>();
     private final MethodHandles.Lookup lookup = MethodHandles.lookup();
 
     @Override
