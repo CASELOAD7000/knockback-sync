@@ -18,6 +18,7 @@ import lombok.Setter;
 import me.caseload.knockbacksync.Base;
 import me.caseload.knockbacksync.command.subcommand.ToggleOffGroundSubcommand;
 import me.caseload.knockbacksync.event.KBSyncEventHandler;
+import me.caseload.knockbacksync.event.events.ConfigReloadEvent;
 import me.caseload.knockbacksync.event.events.ToggleOnOffEvent;
 import me.caseload.knockbacksync.manager.CombatManager;
 import me.caseload.knockbacksync.scheduler.AbstractTaskHandle;
@@ -80,6 +81,7 @@ public class PlayerData {
     @Nullable @Setter private Integer lastDamageTicks;
     @Setter private double gravityAttribute = 0.08;
     @Setter private double knockbackResistanceAttribute = 0.0;
+    public PingStrategy pingStrategy; // this is currently shared between all instances, but can be made per-player later
 
     public PlayerData(PlatformPlayer platformPlayer) {
         this.uuid = platformPlayer.getUUID();
@@ -140,9 +142,8 @@ public class PlayerData {
     public void sendPing(boolean async) {
         if (user == null || user.getEncoderState() != ConnectionState.PLAY) return;
 
-       String pingStrategy = Base.INSTANCE.getConfigManager().getConfigWrapper().getString("ping_strategy", "KEEPALIVE");
        switch (pingStrategy) {
-           case "KEEPALIVE":
+           case KEEPALIVE:
                long keepAliveID = async ? NETTY_THREAD_TRANSACTION_ID : MAIN_THREAD_TRANSACTION_ID;
                if (async) {
                    ChannelHelper.runInEventLoop(user.getChannel(), () -> {
@@ -155,8 +156,7 @@ public class PlayerData {
                    user.sendPacket(new WrapperPlayServerKeepAlive(keepAliveID));
                }
                break;
-           case "PING":
-           case "TRANSACTION":
+           case TRANSACTION:
                PacketWrapper<?> packet;
                short pingTransactionID = async ? NETTY_THREAD_TRANSACTION_ID : MAIN_THREAD_TRANSACTION_ID;
                if (PacketEvents.getAPI().getServerManager().getVersion().isNewerThanOrEquals(ServerVersion.V_1_17)) {
@@ -338,6 +338,20 @@ public class PlayerData {
         if (event.getStatus() == false) {
             transactionsSent.clear();
             keepaliveMap.clear();
+        }
+    }
+
+    @KBSyncEventHandler
+    public void onConfigReloadEvent(ConfigReloadEvent event) {
+        String pingStrategy = event.getConfigManager().getConfigWrapper().getString("ping_strategy", "KEEPALIVE");
+        switch (pingStrategy) {
+            case "KEEPALIVE":
+                this.pingStrategy = PingStrategy.KEEPALIVE;
+                break;
+            case "PING":
+            case "TRANSACTION":
+                this.pingStrategy = PingStrategy.TRANSACTION;
+                break;
         }
     }
 }

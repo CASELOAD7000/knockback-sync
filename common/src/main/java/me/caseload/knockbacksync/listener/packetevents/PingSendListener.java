@@ -11,6 +11,7 @@ import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerPi
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerWindowConfirmation;
 import me.caseload.knockbacksync.Base;
 import me.caseload.knockbacksync.manager.PlayerDataManager;
+import me.caseload.knockbacksync.player.PingStrategy;
 import me.caseload.knockbacksync.player.PlayerData;
 import me.caseload.knockbacksync.util.data.Pair;
 
@@ -29,28 +30,22 @@ public class PingSendListener extends PacketListenerAbstract {
         if (event.isCancelled()) return;
 
         PacketTypeCommon packetType = event.getPacketType();
-        if (packetType.equals(PacketType.Play.Server.KEEP_ALIVE)) {
+        PlayerData playerData = PlayerDataManager.getPlayerData(event.getUser().getUUID());
+        if (playerData == null) return;
+
+        if (playerData.pingStrategy == PingStrategy.KEEPALIVE && packetType.equals(PacketType.Play.Server.KEEP_ALIVE)) {
             WrapperPlayServerKeepAlive keepAlive = new WrapperPlayServerKeepAlive(event);
             long id = keepAlive.getId();
 
-            PlayerData playerData = PlayerDataManager.getPlayerData(event.getUser().getUUID());
-            if (playerData == null) return;
-
             playerData.keepaliveMap.add(new Pair<>(id, System.nanoTime()));
-        } else if (packetType.equals(PacketType.Play.Server.PING)) {
+        } else if (playerData.pingStrategy == PingStrategy.TRANSACTION && packetType.equals(PacketType.Play.Server.PING)) {
             WrapperPlayServerPing ping = new WrapperPlayServerPing(event);
             int id = ping.getId();
 
-            PlayerData playerData = PlayerDataManager.getPlayerData(event.getUser().getUUID());
-            if (playerData == null) return;
-
             playerData.transactionsSent.add(new Pair<>(id, System.nanoTime()));
-        } else if (packetType.equals(PacketType.Play.Server.WINDOW_CONFIRMATION)) {
+        } else if (playerData.pingStrategy == PingStrategy.TRANSACTION && packetType.equals(PacketType.Play.Server.WINDOW_CONFIRMATION)) {
             WrapperPlayServerWindowConfirmation confirmation = new WrapperPlayServerWindowConfirmation(event);
             int id = confirmation.getActionId();
-
-            PlayerData playerData = PlayerDataManager.getPlayerData(event.getUser().getUUID());
-            if (playerData == null) return;
 
             playerData.transactionsSent.add(new Pair<>(id, System.nanoTime()));
         }
