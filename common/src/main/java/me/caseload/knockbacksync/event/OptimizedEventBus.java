@@ -9,8 +9,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class OptimizedEventBus implements EventBus {
+    // ordinarily this would just be a hashmap since we don't modify it on different threads, but Folia forces us to make it concurrent
     private final Map<Class<? extends Event>, List<OptimizedListener>> listenerMap = new ConcurrentHashMap<>();
     private final MethodHandles.Lookup lookup = MethodHandles.lookup();
 
@@ -38,7 +40,8 @@ public class OptimizedEventBus implements EventBus {
 
                         MethodHandle handle = lookup.unreflect(method);
                         OptimizedListener optimizedListener = new OptimizedListener(instance, handle, annotation.priority(), method.getDeclaringClass());
-                        listenerMap.computeIfAbsent((Class<? extends Event>) eventType, k -> new ArrayList<>()).add(optimizedListener);
+                        // Yes the CopyOnWriteArrayList is slow, yes we need to for thread safety on Folia, we'll replace when performance problems actually crop up
+                        listenerMap.computeIfAbsent((Class<? extends Event>) eventType, k -> new CopyOnWriteArrayList<>()).add(optimizedListener);
                     } catch (IllegalAccessException e) {
                         e.printStackTrace();
                     }
