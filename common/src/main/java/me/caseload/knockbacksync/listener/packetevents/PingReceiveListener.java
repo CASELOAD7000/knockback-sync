@@ -13,6 +13,7 @@ import me.caseload.knockbacksync.player.PlayerData;
 import me.caseload.knockbacksync.util.data.Pair;
 
 import java.util.Queue;
+import java.util.UUID;
 
 public class PingReceiveListener extends PacketListenerAbstract {
 
@@ -26,7 +27,9 @@ public class PingReceiveListener extends PacketListenerAbstract {
         // And then receive a response we have to ensure that if the packet was sent by us we cancel it
         // otherwise the server will likely kick the player
         PacketTypeCommon packetType = event.getPacketType();
-        PlayerData playerData = PlayerDataManager.getPlayerData(event.getUser().getUUID());
+        UUID playerUUID = event.getUser().getUUID();
+        if (playerUUID == null) return;
+        PlayerData playerData = PlayerDataManager.getPlayerData(playerUUID);
         if (playerData == null) return;
 
         if (playerData.pingStrategy == PingStrategy.KEEPALIVE && packetType == PacketType.Play.Client.KEEP_ALIVE) {
