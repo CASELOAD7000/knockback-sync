@@ -21,6 +21,7 @@ import me.caseload.knockbacksync.event.KBSyncEventHandler;
 import me.caseload.knockbacksync.event.events.ConfigReloadEvent;
 import me.caseload.knockbacksync.event.events.ToggleOnOffEvent;
 import me.caseload.knockbacksync.manager.CombatManager;
+import me.caseload.knockbacksync.manager.ConfigManager;
 import me.caseload.knockbacksync.scheduler.AbstractTaskHandle;
 import me.caseload.knockbacksync.util.MathUtil;
 import me.caseload.knockbacksync.util.data.Pair;
@@ -102,6 +103,7 @@ public class PlayerData {
         }
 
         this.user = tempUser;
+        this.pingStrategy = loadPingStrategy(Base.INSTANCE.getConfigManager());
     }
 
     public double getNotNullPing() {
@@ -343,15 +345,19 @@ public class PlayerData {
 
     @KBSyncEventHandler
     public void onConfigReloadEvent(ConfigReloadEvent event) {
-        String pingStrategy = event.getConfigManager().getConfigWrapper().getString("ping_strategy", "KEEPALIVE");
+        this.pingStrategy = loadPingStrategy(event.getConfigManager());
+    }
+
+    private PingStrategy loadPingStrategy(ConfigManager  configManager) {
+        String pingStrategy = configManager.getConfigWrapper().getString("ping_strategy", "KEEPALIVE");
         switch (pingStrategy) {
             case "KEEPALIVE":
-                this.pingStrategy = PingStrategy.KEEPALIVE;
-                break;
+                return PingStrategy.KEEPALIVE;
             case "PING":
             case "TRANSACTION":
-                this.pingStrategy = PingStrategy.TRANSACTION;
-                break;
+                return PingStrategy.TRANSACTION;
+            default:
+                throw new IllegalStateException("Unknown ping_strategy: " + pingStrategy);
         }
     }
 }
