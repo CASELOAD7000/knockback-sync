@@ -36,7 +36,7 @@ dependencies {
     annotationProcessor("org.projectlombok:lombok:1.18.34")
 
     shadeThisThing(implementation("org.kohsuke:github-api:1.326")!!)
-    shadeThisThing(implementation("com.github.retrooper:packetevents-spigot:2.6.1-SNAPSHOT")!!)
+    shadeThisThing(implementation("com.github.retrooper:packetevents-spigot:2.7.0-SNAPSHOT")!!)
 //    shadeThisThing(implementation("net.kyori:adventure-platform-bukkit:4.3.4")!!)
     shadeThisThing(implementation("org.incendo:cloud-paper:2.0.0-beta.10")!!)
     shadeThisThing(implementation("org.incendo:cloud-core:2.0.0")!!)
@@ -47,7 +47,7 @@ dependencies {
 
 tasks.withType<ShadowJar> {
     configurations = listOf(shadeThisThing)
-    isEnableRelocation = true
+    isEnableRelocation = false
     relocationPrefix = "${project.property("maven_group")}.${project.property("archives_base_name")}.shaded"
 }
 

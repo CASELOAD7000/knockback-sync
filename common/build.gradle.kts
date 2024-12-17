@@ -9,7 +9,7 @@ dependencies {
     annotationProcessor("org.projectlombok:lombok:1.18.34")
 
     // Shaded in or bundled by platform-specific code
-    implementation("com.github.retrooper:packetevents-api:2.6.1-SNAPSHOT")
+    implementation("com.github.retrooper:packetevents-api:2.7.0-SNAPSHOT")
     implementation("org.yaml:snakeyaml:2.0")
 //    implementation("com.fasterxml.jackson.core:jackson-databind:2.17.2")
 //    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.17.2")
