@@ -1,0 +1,215 @@
+name: Build and Version Update
+
+permissions:
+  contents: write
+
+on:
+  push:
+    branches:
+      - main
+      - merge
+      - dev
+      - fabric-experimental-gradle
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout main repository
+        uses: actions/checkout@v2
+
+      - name: Set up JDK
+        uses: actions/setup-java@v2
+        with:
+          java-version: '21'
+          distribution: 'adopt'
+          cache: gradle
+
+      - name: Setup Gradle 8.10
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.10" # Quotes required to prevent YAML converting to number
+
+      - name: Generate build number
+        id: buildnumber
+        uses: einaregilsson/build-number@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Update version in build.gradle.kts
+        id: update_version
+        run: |
+          # Read current fullVersion from build.gradle.kts
+          FULL_VERSION=$(grep 'val fullVersion =' build.gradle.kts | awk -F '"' '{print $2}')
+          IFS='.' read -ra VERSION_PARTS <<< "$FULL_VERSION"
+          PATCH=$((VERSION_PARTS[2] + 1))
+          NEW_VERSION="${VERSION_PARTS[0]}.${VERSION_PARTS[1]}.$PATCH-dev-b${{ steps.buildnumber.outputs.build_number }}"
+          echo "NEW_VERSION=${NEW_VERSION}" >> $GITHUB_ENV
+          
+          # Update fullVersion in build.gradle
+          sed -i "s/val fullVersion = \".*\"/val fullVersion = \"$NEW_VERSION\"/" build.gradle.kts
+          
+          # Ensure snapshot is set to false
+          sed -i "s/val snapshot = .*/val snapshot = false/" build.gradle.kts
+
+      - name: Build with Gradle
+        run: gradle clean build -x test
+        env:
+          GITHUB_REPOSITORY: ${{ github.repository }}
+
+      - name: Rename shaded jar to overwrite non-shaded jar
+        run: mv bukkit/build/libs/knockbacksync-bukkit-${{ env.NEW_VERSION }}-all.jar bukkit/build/libs/knockbacksync-bukkit-${{ env.NEW_VERSION }}.jar
+
+      # Download PaperSpigot (Choose version for reproducibility
+      - name: Download PaperSpigot
+        run: |
+          mkdir -p paper-server/plugins
+          curl -o paperclip.jar https://api.papermc.io/v2/projects/paper/versions/1.21.1/builds/120/downloads/paper-1.21.1-120.jar 
+          mv paperclip.jar paper-server/
+
+      # Copy Plugin into Plugins Folder and Start Server
+      - name: Copy Plugin and Start Paper Server
+        run: |
+          cp bukkit/build/libs/knockbacksync-bukkit-${{ env.NEW_VERSION }}.jar paper-server/plugins/
+          cd paper-server
+          # Start the server to remap the plugin
+          timeout 60 java -Xms3G -Xmx3G -XX:+UseG1GC -XX:+ParallelRefProcEnabled -XX:MaxGCPauseMillis=200 -XX:+UnlockExperimentalVMOptions -XX:+DisableExplicitGC -XX:+AlwaysPreTouch -XX:G1NewSizePercent=30 -XX:G1MaxNewSizePercent=40 -XX:G1HeapRegionSize=8M -XX:G1ReservePercent=20 -XX:G1HeapWastePercent=5 -XX:G1MixedGCCountTarget=4 -XX:InitiatingHeapOccupancyPercent=15 -XX:G1MixedGCLiveThresholdPercent=90 -XX:G1RSetUpdatingPauseTimePercent=5 -XX:SurvivorRatio=32 -XX:+PerfDisableSharedMem -XX:MaxTenuringThreshold=1 -jar -Dcom.mojang.eula.agree=true paperclip.jar --nogui || true
+
+      # Get the Hashes of the Original and Remapped JARs
+      - name: Calculate Hashes
+        run: |
+          # Calculate hash for the original JAR
+          ORIGINAL_HASH=$(sha256sum bukkit/build/libs/knockbacksync-bukkit-${{ env.NEW_VERSION }}.jar | awk '{print $1}')
+          echo "ORIGINAL_HASH=$ORIGINAL_HASH" >> $GITHUB_ENV
+          # Calculate hash for the remapped JAR
+          REMAPPED_HASH=$(sha256sum paper-server/plugins/.paper-remapped/knockbacksync-bukkit-${{ env.NEW_VERSION }}.jar | awk '{print $1}')
+          echo "REMAPPED_HASH=$REMAPPED_HASH" >> $GITHUB_ENV
+          # Calculate hash for the remapped JAR
+          FABRIC_HASH=$(sha256sum fabric/build/libs/knockbacksync-fabric-${{ env.NEW_VERSION }}.jar | awk '{print $1}')
+          echo "FABRIC_HASH=$FABRIC_HASH" >> $GITHUB_ENV
+
+      # Download, update, and re-upload dev-builds.txt
+      - name: Update dev-builds.txt
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Download the current dev-builds.txt
+          curl -L -o dev-builds.txt https://github.com/${{ github.repository }}/releases/latest/download/dev-builds.txt
+          
+          # Create a copy of the original file
+          cp dev-builds.txt dev-builds.txt.original
+          
+          # Ensure the file ends with a newline
+          sed -i -e '$a\' dev-builds.txt
+          
+          # Function to add hash if it doesn't exist
+          add_hash_if_new() {
+            if ! grep -q "$1" dev-builds.txt; then
+              echo "$1" >> dev-builds.txt
+            fi
+          }
+          
+          # Add new hashes if they don't exist
+          add_hash_if_new "${{ env.ORIGINAL_HASH }}"
+          add_hash_if_new "${{ env.REMAPPED_HASH }}"
+          add_hash_if_new "${{ env.FABRIC_HASH }}"
+          
+          # Check if the file has changed
+          if cmp -s dev-builds.txt dev-builds.txt.original; then
+            echo "No changes to dev-builds.txt, skipping upload."
+          else
+            echo "Changes detected in dev-builds.txt, uploading new version."
+          
+            # Get the latest release ID
+            RELEASE_ID=$(curl -s "https://api.github.com/repos/${{ github.repository }}/releases/latest" | jq -r .id)
+          
+            # Delete the old dev-builds.txt asset
+            ASSET_ID=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+              "https://api.github.com/repos/${{ github.repository }}/releases/$RELEASE_ID/assets" | \
+              jq -r '.[] | select(.name == "dev-builds.txt") | .id')
+            if [ ! -z "$ASSET_ID" ]; then
+              curl -X DELETE -H "Authorization: token $GITHUB_TOKEN" \
+                "https://api.github.com/repos/${{ github.repository }}/releases/assets/$ASSET_ID"
+            fi
+          
+            # Upload the new dev-builds.txt
+            curl -X POST -H "Authorization: token $GITHUB_TOKEN" \
+              -H "Content-Type: application/octet-stream" \
+              --data-binary @dev-builds.txt \
+              "https://uploads.github.com/repos/${{ github.repository }}/releases/$RELEASE_ID/assets?name=dev-builds.txt"
+          fi
+          
+          # Clean up
+          rm dev-builds.txt.original
+
+      - name: Create artifacts directory
+        run: mkdir -p artifacts
+
+      - name: Copy bukkit artifact
+        run: cp bukkit/build/libs/knockbacksync-bukkit-${{ env.NEW_VERSION }}.jar artifacts/
+
+      - name: Copy fabric artifact
+        run: cp fabric/build/libs/knockbacksync-fabric-${{ env.NEW_VERSION }}.jar artifacts/
+
+      - name: Zip the artifacts
+        run: zip -r KnockbackSync-${{ env.NEW_VERSION }}.zip artifacts/*
+
+      - name: Upload artifacts zip
+        uses: actions/upload-artifact@v4
+        with:
+          name: KnockbackSync-${{ env.NEW_VERSION }}.zip
+          path: KnockbackSync-${{ env.NEW_VERSION }}.zip
+          retention-days: 90
+
+      - uses: Kir-Antipov/mc-publish@v3.3
+        with:
+          modrinth-id: ${{ vars.MODRINTH_ID  }}
+          modrinth-featured: true
+          modrinth-unfeature-mode: subset
+          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
+
+          files: |
+            bukkit/build/libs/knockbacksync-bukkit-${{ env.NEW_VERSION }}.jar
+
+          name: KnockbackSync-${{ env.NEW_VERSION }}
+          version: ${{ env.NEW_VERSION }}
+          version-type: alpha
+
+          loaders: |
+            bukkit
+            spigot
+            paper
+            folia
+            purpur
+
+          game-versions: |
+            >=1.12.2
+
+          retry-attempts: 2
+          retry-delay: 10000
+          fail-mode: fail
+
+      - uses: Kir-Antipov/mc-publish@v3.3
+        with:
+          modrinth-id: ${{ vars.MODRINTH_ID }}
+          modrinth-featured: true
+          modrinth-unfeature-mode: subset
+          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
+
+          files: |
+            fabric/build/libs/knockbacksync-fabric-${{ env.NEW_VERSION }}.jar
+
+          name: KnockbackSync-${{ env.NEW_VERSION }}
+          version: ${{ env.NEW_VERSION }}
+          version-type: alpha
+
+          loaders: |
+            fabric
+
+          game-versions: |
+            >=1.21
+
+          retry-attempts: 2
+          retry-delay: 10000
+          fail-mode: fail

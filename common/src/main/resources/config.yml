@@ -1,0 +1,239 @@
+#########################################
+#      KnockbackSync Configuration      #
+#########################################
+
+# Do not modify!
+config_version: 7
+
+# Plugin enabled state
+# Toggleable using /knockbacksync toggle
+# Required permission: knockbacksync.toggle
+enabled: true
+
+# Notify staff about update availability
+# Required permission: knockbacksync.update
+notify_updates: true
+
+# Automatically updates the plugin
+# Only servers with restart compatibility can use this feature
+auto_update: false
+
+# Grabs the ping of combat-tagged players every x ticks
+# Disabling this may lead to inaccuracies in calculations
+runnable:
+  enabled: true       # Runnable enabled state
+  interval: 5         # The interval in ticks between sending out pings to players
+  combat_timer: 30    # The timer in ticks before being considered out of combat
+
+# The minimum change in ping required for it to be considered a lag spike.
+# If the difference between the latest and previous ping is greater than or equal to
+# the threshold, the previous ping value is used to avoid calculation inaccuracies.
+spike_threshold: 20
+
+# OPTIONS: KEEPALIVE, PING, TRANSACTION - PING and TRANSACTION are aliases for each other and are effectively the same
+# The packet type used to measure ping by the runnable.
+# KEEPALIVE is the most accurate however sending too many of them too often (such as using a runnable with a low interval)
+# - May disconnect players, especially laggy ones if sent too often
+# - The default interval of 20 ticks or 1 second
+#    means it is in theory possible for a player to have a ping spike in-between two sword attacks
+#    and have it immediately spike back down, slightly throwing off knockback synchronization
+#    in practice this is very rare and the extra ping accuracy and precision is more valued
+# PING/TRANSACTION can be sent more often (and therefore better detect ping spikes) but are less precise
+# ping measured in ms with PING/TRANSACTION is typically within ± 5ms of actual but can be up to 50ms off
+ping_strategy: "KEEPALIVE"
+
+# Whether to try to detect when player is offground and apply less kb
+enable_offground_synchronization: true
+
+# This is the rate the server will use for (amongst other things) sending packets about entities to players
+# In other words it defines how often clients get updated velocity for other entities in the world
+# Note that certain events mark velocity as dirty and causes it to be immediately updated for 1 tick regardless of the tick interval
+# These include but are not limited to jumping, taking knockback, swimming, and a target entity being affected by a special mob attack
+# Such as the Ender Dragon's knockback attacks
+# If an entity below doesn't exist in the version of the game your server is running in, changing the config for it will do nothing
+# Currently only modifying the player's tick interval is supported on Bukkit/Spigot/Paper + Folia
+# Modifying the tick interval of any entity is supported on Fabric.
+entity_tick_intervals:
+  player: 2 # This is 2 by default in vanilla and paper, change to 1 to test out the new feature
+  allay: 2
+  area_effect_cloud: Integer.MAX_VALUE
+  armadillo: 3
+  armor_stand: 3
+  arrow: 20
+  axolotl: 3
+  bat: 3
+  bee: 3
+  blaze: 3
+  block_display: 1
+  boat: 3
+  bogged: 3
+  breeze: 3
+  breeze_wind_charge: 10
+  camel: 3
+  cat: 3
+  cave_spider: 3
+  chest_boat: 3
+  chest_minecart: 3
+  chicken: 3
+  cod: 3
+  command_block_minecart: 3
+  cow: 3
+  creeper: 3
+  dolphin: 3
+  donkey: 3
+  dragon_fireball: 10
+  drowned: 3
+  egg: 10
+  elder_guardian: 3
+  end_crystal: Integer.MAX_VALUE
+  ender_dragon: 3
+  ender_pearl: 10
+  enderman: 3
+  endermite: 3
+  evoker: 3
+  evoker_fangs: 2
+  experience_bottle: 10
+  experience_orb: 20
+  eye_of_ender: 4
+  falling_block: 20
+  firework_rocket: 10
+  fox: 3
+  frog: 3
+  furnace_minecart: 3
+  ghast: 3
+  giant: 3
+  glow_item_frame: Integer.MAX_VALUE
+  glow_squid: 3
+  goat: 3
+  guardian: 3
+  hoglin: 3
+  hopper_minecart: 3
+  horse: 3
+  husk: 3
+  illusioner: 3
+  interaction: 3
+  iron_golem: 3
+  item: 20
+  item_display: 1
+  item_frame: Integer.MAX_VALUE
+  ominous_item_spawner: 3
+  fireball: 10
+  leash_knot: Integer.MAX_VALUE
+  lightning_bolt: Integer.MAX_VALUE
+  llama: 3
+  llama_spit: 10
+  magma_cube: 3
+  marker: 3
+  minecart: 3
+  mooshroom: 3
+  mule: 3
+  ocelot: 3
+  painting: Integer.MAX_VALUE
+  panda: 3
+  parrot: 3
+  phantom: 3
+  pig: 3
+  piglin: 3
+  piglin_brute: 3
+  pillager: 3
+  polar_bear: 3
+  potion: 10
+  pufferfish: 3
+  rabbit: 3
+  ravager: 3
+  salmon: 3
+  sheep: 3
+  shulker: 3
+  shulker_bullet: 3
+  silverfish: 3
+  skeleton: 3
+  skeleton_horse: 3
+  slime: 3
+  small_fireball: 10
+  sniffer: 3
+  snow_golem: 3
+  snowball: 10
+  spawner_minecart: 3
+  spectral_arrow: 20
+  spider: 3
+  squid: 3
+  stray: 3
+  strider: 3
+  tadpole: 3
+  text_display: 1
+  tnt: 10
+  tnt_minecart: 3
+  trader_llama: 3
+  trident: 20
+  tropical_fish: 3
+  turtle: 3
+  vex: 3
+  villager: 3
+  vindicator: 3
+  wandering_trader: 3
+  warden: 3
+  wind_charge: 10
+  witch: 3
+  wither: 3
+  wither_skeleton: 3
+  wither_skull: 10
+  wolf: 3
+  zoglin: 3
+  zombie: 3
+  zombie_horse: 3
+  zombie_villager: 3
+  zombified_piglin: 3
+  fishing_bobber: 5
+
+messages:
+  toggle:
+    global:
+      enable: "&aSuccessfully enabled KnockbackSync."
+      disable: "&cSuccessfully disabled KnockbackSync."
+    player:
+      enable: "&aSuccessfully enabled KnockbackSync for %player%."
+      disable: "&aSuccessfully &cdisabled &aKnockbackSync for %player%."
+      ineligible: "&c%player% is ineligible for KnockbackSync. If you believe this is in error, please contact your server administrators."
+    permission:
+      no_global: "&cYou don't have permission to toggle the global setting."
+      no_self: "&cYou do not have permission to toggle your knockback."
+      no_other: "&cYou do not have permission to toggle the knockback of other player's."
+    self:
+      enable: "&aSuccessfully enabled KnockbackSync."
+      disable: "&cSuccessfully disabled KnockbackSync."
+    other:
+      enable: "&aSuccessfully enabled KnockbackSync for %player%."
+      disable: "&aSuccessfully &cdisabled &aKnockbackSync for %player%."
+      ineligible: "&c%player% is ineligible for KnockbackSync. If you believe this is in error, please contact your server administrators."
+  server_disabled: "&cKnockbacksync is currently disabled on this server. Contact your server administrator for more information."
+  offground:
+    enable: "&aSuccessfully enabled offground synchronization."
+    disable: "&cSuccessfully disabled offground synchronization."
+  reload:
+    success: "&aSuccessfully reloaded KnockbackSync."
+  status:
+    global:
+      enabled: "&eKnockbackSync global status: &aEnabled"
+      disabled: "&eKnockbackSync global status: &cDisabled"
+    offground:
+      enabled: "&eKnockbackSync off-ground status: &aEnabled"
+      disabled: "&eKnockbackSync off-ground status: &cDisabled"
+    player:
+      enabled: "&e%player%'s KnockbackSync status: &aEnabled"
+      disabled: "&e%player%'s KnockbackSync status: &cDisabled"
+      global_disabled: "&e%player%'s KnockbackSync status: &cDisabled (Global toggle is off)"
+    permission:
+      no_self: "&cYou do not have permission to check your knockbacksync status."
+      no_other: "&cYou do not have permission to check the status of other players!"
+  console:
+    must_specify_player: "&cYou must specify a player to use the knockbacksync ping command from the console."
+  disabled:
+    self: "&cKnockback synchronization is currently disabled for you!"
+    target: "&cKnockback synchronization is currently disabled for the target player."
+  ping:
+    self:
+      unavailable: "Accurate ping unavailable. Your estimated ping is &b%ping%&rms."
+      available: "Your real ping is &b%ping%&rms. Jitter: &b%jitter%&rms. Spike: &b%spike%&r. Compensated ping: &b%compensated%&rms."
+    other:
+      unavailable: "Accurate ping unavailable. %player%'s estimated ping is &b%ping%&rms."
+      available: "%player%'s real ping is &b%ping%&rms. Jitter: &b%jitter%&rms. Spike: &b%spike%&r. Compensated ping: &b%compensated%&rms."

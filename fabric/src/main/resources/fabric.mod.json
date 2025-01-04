@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "knockbacksync",
+  "version": "${version}",
+  "name": "Knockback Sync",
+  "description": "",
+  "authors": [],
+  "contact": {},
+  "license": "All-Rights-Reserved",
+  "icon": "assets/knockbacksync/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "me.caseload.knockbacksync.FabricLoaderMod"
+    ]
+  },
+  "mixins": [
+    "knockbacksync.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.15.11",
+    "fabric": "*",
+    "minecraft": "~${minecraft_version}",
+    "packetevents": "*"
+  },
+  "accessWidener": "knockbacksync.accesswidener"
+}
