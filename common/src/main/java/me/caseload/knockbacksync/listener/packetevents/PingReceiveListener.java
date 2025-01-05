@@ -51,30 +51,41 @@ public class PingReceiveListener extends PacketListenerAbstract {
     }
 
     private <T extends Number> void handlePingCalculationPackets(PacketReceiveEvent event, PlayerData playerData, long id, Queue<Pair<T, Long>> packetSentList) {
-        // We can cancel for all 3 cases
+//        System.out.println("Received response ID: " + id + " Queue size before: " + packetSentList.size());
+//        System.out.println("Current queue contents: " + packetSentList.toString());
+
         if (playerData.didWeSendThatPacket(id)) {
-            // Pong not needed as vanilla ignores the packet, its needed for packet limiters
-            // We want to cancel Window Confirmations that we send, and ...
-            // Minecraft kicks players that send invalid keepAliveID packets
-            // Since Minecraft doesn't know we just sent a keepalive, we gotta cancel it
-            // To stop MC from processing it and kicking the player
             event.setCancelled(true);
         }
 
         if (!Base.INSTANCE.getConfigManager().isToggled()) return;
 
-        Pair<T, Long> longPair = packetSentList.poll();
-        if (longPair == null) {
-            throw new IllegalStateException("packetSentList was empty. Knockbacksync should continue to function but ping measurements may be inaccurate due to conflicts with other plugins.");
-        }
-        long pingNanos = (System.nanoTime() - longPair.getSecond());
-        double diffMillisDouble = pingNanos / 1_000_000.0;
+        Pair<T, Long> data = null;
+        int cleared = 0;
+        // Keep polling until we find the matching ID
+        do {
+            data = packetSentList.poll();
+            cleared++;
 
-        playerData.setPreviousPing(playerData.getPing());
-        playerData.setPing(diffMillisDouble);
+            if (data == null) {
+//                System.out.println("No data found in queue!");
+                break;
+            }
 
-        playerData.getJitterCalculator().addPing(pingNanos);
-        double jitter = playerData.getJitterCalculator().calculateJitter();
-        playerData.setJitter(jitter);
+//            System.out.println("Cleared entry " + cleared + ": ID=" + data.getFirst() + " Time=" + data.getSecond());
+
+            long pingNanos = (System.nanoTime() - data.getSecond());
+            double diffMillisDouble = pingNanos / 1_000_000.0;
+
+            playerData.setPreviousPing(playerData.getPing());
+            playerData.setPing(diffMillisDouble);
+
+            playerData.getJitterCalculator().addPing(pingNanos);
+            double jitter = playerData.getJitterCalculator().calculateJitter();
+            playerData.setJitter(jitter);
+
+        } while (data.getFirst().longValue() != id);
+
+//        System.out.println("Finished processing - Cleared " + cleared + " entries. Queue size after: " + packetSentList.size());
     }
 }
