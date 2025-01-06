@@ -159,8 +159,6 @@ This command reloads the KnockbackSync plugin's configuration file.
   * Sends a message indicating whether the experimental off-ground knockback synchronization has been enabled or disabled. The messages are configurable in the `config.yml` file.
   
   **Notes:**
-  
-  * **This command currently does not do anything as off-ground synchronization has yet to be implemented.**
     * This feature is experimental and may not work as expected.
 
 ## License
