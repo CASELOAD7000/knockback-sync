@@ -40,6 +40,7 @@ public class PingSendListener extends PacketListenerAbstract {
             WrapperPlayServerKeepAlive keepAlive = new WrapperPlayServerKeepAlive(event);
             long id = keepAlive.getId();
 
+//            System.out.println("Adding ping to queue - ID: " + id + " Time: " + System.nanoTime() + " Queue size before: " + playerData.keepaliveMap.size());
             playerData.keepaliveMap.add(new Pair<>(id, System.nanoTime()));
         } else if (playerData.pingStrategy == PingStrategy.TRANSACTION && packetType.equals(PacketType.Play.Server.PING)) {
             WrapperPlayServerPing ping = new WrapperPlayServerPing(event);

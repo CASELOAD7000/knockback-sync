@@ -19,6 +19,6 @@ public abstract class PlayerDamageListener {
         playerData.updateCombat();
 
         if (!Base.INSTANCE.getConfigManager().isRunnableEnabled())
-            playerData.sendPing(false);
+            playerData.sendPing(true);
     }
 }

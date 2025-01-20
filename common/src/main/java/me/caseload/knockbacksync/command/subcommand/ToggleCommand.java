@@ -1,9 +1,11 @@
 package me.caseload.knockbacksync.command.subcommand;
+import com.github.retrooper.packetevents.protocol.player.Combat;
 import me.caseload.knockbacksync.Base;
 import me.caseload.knockbacksync.ConfigWrapper;
 import me.caseload.knockbacksync.command.generic.BuilderCommand;
 import me.caseload.knockbacksync.command.generic.PlayerSelector;
 import me.caseload.knockbacksync.event.events.ToggleOnOffEvent;
+import me.caseload.knockbacksync.manager.CombatManager;
 import me.caseload.knockbacksync.manager.ConfigManager;
 import me.caseload.knockbacksync.manager.PlayerDataManager;
 import me.caseload.knockbacksync.permission.PermissionChecker;
@@ -125,9 +127,12 @@ public class ToggleCommand implements BuilderCommand {
         }
 
         boolean hasPlayerData = PlayerDataManager.containsPlayerData(uuid);
-        if (hasPlayerData)
+        if (hasPlayerData) {
+            if (CombatManager.getPlayers().contains(uuid)) {
+                CombatManager.removePlayer(uuid);
+            }
             PlayerDataManager.removePlayerData(uuid);
-        else {
+        } else {
             PlayerDataManager.addPlayerData(uuid, new PlayerData(Base.INSTANCE.getPlatformServer().getPlayer(uuid)));
         }
 
