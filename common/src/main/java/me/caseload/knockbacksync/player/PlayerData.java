@@ -305,7 +305,7 @@ public class PlayerData {
     }
 
     public void quitCombat() {
-        combatTask.cancel(); // should do nothing
+        if (combatTask != null) combatTask.cancel(); // rarely throws NPE without null check
         combatTask = null;
         CombatManager.removePlayer(uuid);
     }
