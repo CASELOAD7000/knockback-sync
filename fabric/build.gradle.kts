@@ -3,6 +3,8 @@ plugins {
     id("com.gradleup.shadow")
 }
 
+val shadePE: Boolean by rootProject.extra
+
 loom {
     accessWidenerPath = file("src/main/resources/knockbacksync.accesswidener")
 }
@@ -57,6 +59,7 @@ dependencies {
 
     compileOnly("org.geysermc.floodgate:api:2.0-SNAPSHOT")
     compileOnly("org.projectlombok:lombok:1.18.34")
+    compileOnly("io.netty:netty-all:4.1.72.Final")
     annotationProcessor("org.projectlombok:lombok:1.18.34")
 }
 

@@ -3,12 +3,16 @@ import java.io.ByteArrayOutputStream
 plugins {
     id("java")
     id("com.gradleup.shadow") version "8.3.3" apply false
-    id("fabric-loom") version "1.8-SNAPSHOT" apply false
+    id("fabric-loom") version "1.10.2" apply false
 }
 
 val fullVersion = "1.3.5"
 val snapshot = true
 val githubRepo = System.getenv("GITHUB_REPOSITORY") ?: project.findProperty("githubRepo").toString()
+
+extra["shadePE"] = project.findProperty("shadePE")?.toString()?.toBoolean()
+    ?: System.getenv("SHADE_PE")?.toBoolean()
+    ?: true
 
 allprojects {
     fun getVersionMeta(includeHash: Boolean): String {

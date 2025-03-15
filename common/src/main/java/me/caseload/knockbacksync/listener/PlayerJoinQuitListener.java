@@ -25,9 +25,7 @@ public abstract class PlayerJoinQuitListener {
         if (playerData == null)
             return;
 
-        if (playerData.isInCombat())
-            playerData.quitCombat();
-
+        playerData.quitCombat(true);
         PlayerDataManager.removePlayerData(uuid);
     }
 }

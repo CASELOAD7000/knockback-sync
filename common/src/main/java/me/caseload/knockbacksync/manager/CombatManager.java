@@ -8,17 +8,17 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class CombatManager {
 
-    private static final Set<UUID> combatPlayers = ConcurrentHashMap.newKeySet();
+    private static final Set<@NotNull UUID> combatPlayers = ConcurrentHashMap.newKeySet();
 
-    public static @NotNull Set<UUID> getPlayers() {
+    public static @NotNull Set<@NotNull UUID> getPlayers() {
         return combatPlayers;
     }
 
-    public static void addPlayer(UUID uuid) {
+    public static void addPlayer(@NotNull UUID uuid) {
         combatPlayers.add(uuid);
     }
 
-    public static void removePlayer(UUID uuid) {
+    public static void removePlayer(@NotNull UUID uuid) {
         combatPlayers.remove(uuid);
     }
 }

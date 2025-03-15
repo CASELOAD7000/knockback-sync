@@ -29,7 +29,7 @@ jobs:
       - name: Setup Gradle 8.10
         uses: gradle/actions/setup-gradle@v4
         with:
-          gradle-version: "8.10" # Quotes required to prevent YAML converting to number
+          gradle-version: "8.13" # Quotes required to prevent YAML converting to number
 
       - name: Generate build number
         id: buildnumber
@@ -53,39 +53,26 @@ jobs:
           # Ensure snapshot is set to false
           sed -i "s/val snapshot = .*/val snapshot = false/" build.gradle.kts
 
-      - name: Build with Gradle
-        run: gradle clean build -x test
+      - name: Build without PE shaded
+        run: gradle build -PshadePE=false -x test
         env:
           GITHUB_REPOSITORY: ${{ github.repository }}
 
-      - name: Rename shaded jar to overwrite non-shaded jar
-        run: mv bukkit/build/libs/knockbacksync-bukkit-${{ env.NEW_VERSION }}-all.jar bukkit/build/libs/knockbacksync-bukkit-${{ env.NEW_VERSION }}.jar
+      - name: Build with PE shaded Gradle
+        run: gradle build -PshadePE=true -x test
+        env:
+          GITHUB_REPOSITORY: ${{ github.repository }}
 
-      # Download PaperSpigot (Choose version for reproducibility
-      - name: Download PaperSpigot
-        run: |
-          mkdir -p paper-server/plugins
-          curl -o paperclip.jar https://api.papermc.io/v2/projects/paper/versions/1.21.1/builds/120/downloads/paper-1.21.1-120.jar 
-          mv paperclip.jar paper-server/
-
-      # Copy Plugin into Plugins Folder and Start Server
-      - name: Copy Plugin and Start Paper Server
-        run: |
-          cp bukkit/build/libs/knockbacksync-bukkit-${{ env.NEW_VERSION }}.jar paper-server/plugins/
-          cd paper-server
-          # Start the server to remap the plugin
-          timeout 60 java -Xms3G -Xmx3G -XX:+UseG1GC -XX:+ParallelRefProcEnabled -XX:MaxGCPauseMillis=200 -XX:+UnlockExperimentalVMOptions -XX:+DisableExplicitGC -XX:+AlwaysPreTouch -XX:G1NewSizePercent=30 -XX:G1MaxNewSizePercent=40 -XX:G1HeapRegionSize=8M -XX:G1ReservePercent=20 -XX:G1HeapWastePercent=5 -XX:G1MixedGCCountTarget=4 -XX:InitiatingHeapOccupancyPercent=15 -XX:G1MixedGCLiveThresholdPercent=90 -XX:G1RSetUpdatingPauseTimePercent=5 -XX:SurvivorRatio=32 -XX:+PerfDisableSharedMem -XX:MaxTenuringThreshold=1 -jar -Dcom.mojang.eula.agree=true paperclip.jar --nogui || true
-
-      # Get the Hashes of the Original and Remapped JARs
+      # Get the Hashes of the Original and Lite JARs
       - name: Calculate Hashes
         run: |
           # Calculate hash for the original JAR
-          ORIGINAL_HASH=$(sha256sum bukkit/build/libs/knockbacksync-bukkit-${{ env.NEW_VERSION }}.jar | awk '{print $1}')
-          echo "ORIGINAL_HASH=$ORIGINAL_HASH" >> $GITHUB_ENV
-          # Calculate hash for the remapped JAR
-          REMAPPED_HASH=$(sha256sum paper-server/plugins/.paper-remapped/knockbacksync-bukkit-${{ env.NEW_VERSION }}.jar | awk '{print $1}')
-          echo "REMAPPED_HASH=$REMAPPED_HASH" >> $GITHUB_ENV
-          # Calculate hash for the remapped JAR
+          BUKKIT_HASH=$(sha256sum bukkit/build/libs/knockbacksync-bukkit-${{ env.NEW_VERSION }}.jar | awk '{print $1}')
+          echo "BUKKIT_HASH=$BUKKIT_HASH" >> $GITHUB_ENV
+          # Calculate hash for the lite JAR
+          BUKKIT_LITE_HASH=$(sha256sum bukkit/build/libs/knockbacksync-bukkit-lite-${{ env.NEW_VERSION }}.jar | awk '{print $1}')
+          echo "BUKKIT_LITE_HASH=$BUKKIT_LITE_HASH" >> $GITHUB_ENV
+          # Calculate hash for the lite JAR
           FABRIC_HASH=$(sha256sum fabric/build/libs/knockbacksync-fabric-${{ env.NEW_VERSION }}.jar | awk '{print $1}')
           echo "FABRIC_HASH=$FABRIC_HASH" >> $GITHUB_ENV
 
@@ -111,8 +98,8 @@ jobs:
           }
           
           # Add new hashes if they don't exist
-          add_hash_if_new "${{ env.ORIGINAL_HASH }}"
-          add_hash_if_new "${{ env.REMAPPED_HASH }}"
+          add_hash_if_new "${{ env.BUKKIT_HASH }}"
+          add_hash_if_new "${{ env.BUKKIT_LITE_HASH }}"
           add_hash_if_new "${{ env.FABRIC_HASH }}"
           
           # Check if the file has changed
@@ -143,23 +130,25 @@ jobs:
           # Clean up
           rm dev-builds.txt.original
 
-      - name: Create artifacts directory
-        run: mkdir -p artifacts
-
-      - name: Copy bukkit artifact
-        run: cp bukkit/build/libs/knockbacksync-bukkit-${{ env.NEW_VERSION }}.jar artifacts/
-
-      - name: Copy fabric artifact
-        run: cp fabric/build/libs/knockbacksync-fabric-${{ env.NEW_VERSION }}.jar artifacts/
-
-      - name: Zip the artifacts
-        run: zip -r KnockbackSync-${{ env.NEW_VERSION }}.zip artifacts/*
-
-      - name: Upload artifacts zip
+      - name: Upload Bukkit Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: KnockbackSync-${{ env.NEW_VERSION }}.zip
-          path: KnockbackSync-${{ env.NEW_VERSION }}.zip
+          name: knockbacksync-bukkit-${{ env.NEW_VERSION }}.jar
+          path: bukkit/build/libs/knockbacksync-bukkit-${{ env.NEW_VERSION }}.jar
+          retention-days: 90
+
+      - name: Upload Bukkit Lite Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: knockbacksync-bukkit-lite-${{ env.NEW_VERSION }}.jar
+          path: bukkit/build/libs/knockbacksync-bukkit-lite-${{ env.NEW_VERSION }}.jar
+          retention-days: 90
+
+      - name: Upload Fabric Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: knockbacksync-fabric-${{ env.NEW_VERSION }}.jar
+          path: fabric/build/libs/knockbacksync-fabric-${{ env.NEW_VERSION }}.jar
           retention-days: 90
 
       - uses: Kir-Antipov/mc-publish@v3.3
@@ -171,6 +160,7 @@ jobs:
 
           files: |
             bukkit/build/libs/knockbacksync-bukkit-${{ env.NEW_VERSION }}.jar
+            bukkit/build/libs/knockbacksync-bukkit-lite-${{ env.NEW_VERSION }}.jar
 
           name: KnockbackSync-${{ env.NEW_VERSION }}
           version: ${{ env.NEW_VERSION }}

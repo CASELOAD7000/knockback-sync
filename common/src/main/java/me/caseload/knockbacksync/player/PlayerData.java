@@ -23,6 +23,7 @@ import me.caseload.knockbacksync.event.events.ToggleOnOffEvent;
 import me.caseload.knockbacksync.manager.CombatManager;
 import me.caseload.knockbacksync.manager.ConfigManager;
 import me.caseload.knockbacksync.scheduler.AbstractTaskHandle;
+import me.caseload.knockbacksync.scheduler.NettyTaskHandle;
 import me.caseload.knockbacksync.util.MathUtil;
 import me.caseload.knockbacksync.util.data.Pair;
 import me.caseload.knockbacksync.world.PlatformWorld;
@@ -32,8 +33,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Field;
+import io.netty.channel.Channel;
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.TimeUnit;
 
 @Getter
 public class PlayerData {
@@ -77,6 +80,7 @@ public class PlayerData {
     @Getter private final JitterCalculator jitterCalculator = new JitterCalculator();
     @Setter private double jitter;
     @Nullable private AbstractTaskHandle combatTask;
+    @NotNull private final Object combatTaskLock = new Object(); // Lock object for synchronization
     @Nullable @Setter private Double ping, previousPing;
     @Nullable @Setter private Double verticalVelocity;
     @Nullable @Setter private Integer lastDamageTicks;
@@ -292,28 +296,41 @@ public class PlayerData {
         return yAxis;
     }
 
-    public boolean isInCombat() {
-        return combatTask != null;
-    }
-
     public void updateCombat() {
-        if (isInCombat())
-            combatTask.cancel();
-
-        combatTask = newCombatTask();
-        CombatManager.addPlayer(uuid);
+        Channel channel = (Channel) user.getChannel();
+        channel.eventLoop().execute(() -> {
+            if (combatTask != null) {
+                combatTask.cancel();
+            }
+            combatTask = newCombatTask(channel);
+            CombatManager.addPlayer(uuid);
+        });
     }
 
-    public void quitCombat() {
-        if (combatTask != null) combatTask.cancel(); // rarely throws NPE without null check
-        combatTask = null;
-        CombatManager.removePlayer(uuid);
+    /**
+     * Cancels the combatTask quit task. This prevents quitCombat() from being called later against a new combat task
+     * Or against a player that has disconnected already
+     * @param async Whether we are already in the players netty thread
+     */
+    public void quitCombat(boolean async) {
+        Channel channel = (Channel) user.getChannel();
+        Runnable runnable = () -> {
+            if (combatTask != null) {
+                combatTask.cancel();
+                combatTask = null;
+            }
+            CombatManager.removePlayer(uuid);
+        };
+        if (async) {
+            channel.eventLoop().execute(runnable);
+        } else {
+            runnable.run();
+        }
     }
 
     @NotNull
-    private AbstractTaskHandle newCombatTask() {
-        return Base.INSTANCE.getScheduler().runTaskLaterAsynchronously(
-                this::quitCombat, Base.INSTANCE.getConfigManager().getCombatTimer());
+    private AbstractTaskHandle newCombatTask(Channel channel) {
+        return new NettyTaskHandle(channel.eventLoop().schedule(() -> quitCombat(false), convertTicksToMilliseconds(Base.INSTANCE.getConfigManager().getCombatTimer()), TimeUnit.MILLISECONDS));
     }
 
     public ClientVersion getClientVersion() {
@@ -359,5 +376,9 @@ public class PlayerData {
             default:
                 throw new IllegalStateException("Unknown ping_strategy: " + pingStrategy);
         }
+    }
+
+    private long convertTicksToMilliseconds(long ticks) {
+        return ticks * 50;
     }
 }

@@ -1,5 +1,6 @@
 package me.caseload.knockbacksync;
 
+import net.fabricmc.api.EnvType;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.loader.api.FabricLoader;
@@ -16,15 +17,23 @@ public class FabricLoaderMod implements PreLaunchEntrypoint, ModInitializer {
 
     @Override
     public void onPreLaunch() {
+        ensureServer();
         core.load();
     }
 
     @Override
     public void onInitialize() {
+        ensureServer();
         core.enable();
         ServerLifecycleEvents.SERVER_STOPPING.register((server) -> {
             core.scheduler.shutdown();
             core.statsManager.getMetrics().shutdown();
         });
+    }
+
+    private void ensureServer() {
+        if (FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) {
+            throw new IllegalStateException("This mod can only be run on servers");
+        }
     }
 }
