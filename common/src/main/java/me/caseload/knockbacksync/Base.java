@@ -13,10 +13,7 @@ import me.caseload.knockbacksync.command.subcommand.ToggleOffGroundSubcommand;
 import me.caseload.knockbacksync.event.Event;
 import me.caseload.knockbacksync.event.EventBus;
 import me.caseload.knockbacksync.event.OptimizedEventBus;
-import me.caseload.knockbacksync.listener.packetevents.AttributeChangeListener;
-import me.caseload.knockbacksync.listener.packetevents.ClientBrandListener;
-import me.caseload.knockbacksync.listener.packetevents.PingReceiveListener;
-import me.caseload.knockbacksync.listener.packetevents.PingSendListener;
+import me.caseload.knockbacksync.listener.packetevents.*;
 import me.caseload.knockbacksync.manager.ConfigManager;
 import me.caseload.knockbacksync.permission.PermissionChecker;
 import me.caseload.knockbacksync.scheduler.SchedulerAdapter;
@@ -119,6 +116,7 @@ public abstract class Base {
                 new AttributeChangeListener(),
                 new PingSendListener(),
                 new PingReceiveListener(),
+                new PacketPlayerJoinQuit(),
                 new ClientBrandListener()
         );
         Event.setEventBus(eventBus);

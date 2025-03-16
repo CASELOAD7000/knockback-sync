@@ -5,7 +5,6 @@ import io.github.retrooper.packetevents.factory.fabric.FabricPacketEventsAPI;
 import lombok.Getter;
 import me.caseload.knockbacksync.entity.EntityTickManager;
 import me.caseload.knockbacksync.listener.fabric.FabricPlayerDamageListener;
-import me.caseload.knockbacksync.listener.fabric.FabricPlayerJoinQuitListener;
 import me.caseload.knockbacksync.listener.fabric.FabricPlayerKnockbackListener;
 import me.caseload.knockbacksync.listener.fabric.FabricTickRateChangeListener;
 import me.caseload.knockbacksync.manager.ConfigManager;
@@ -85,7 +84,6 @@ public class FabricBase extends Base {
 
     @Override
     protected void registerPlatformListeners() {
-        new FabricPlayerJoinQuitListener().register();
         new FabricPlayerDamageListener().register();
         new FabricPlayerKnockbackListener().register();
         new FabricTickRateChangeListener().register();

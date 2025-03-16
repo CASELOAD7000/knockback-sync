@@ -31,7 +31,7 @@ public class BukkitPlayer implements PlatformPlayer {
     private static Class<?> craftPlayerClass;
     private static Method getHandleMethod;
     private static Method getAttackStrengthScaleMethod;
-    private static ServerVersion currentVersion = PacketEvents.getAPI().getServerManager().getVersion();
+    private static final ServerVersion currentVersion = PacketEvents.getAPI().getServerManager().getVersion();
 
     // 1.12.2 support
     static {

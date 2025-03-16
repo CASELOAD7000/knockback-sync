@@ -3,6 +3,7 @@ package me.caseload.knockbacksync.world;
 import me.caseload.knockbacksync.FabricLoaderMod;
 import me.caseload.knockbacksync.player.FabricPlayer;
 import me.caseload.knockbacksync.player.PlatformPlayer;
+import net.minecraft.server.level.ServerPlayer;
 
 import java.util.Collection;
 import java.util.UUID;
@@ -20,4 +21,8 @@ public class FabricServer implements PlatformServer {
         return new FabricPlayer(FabricLoaderMod.getServer().getPlayerList().getPlayer(uuid));
     }
 
+    @Override
+    public PlatformPlayer getPlayer(Object nativePlatformPlayer) {
+        return new FabricPlayer((ServerPlayer) nativePlatformPlayer);
+    }
 }

@@ -37,6 +37,19 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
+      # Temporary tasks so built jar works because PacketEvents won't merge my fixes for their broken fabric support
+      - name: Clone Axionize's PacketEvents Repository
+        run: |
+          git clone -b fix/fabric-events https://github.com/Axionize/packetevents.git packetevents
+          cd packetevents
+          echo "Cloned PacketEvents repository"
+
+      - name: Build and Publish PacketEvents to Maven Local
+        uses: gradle/actions/setup-gradle@v3
+        with:
+          build-root-directory: packetevents
+          arguments: publishToMavenLocal
+
       - name: Update version in build.gradle.kts
         id: update_version
         run: |

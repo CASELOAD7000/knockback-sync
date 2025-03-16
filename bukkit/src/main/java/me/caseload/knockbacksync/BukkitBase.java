@@ -132,8 +132,7 @@ public class BukkitBase extends Base {
     protected void registerPlatformListeners() {
         registerPluginListeners(
                 new BukkitPlayerDamageListener(),
-                new BukkitPlayerKnockbackListener(),
-                new BukkitPlayerJoinQuitListener()
+                new BukkitPlayerKnockbackListener()
         );
     }
 

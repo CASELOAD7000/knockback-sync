@@ -3,6 +3,7 @@ package me.caseload.knockbacksync.world;
 import me.caseload.knockbacksync.player.BukkitPlayer;
 import me.caseload.knockbacksync.player.PlatformPlayer;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 
 import java.util.Collection;
 import java.util.UUID;
@@ -18,5 +19,10 @@ public class BukkitServer implements PlatformServer {
     @Override
     public PlatformPlayer getPlayer(UUID uuid) {
         return new BukkitPlayer(Bukkit.getPlayer(uuid));
+    }
+
+    @Override
+    public PlatformPlayer getPlayer(Object nativePlatformPlayer) {
+        return new BukkitPlayer((Player) nativePlatformPlayer);
     }
 }

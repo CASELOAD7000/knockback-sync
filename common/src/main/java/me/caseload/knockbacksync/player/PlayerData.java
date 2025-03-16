@@ -354,7 +354,7 @@ public class PlayerData {
 
     @KBSyncEventHandler
     public void onToggledEvent(ToggleOnOffEvent event) {
-        if (event.getStatus() == false) {
+        if (!event.getStatus()) {
             transactionsSent.clear();
             keepaliveMap.clear();
         }
