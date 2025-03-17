@@ -25,6 +25,7 @@ import me.caseload.knockbacksync.world.PlatformServer;
 import org.incendo.cloud.CommandManager;
 import org.kohsuke.github.GitHub;
 
+import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
@@ -204,7 +205,11 @@ public abstract class Base {
                     .findFirst()
                     .map(asset -> {
                         try (InputStream inputStream = new URL(asset.getBrowserDownloadUrl()).openStream()) {
-                            return inputStream.readAllBytes();
+                            inputStream.reset();
+                            byte[] bytes = new byte[inputStream.available()];
+                            DataInputStream dataInputStream = new DataInputStream(inputStream);
+                            dataInputStream.readFully(bytes);
+                            return bytes;
                         } catch (Exception e) {
                             LOGGER.severe("Failed to download latest release: " + e.getMessage());
                             return null;
