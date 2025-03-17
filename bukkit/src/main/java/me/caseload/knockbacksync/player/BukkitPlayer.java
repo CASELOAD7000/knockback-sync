@@ -5,6 +5,7 @@ import com.github.retrooper.packetevents.manager.server.ServerVersion;
 import com.github.retrooper.packetevents.protocol.player.User;
 import com.github.retrooper.packetevents.protocol.world.BoundingBox;
 import com.github.retrooper.packetevents.util.Vector3d;
+import com.google.common.base.Preconditions;
 import me.caseload.knockbacksync.BukkitBase;
 import me.caseload.knockbacksync.Platform;
 import me.caseload.knockbacksync.world.FoliaWorld;
@@ -25,6 +26,7 @@ import java.util.UUID;
 
 public class BukkitPlayer implements PlatformPlayer {
     public final Player bukkitPlayer;
+    public final User user;
     private String clientBrand = "vanilla";
 
     // Reflection variables
@@ -74,6 +76,8 @@ public class BukkitPlayer implements PlatformPlayer {
 
     public BukkitPlayer(Player player) {
         this.bukkitPlayer = player;
+        this.user = PacketEvents.getAPI().getPlayerManager().getUser(bukkitPlayer);
+        Preconditions.checkArgument(user != null);
     }
 
     @Override
@@ -216,7 +220,7 @@ public class BukkitPlayer implements PlatformPlayer {
 
     @Override
     public User getUser() {
-        return PacketEvents.getAPI().getPlayerManager().getUser(bukkitPlayer);
+        return this.user;
     }
 
     @Override

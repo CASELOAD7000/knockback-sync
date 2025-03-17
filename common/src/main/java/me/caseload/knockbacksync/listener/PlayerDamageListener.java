@@ -10,7 +10,7 @@ public abstract class PlayerDamageListener {
         if (!Base.INSTANCE.getConfigManager().isToggled())
             return;
 
-        PlayerData playerData = PlayerDataManager.getPlayerData(victim.getUUID());
+        PlayerData playerData = PlayerDataManager.getPlayerData(victim.getUser());
         if (playerData == null)
             return;
 

@@ -5,6 +5,7 @@ import com.github.retrooper.packetevents.event.PacketSendEvent;
 import com.github.retrooper.packetevents.protocol.attribute.Attributes;
 import com.github.retrooper.packetevents.protocol.packettype.PacketType;
 import com.github.retrooper.packetevents.protocol.player.ClientVersion;
+import com.github.retrooper.packetevents.protocol.player.User;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerUpdateAttributes;
 import me.caseload.knockbacksync.Base;
 import me.caseload.knockbacksync.manager.PlayerDataManager;
@@ -36,17 +37,16 @@ public class AttributeChangeListener extends PacketListenerAbstract {
 
             WrapperPlayServerUpdateAttributes packet = new WrapperPlayServerUpdateAttributes(event);
 
-            UUID uuid = event.getUser().getUUID();
-            if (!PlayerDataManager.containsPlayerData(uuid))
-                return;
+            User user = event.getUser();
+            if (!PlayerDataManager.containsPlayerData(user)) return;
 
             // Get the attributes from the packet
             for (WrapperPlayServerUpdateAttributes.Property property : packet.getProperties()) {
                 // You can now check for specific attributes
                 if (property.getAttribute().equals(Attributes.GENERIC_GRAVITY)) {
-                    onPlayerGravityChange(uuid, calculateValueWithModifiers(property));
+                    onPlayerGravityChange(user, calculateValueWithModifiers(property));
                 } else if (property.getAttribute().equals(Attributes.GENERIC_KNOCKBACK_RESISTANCE)) {
-                    onPlayerKnockBackChange(uuid, calculateValueWithModifiers(property));
+                    onPlayerKnockBackChange(user, calculateValueWithModifiers(property));
                 }
             }
         }
@@ -87,8 +87,8 @@ public class AttributeChangeListener extends PacketListenerAbstract {
 
     // Yes this is not properly latency compensated, that would require including a proper simulation engine
     // Laggy players will just have to deal with being on the wrong gravity for a few hundred ms, too bad!
-    public void onPlayerGravityChange(UUID uuid, double newGravity) {
-        PlayerData playerData = PlayerDataManager.getPlayerData(uuid);
+    public void onPlayerGravityChange(User user, double newGravity) {
+        PlayerData playerData = PlayerDataManager.getPlayerData(user);
         if (playerData.getClientVersion().isNewerThanOrEquals(ClientVersion.V_1_20_5)) {
             playerData.setGravityAttribute(newGravity);
         } else {
@@ -96,8 +96,8 @@ public class AttributeChangeListener extends PacketListenerAbstract {
         }
     }
 
-    private void onPlayerKnockBackChange(UUID uuid, double newKnockbackResistance) {
-        PlayerData playerData = PlayerDataManager.getPlayerData(uuid);
+    private void onPlayerKnockBackChange(User user, double newKnockbackResistance) {
+        PlayerData playerData = PlayerDataManager.getPlayerData(user);
         playerData.setKnockbackResistanceAttribute(newKnockbackResistance);
     }
 }

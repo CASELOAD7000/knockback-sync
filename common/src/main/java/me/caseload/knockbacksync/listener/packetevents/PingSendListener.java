@@ -33,7 +33,7 @@ public class PingSendListener extends PacketListenerAbstract {
         PacketTypeCommon packetType = event.getPacketType();
         UUID playerUUID = event.getUser().getUUID();
         if (playerUUID == null) return;
-        PlayerData playerData = PlayerDataManager.getPlayerData(playerUUID);
+        PlayerData playerData = PlayerDataManager.getPlayerData(event.getUser());
         if (playerData == null) return;
 
         if (playerData.pingStrategy == PingStrategy.KEEPALIVE && packetType.equals(PacketType.Play.Server.KEEP_ALIVE)) {

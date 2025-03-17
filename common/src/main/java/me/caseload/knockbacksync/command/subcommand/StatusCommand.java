@@ -86,8 +86,7 @@ public class StatusCommand implements BuilderCommand {
 
     private void showPlayerStatus(Sender sender, PlatformPlayer target) {
         boolean globalStatus = configManager.isToggled();
-        UUID uuid = target.getUUID();
-        boolean playerStatus = PlayerDataManager.containsPlayerData(uuid);
+        boolean playerStatus = PlayerDataManager.containsPlayerData(target.getUser());
 
         String statusMessage;
         if (!globalStatus) {

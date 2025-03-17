@@ -1,5 +1,6 @@
 package me.caseload.knockbacksync.command.subcommand;
 import com.github.retrooper.packetevents.protocol.player.Combat;
+import com.github.retrooper.packetevents.protocol.player.User;
 import me.caseload.knockbacksync.Base;
 import me.caseload.knockbacksync.ConfigWrapper;
 import me.caseload.knockbacksync.command.generic.BuilderCommand;
@@ -115,9 +116,9 @@ public class ToggleCommand implements BuilderCommand {
     }
 
     private static void togglePlayerKnockback(PlatformPlayer target, ConfigManager configManager, Sender sender) {
-        UUID uuid = target.getUUID();
+        User user = target.getUser();
 
-        if (PlayerDataManager.shouldExempt(uuid)) {
+        if (PlayerDataManager.shouldExempt(target.getUUID())) {
             String message = ChatUtil.translateAlternateColorCodes('&',
                     configManager.getPlayerIneligibleMessage()
             ).replace("%player%", target.getName());
@@ -126,14 +127,14 @@ public class ToggleCommand implements BuilderCommand {
             return;
         }
 
-        boolean hasPlayerData = PlayerDataManager.containsPlayerData(uuid);
+        boolean hasPlayerData = PlayerDataManager.containsPlayerData(user);
         if (hasPlayerData) {
-            if (CombatManager.getPlayers().contains(uuid)) {
-                CombatManager.removePlayer(uuid);
+            if (CombatManager.getPlayers().contains(user)) {
+                CombatManager.removePlayer(user);
             }
-            PlayerDataManager.removePlayerData(uuid);
+            PlayerDataManager.removePlayerData(user);
         } else {
-            PlayerDataManager.addPlayerData(uuid, new PlayerData(Base.INSTANCE.getPlatformServer().getPlayer(uuid)));
+            PlayerDataManager.addPlayerData(user, target);
         }
 
         String message = ChatUtil.translateAlternateColorCodes('&',

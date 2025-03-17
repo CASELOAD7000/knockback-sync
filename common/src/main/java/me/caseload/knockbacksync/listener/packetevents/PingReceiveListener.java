@@ -3,6 +3,7 @@ package me.caseload.knockbacksync.listener.packetevents;
 import com.github.retrooper.packetevents.event.*;
 import com.github.retrooper.packetevents.protocol.packettype.PacketType;
 import com.github.retrooper.packetevents.protocol.packettype.PacketTypeCommon;
+import com.github.retrooper.packetevents.protocol.player.User;
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientKeepAlive;
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPong;
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientWindowConfirmation;
@@ -27,9 +28,9 @@ public class PingReceiveListener extends PacketListenerAbstract {
         // And then receive a response we have to ensure that if the packet was sent by us we cancel it
         // otherwise the server will likely kick the player
         PacketTypeCommon packetType = event.getPacketType();
-        UUID playerUUID = event.getUser().getUUID();
-        if (playerUUID == null) return;
-        PlayerData playerData = PlayerDataManager.getPlayerData(playerUUID);
+        User user = event.getUser();
+        if (user == null) return;
+        PlayerData playerData = PlayerDataManager.getPlayerData(user);
         if (playerData == null) return;
 
         if (playerData.pingStrategy == PingStrategy.KEEPALIVE && packetType == PacketType.Play.Client.KEEP_ALIVE) {

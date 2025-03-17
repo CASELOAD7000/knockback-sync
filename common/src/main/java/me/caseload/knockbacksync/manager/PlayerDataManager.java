@@ -1,6 +1,8 @@
 package me.caseload.knockbacksync.manager;
 
+import com.github.retrooper.packetevents.protocol.player.User;
 import me.caseload.knockbacksync.Base;
+import me.caseload.knockbacksync.player.PlatformPlayer;
 import me.caseload.knockbacksync.player.PlayerData;
 import me.caseload.knockbacksync.util.FloodgateUtil;
 import me.caseload.knockbacksync.util.GeyserUtil;
@@ -12,27 +14,28 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class PlayerDataManager {
 
-    private static final Map<UUID, PlayerData> playerDataMap = new ConcurrentHashMap<>();
+    private static final Map<User, PlayerData> playerDataMap = new ConcurrentHashMap<>();
 
-    public static PlayerData getPlayerData(@NotNull UUID uuid) {
-        return playerDataMap.get(uuid);
+    public static PlayerData getPlayerData(@NotNull User user) {
+        return playerDataMap.get(user);
     }
 
-    public static void addPlayerData(@NotNull UUID uuid, @NotNull PlayerData playerData) {
-        if (!shouldExempt(uuid)) {
-            playerDataMap.put(uuid, playerData);
+    public static void addPlayerData(@NotNull User user, @NotNull PlatformPlayer platformPlayer) {
+        if (!shouldExempt(platformPlayer.getUUID())) {
+            PlayerData playerData = new PlayerData(user, platformPlayer);
+            playerDataMap.put(user, playerData);
             Base.INSTANCE.getEventBus().registerListeners(playerData);
         }
     }
 
-    public static void removePlayerData(@NotNull UUID uuid) {
-        PlayerData playerData = playerDataMap.remove(uuid);
+    public static void removePlayerData(@NotNull User user) {
+        PlayerData playerData = playerDataMap.remove(user);
         if (playerData != null)
             Base.INSTANCE.getEventBus().unregisterListeners(playerData);
     }
 
-    public static boolean containsPlayerData(@NotNull UUID uuid) {
-        return playerDataMap.containsKey(uuid);
+    public static boolean containsPlayerData(@NotNull User user) {
+        return playerDataMap.containsKey(user);
     }
 
     public static boolean shouldExempt(@NotNull UUID uuid) {

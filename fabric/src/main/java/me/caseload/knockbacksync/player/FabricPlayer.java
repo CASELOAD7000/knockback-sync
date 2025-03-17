@@ -7,6 +7,8 @@ import com.github.retrooper.packetevents.protocol.world.Location;
 import com.github.retrooper.packetevents.util.Vector3d;
 import me.caseload.knockbacksync.world.FabricWorld;
 import me.caseload.knockbacksync.world.PlatformWorld;
+import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.registries.VanillaRegistries;
@@ -27,10 +29,13 @@ import java.util.UUID;
 
 public class FabricPlayer implements PlatformPlayer {
     public final ServerPlayer fabricPlayer;
-    private String clientBrand = "fabric";
+    public final User user;
+
+    private String clientBrand = "vanilla";
 
     public FabricPlayer(ServerPlayer player) {
         this.fabricPlayer = player;
+        this.user = PacketEvents.getAPI().getPlayerManager().getUser(fabricPlayer);
     }
 
     @Override
@@ -157,7 +162,7 @@ public class FabricPlayer implements PlatformPlayer {
 
     @Override
     public User getUser() {
-        return PacketEvents.getAPI().getPlayerManager().getUser(fabricPlayer);
+        return user;
     }
 
     @Override

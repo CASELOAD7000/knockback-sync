@@ -14,7 +14,7 @@ public abstract class PlayerKnockbackListener {
         if (!Base.INSTANCE.getConfigManager().isToggled())
             return;
 
-        PlayerData victimPlayerData = PlayerDataManager.getPlayerData(victim.getUUID());
+        PlayerData victimPlayerData = PlayerDataManager.getPlayerData(victim.getUser());
         if (victimPlayerData == null)
             return;
 

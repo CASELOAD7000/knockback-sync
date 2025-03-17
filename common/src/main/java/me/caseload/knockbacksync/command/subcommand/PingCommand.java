@@ -87,12 +87,12 @@ public class PingCommand implements BuilderCommand {
         }
 
         if (isSelf) {
-            playerData = PlayerDataManager.getPlayerData(senderUUID);
+            playerData = PlayerDataManager.getPlayerData(Base.INSTANCE.getPlatformServer().getPlayer(senderUUID).getUser());
             if (playerData == null) {
                 return ChatUtil.translateAlternateColorCodes('&', knockbacksyncDisabledForYouMessage);
             }
         } else {
-            playerData = PlayerDataManager.getPlayerData(targetUUID);
+            playerData = PlayerDataManager.getPlayerData(Base.INSTANCE.getPlatformServer().getPlayer(targetUUID).getUser());
             if (playerData == null) {
                 return ChatUtil.translateAlternateColorCodes('&', knockbacksyncDisabledForTargetMessage);
             }

@@ -88,25 +88,10 @@ public class PlayerData {
     @Setter private double knockbackResistanceAttribute = 0.0;
     public PingStrategy pingStrategy; // this is currently shared between all instances, but can be made per-player later
 
-    public PlayerData(PlatformPlayer platformPlayer) {
+    public PlayerData(User user, PlatformPlayer platformPlayer) {
         this.uuid = platformPlayer.getUUID();
+        this.user = user;
         this.platformPlayer = platformPlayer;
-
-        User tempUser = null;
-
-        PlayerManager playerManager = PacketEvents.getAPI().getPlayerManager();
-        Object player = null;
-        try {
-            player = playerField.get(platformPlayer);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
-
-        if (player != null) {
-            tempUser = playerManager.getUser(player);
-        }
-
-        this.user = tempUser;
         this.pingStrategy = loadPingStrategy(Base.INSTANCE.getConfigManager());
     }
 
@@ -303,7 +288,7 @@ public class PlayerData {
                 combatTask.cancel();
             }
             combatTask = newCombatTask(channel);
-            CombatManager.addPlayer(uuid);
+            CombatManager.addPlayer(user);
         });
     }
 
@@ -319,7 +304,7 @@ public class PlayerData {
                 combatTask.cancel();
                 combatTask = null;
             }
-            CombatManager.removePlayer(uuid);
+            CombatManager.removePlayer(user);
         };
         if (async) {
             channel.eventLoop().execute(runnable);
