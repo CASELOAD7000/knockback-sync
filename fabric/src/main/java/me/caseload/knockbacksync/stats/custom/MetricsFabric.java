@@ -87,8 +87,8 @@ public class MetricsFabric implements Metrics {
 
     private void appendPlatformData(JsonObjectBuilder builder) {
         builder.appendField("playerAmount", getPlayerAmount());
-        builder.appendField("onlineMode", FabricLoaderMod.getServer().usesAuthentication() ? 0 : 1);
-        builder.appendField("bukkitVersion", "Fabric " + FabricLoader.getInstance().getModContainer("fabricloader").get().getMetadata().getVersion().getFriendlyString() + " (MC: " + FabricLoaderMod.getServer().getServerVersion() + ")");
+        builder.appendField("onlineMode", FabricLoaderMod.getServer().isOnlineMode() ? 0 : 1);
+        builder.appendField("bukkitVersion", "Fabric " + FabricLoader.getInstance().getModContainer("fabricloader").get().getMetadata().getVersion().getFriendlyString() + " (MC: " + FabricLoaderMod.getServer().getVersion() + ")");
         builder.appendField("bukkitName", "Fabric");
         builder.appendField("javaVersion", System.getProperty("java.version"));
         builder.appendField("osName", System.getProperty("os.name"));
@@ -103,7 +103,7 @@ public class MetricsFabric implements Metrics {
 
     private int getPlayerAmount() {
         if (FabricLoaderMod.getServer().isRunning()) {
-            return FabricLoaderMod.getServer().getPlayerCount();
+            return FabricLoaderMod.getServer().getCurrentPlayerCount();
         } else {
             return 0;
         }

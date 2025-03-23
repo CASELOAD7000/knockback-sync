@@ -36,10 +36,7 @@ dependencies {
     implementation(project(":common"))
 
     minecraft("com.mojang:minecraft:${rootProject.property("minecraft_version")}")
-    mappings(loom.layered {
-        officialMojangMappings()
-        parchment("org.parchmentmc.data:parchment-1.21:${rootProject.property("parchment_mappings")}")
-    })
+    mappings("net.fabricmc:yarn:${rootProject.property("yarn_mappings")}")
     modImplementation("net.fabricmc:fabric-loader:${rootProject.property("loader_version")}")
     modImplementation(fabricApi.module("fabric-lifecycle-events-v1", "${rootProject.property("fabric_version")}"))
     modImplementation(fabricApi.module("fabric-events-interaction-v0", "${rootProject.property("fabric_version")}"))

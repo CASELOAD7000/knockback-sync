@@ -6,18 +6,20 @@ import com.github.retrooper.packetevents.protocol.world.BoundingBox;
 import com.github.retrooper.packetevents.util.Vector3d;
 import me.caseload.knockbacksync.world.FabricWorld;
 import me.caseload.knockbacksync.world.PlatformWorld;
-import net.minecraft.core.Holder;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.data.registries.VanillaRegistries;
-import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.item.enchantment.Enchantment;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
-import net.minecraft.world.item.enchantment.Enchantments;
-import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.Vec3;
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.enchantment.Enchantments;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.registry.BuiltinRegistries;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
+import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -25,19 +27,19 @@ import java.util.Optional;
 import java.util.UUID;
 
 public class FabricPlayer implements PlatformPlayer {
-    public final ServerPlayer fabricPlayer;
+    public final ServerPlayerEntity fabricPlayer;
     public final User user;
 
     private String clientBrand = "vanilla";
 
-    public FabricPlayer(ServerPlayer player) {
+    public FabricPlayer(ServerPlayerEntity player) {
         this.fabricPlayer = player;
         this.user = PacketEvents.getAPI().getPlayerManager().getUser(fabricPlayer);
     }
 
     @Override
     public UUID getUUID() {
-        return fabricPlayer.getUUID();
+        return fabricPlayer.getUuid();
     }
 
     @Override
@@ -62,32 +64,32 @@ public class FabricPlayer implements PlatformPlayer {
 
     @Override
     public float getPitch() {
-        return fabricPlayer.getXRot();
+        return fabricPlayer.getPitch();
     }
 
     @Override
     public float getYaw() {
-        return fabricPlayer.getYRot();
+        return fabricPlayer.getYaw();
     }
 
     @Override
     public boolean isOnGround() {
-        return fabricPlayer.onGround();
+        return fabricPlayer.isOnGround();
     }
 
     @Override
     public int getPing() {
-        return fabricPlayer.connection.latency();
+        return fabricPlayer.networkHandler.getLatency();
     }
 
     @Override
     public boolean isGliding() {
-        return fabricPlayer.isFallFlying();
+        return fabricPlayer.isGliding();
     }
 
     @Override
     public PlatformWorld getWorld() {
-        return new FabricWorld(fabricPlayer.level());
+        return new FabricWorld(fabricPlayer.getWorld());
     }
 
     @Override
@@ -97,13 +99,13 @@ public class FabricPlayer implements PlatformPlayer {
 
     @Override
     public void sendMessage(@NotNull String s) {
-        fabricPlayer.sendSystemMessage(Component.literal(s));
+        fabricPlayer.sendMessage(Text.literal(s));
     }
 
     @Override
     public double getAttackCooldown() {
         // this is what paper does I have no idea how this works
-        return fabricPlayer.getAttackStrengthScale(0.5f);
+        return fabricPlayer.getAttackCooldownProgress(0.5f);
     }
 
     @Override
@@ -113,37 +115,33 @@ public class FabricPlayer implements PlatformPlayer {
 
     @Override
     public int getMainHandKnockbackLevel() {
-        Optional<Holder.Reference<Enchantment>>
-                entry = VanillaRegistries.createLookup().asGetterLookup().get(
-                Registries.ENCHANTMENT, Enchantments.KNOCKBACK
-        );
-        Holder<Enchantment> registryEntry1 = entry.orElseThrow(); // Reference implements RegistryEntry, this is fine
-        return EnchantmentHelper.getItemEnchantmentLevel(registryEntry1, fabricPlayer.getMainHandItem());
+        RegistryEntry<Enchantment> knockbackEntry = fabricPlayer.getWorld().getRegistryManager().getOrThrow(RegistryKeys.ENCHANTMENT).getOrThrow(Enchantments.KNOCKBACK);
+        return EnchantmentHelper.getLevel(knockbackEntry, fabricPlayer.getMainHandStack());
     }
 
     @Override
     public @Nullable Integer getNoDamageTicks() {
-        return fabricPlayer.invulnerableTime;
+        return fabricPlayer.timeUntilRegen;
     }
 
     @Override
     public void setVelocity(Vector3d adjustedVelocity) {
-        fabricPlayer.setDeltaMovement(adjustedVelocity.x, adjustedVelocity.y, adjustedVelocity.z);
+        fabricPlayer.setVelocity(adjustedVelocity.x, adjustedVelocity.y, adjustedVelocity.z);
         // TODO
         // fix paper-ism? for some reason setVelocity() in paper marks the entity as hurt marked every time its called?
-        fabricPlayer.hurtMarked = true;
+        fabricPlayer.velocityModified = true;
     }
 
     @Override
     public Vector3d getVelocity() {
-        final Vec3 fabricVelocity = fabricPlayer.getDeltaMovement();
+        final Vec3d fabricVelocity = fabricPlayer.getVelocity();
         return new Vector3d(fabricVelocity.x, fabricVelocity.y, fabricVelocity.z);
     }
 
     @Override
     public double getJumpPower() {
         double jumpVelocity = 0.42;
-        MobEffectInstance jumpEffect = fabricPlayer.getEffect(MobEffects.JUMP);
+        StatusEffectInstance jumpEffect = fabricPlayer.getStatusEffect(StatusEffects.JUMP_BOOST);
         if (jumpEffect != null) {
             int amplifier = jumpEffect.getAmplifier();
             jumpVelocity += (amplifier + 1) * 0.1F;
@@ -153,7 +151,7 @@ public class FabricPlayer implements PlatformPlayer {
     }
     @Override
     public BoundingBox getBoundingBox() {
-        AABB boundingBox = fabricPlayer.getBoundingBox();
+        Box boundingBox = fabricPlayer.getBoundingBox();
         return new BoundingBox(boundingBox.minX, boundingBox.minY, boundingBox.minZ, boundingBox.maxX, boundingBox.minY, boundingBox.maxZ);
     }
 

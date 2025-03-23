@@ -1,16 +1,16 @@
 package me.caseload.knockbacksync.mixin;
 
 import me.caseload.knockbacksync.entity.EntityTickManager;
-import net.minecraft.server.level.ChunkMap;
-import net.minecraft.world.entity.EntityType;
+import net.minecraft.entity.EntityType;
+import net.minecraft.server.world.ServerChunkLoadingManager;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
-@Mixin(ChunkMap.class)
+@Mixin(ServerChunkLoadingManager.class)
 public abstract class ChunkMapMixin {
 
-    @Redirect(method = "addEntity", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/EntityType;updateInterval()I"))
+    @Redirect(method = "loadEntity", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/EntityType;getTrackTickInterval()I"))
     private int getCustomUpdateInterval(EntityType<?> entityType) {
         return EntityTickManager.getCustomUpdateInterval(entityType);
     }

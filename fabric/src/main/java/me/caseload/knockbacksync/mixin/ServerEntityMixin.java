@@ -1,11 +1,11 @@
 package me.caseload.knockbacksync.mixin;
 
 import me.caseload.knockbacksync.callback.PlayerVelocityEvent;
-import net.minecraft.server.level.ServerEntity;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.phys.Vec3;
+import net.minecraft.entity.Entity;
+import net.minecraft.server.network.EntityTrackerEntry;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.math.Vec3d;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(ServerEntity.class)
+@Mixin(EntityTrackerEntry.class)
 public class ServerEntityMixin {
 
     @Shadow
@@ -21,19 +21,19 @@ public class ServerEntityMixin {
     private Entity entity;
 
     // Velocity event
-    @Inject(method = "sendChanges", at = @At(value = "FIELD", target = "Lnet/minecraft/world/entity/Entity;hurtMarked:Z", ordinal = 1), cancellable = true)
+    @Inject(method = "tick", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/Entity;velocityModified:Z", ordinal = 1), cancellable = true)
     private void onSendChanges(CallbackInfo ci) {
-        if (this.entity.hurtMarked && this.entity instanceof ServerPlayer player) {
-            Vec3 velocity = player.getDeltaMovement();
+        if (this.entity.velocityModified && this.entity instanceof ServerPlayerEntity player) {
+            Vec3d velocity = player.getVelocity();
 
-            InteractionResult result = PlayerVelocityEvent.EVENT.invoker().onVelocityChange(player, velocity);
+            ActionResult result = PlayerVelocityEvent.EVENT.invoker().onVelocityChange(player, velocity);
 
-            if (result == InteractionResult.FAIL) {
-                this.entity.hurtMarked = false;
+            if (result == ActionResult.FAIL) {
+                this.entity.velocityModified = false;
                 ci.cancel();
-            } else if (result == InteractionResult.SUCCESS) {
+            } else if (result == ActionResult.SUCCESS) {
                 // Currently unnecessary since we do this in the handler, will move later
-                player.setDeltaMovement(velocity);
+                player.setVelocity(velocity);
             }
         }
     }

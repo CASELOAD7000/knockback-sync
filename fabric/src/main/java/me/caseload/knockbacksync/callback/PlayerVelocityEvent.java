@@ -2,23 +2,23 @@ package me.caseload.knockbacksync.callback;
 
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.phys.Vec3;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.math.Vec3d;
 
 public interface PlayerVelocityEvent {
     Event<PlayerVelocityEvent> EVENT = EventFactory.createArrayBacked(PlayerVelocityEvent.class,
             (listeners) -> (player, velocity) -> {
                 for (PlayerVelocityEvent listener : listeners) {
-                    InteractionResult result = listener.onVelocityChange(player, velocity);
+                    ActionResult result = listener.onVelocityChange(player, velocity);
 
-                    if (result != InteractionResult.PASS) {
+                    if (result != ActionResult.PASS) {
                         return result;
                     }
                 }
 
-                return InteractionResult.PASS;
+                return ActionResult.PASS;
             });
 
-    InteractionResult onVelocityChange(ServerPlayer player, Vec3 velocity);
+    ActionResult onVelocityChange(ServerPlayerEntity player, Vec3d velocity);
 }

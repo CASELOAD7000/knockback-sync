@@ -211,7 +211,7 @@ jobs:
             fabric
 
           game-versions: |
-            >=1.21
+            1.21.4
 
           retry-attempts: 2
           retry-delay: 10000

@@ -3,9 +3,8 @@ package me.caseload.knockbacksync.entity;
 import me.caseload.knockbacksync.Base;
 import me.caseload.knockbacksync.ConfigWrapper;
 import me.caseload.knockbacksync.event.events.ConfigReloadEvent;
+import net.minecraft.entity.EntityType;
 import me.caseload.knockbacksync.event.KBSyncEventHandler;
-import net.minecraft.world.entity.EntityType;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -32,9 +31,9 @@ public class EntityTickManager {
         customTickIntervals.clear();
         for (String entityKey : configWrapper.getKeys("entity_tick_intervals")) {
             try {
-                Optional<EntityType<?>> entityType = EntityType.byString(entityKey.toLowerCase());
+                Optional<EntityType<?>> entityType = EntityType.get(entityKey.toLowerCase());
                 if (entityType.isPresent()) {
-                    int interval = configWrapper.getInt("entity_tick_intervals." + entityKey, entityType.get().updateInterval());
+                    int interval = configWrapper.getInt("entity_tick_intervals." + entityKey, entityType.get().getTrackTickInterval());
                     customTickIntervals.put(entityType.get(), interval);
                 }
             } catch (IllegalArgumentException e) {
@@ -44,6 +43,6 @@ public class EntityTickManager {
     }
 
     public static int getCustomUpdateInterval(EntityType<?> entityType) {
-        return customTickIntervals.getOrDefault(entityType, entityType.updateInterval());
+        return customTickIntervals.getOrDefault(entityType, entityType.getTrackTickInterval());
     }
 }
