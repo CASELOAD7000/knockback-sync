@@ -1,5 +1,6 @@
 package me.caseload.knockbacksync.listener;
 
+import com.github.retrooper.packetevents.protocol.player.User;
 import com.github.retrooper.packetevents.protocol.world.states.WrappedBlockState;
 import com.github.retrooper.packetevents.protocol.world.states.type.StateTypes;
 import com.github.retrooper.packetevents.util.Vector3d;
@@ -14,7 +15,10 @@ public abstract class PlayerKnockbackListener {
         if (!Base.INSTANCE.getConfigManager().isToggled())
             return;
 
-        PlayerData victimPlayerData = PlayerDataManager.getPlayerData(victim.getUser());
+        User user = victim.getUser();
+        if (user == null) return; // Prevent errors with fake players
+
+        PlayerData victimPlayerData = PlayerDataManager.getPlayerData(user);
         if (victimPlayerData == null)
             return;
 
