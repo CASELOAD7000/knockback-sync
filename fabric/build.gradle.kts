@@ -41,7 +41,8 @@ dependencies {
         parchment("org.parchmentmc.data:parchment-1.21:${rootProject.property("parchment_mappings")}")
     })
     modImplementation("net.fabricmc:fabric-loader:${rootProject.property("loader_version")}")
-    modImplementation("net.fabricmc.fabric-api:fabric-api:${rootProject.property("fabric_version")}")
+    modImplementation(fabricApi.module("fabric-lifecycle-events-v1", "${rootProject.property("fabric_version")}"))
+    modImplementation(fabricApi.module("fabric-events-interaction-v0", "${rootProject.property("fabric_version")}"))
 
     include(modImplementation("me.lucko:fabric-permissions-api:0.3.1")!!)
     include(modImplementation("com.github.retrooper:packetevents-fabric:2.7.1-SNAPSHOT")!!)

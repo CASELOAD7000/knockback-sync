@@ -19,18 +19,9 @@ public class GeyserUtil {
     public static boolean isGeyserPlayer(UUID uuid) {
         if (!CHECKED_FOR_GEYSER) {
             try {
-                switch (Base.INSTANCE.getPlatform()) {
-                    case BUKKIT:
-                    case FOLIA:
-                        ClassLoader classLoader = PacketEvents.getAPI().getPlugin().getClass().getClassLoader();
-                        GEYSER_CLASS = classLoader.loadClass("org.geysermc.api.Geyser");
-                        break;
-                    case FABRIC:
-                        GEYSER_CLASS = Class.forName("org.geysermc.api.Geyser");
-                        GEYSER_PRESENT = true;
-                        break;
-                }
-
+                ClassLoader classLoader = PacketEvents.getAPI().getPlugin().getClass().getClassLoader();
+                GEYSER_CLASS = classLoader.loadClass("org.geysermc.api.Geyser");
+                GEYSER_PRESENT = true;
             } catch (ClassNotFoundException e) {
                 GEYSER_PRESENT = false;
             }
@@ -40,17 +31,8 @@ public class GeyserUtil {
         if (GEYSER_PRESENT) {
             if (GEYSER_API_CLASS == null) {
                 try {
-                    switch (Base.INSTANCE.getPlatform()) {
-                        case BUKKIT:
-                        case FOLIA:
-                            ClassLoader classLoader = PacketEvents.getAPI().getPlugin().getClass().getClassLoader();
-                            GEYSER_API_CLASS = classLoader.loadClass("org.geysermc.api.GeyserApiBase");
-                            break;
-                        case FABRIC:
-                            GEYSER_CLASS = Class.forName("org.geysermc.api.GeyserApiBase");
-                            GEYSER_PRESENT = true;
-                            break;
-                    }
+                    ClassLoader classLoader = PacketEvents.getAPI().getPlugin().getClass().getClassLoader();
+                    GEYSER_API_CLASS = classLoader.loadClass("org.geysermc.api.GeyserApiBase");
                 } catch (ClassNotFoundException e) {
                     e.printStackTrace();
                 }
