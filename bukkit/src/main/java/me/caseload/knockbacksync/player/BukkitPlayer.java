@@ -75,6 +75,7 @@ public class BukkitPlayer implements PlatformPlayer {
     }
 
     public BukkitPlayer(Player player) {
+        Preconditions.checkArgument(player != null);
         this.bukkitPlayer = player;
         this.user = PacketEvents.getAPI().getPlayerManager().getUser(bukkitPlayer);
         Preconditions.checkArgument(user != null);
