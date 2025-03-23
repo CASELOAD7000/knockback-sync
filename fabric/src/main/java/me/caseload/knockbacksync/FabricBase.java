@@ -68,8 +68,8 @@ public class FabricBase extends Base {
 
     @Override
     public void load() {
-        PacketEvents.setAPI(new FabricPacketEventsAPI("knockbacksync", EnvType.SERVER));
-        PacketEvents.getAPI().load();
+        // Since we JiJ PacketEvents and depend on it on Fabric, we can always just get the API instance since it loads firsts
+        // No need to make an API instance and load it
     }
 
     @Override
