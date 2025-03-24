@@ -28,7 +28,6 @@ Official Discord: https://discord.gg/nnpqpAtyVW
 | IP               | Location                          | Region | Ping Offset | spike_threshold |
 |------------------|-----------------------------------|--------|-------------|-----------------|
 | `pvparcade.club` | Ashburn, Virginia, United States  | NA     | 20          | 15              |
-| `stray.gg`       | Ashburn, Virginia, United States  | NA     | 25          | 20              |
 | `eu.stray.gg`    | Frankfurt, Hesse, Germany         | EU     | 25          | 20              |
 | `valed.gg`       | Frankfurt, Hesse, Germany         | EU     | 25          | 20              |
 | `eu.catpvp.xyz`  | Frankfurt, Hesse, Germany         | EU     | 25          | 20              |
