@@ -14,6 +14,10 @@ extra["shadePE"] = project.findProperty("shadePE")?.toString()?.toBoolean()
     ?: System.getenv("SHADE_PE")?.toBoolean()
     ?: true
 
+extra["relocate"] = project.findProperty("relocate")?.toString()?.toBoolean()
+    ?: System.getenv("RELOCATE_JAR")?.toBoolean()
+    ?: true
+
 allprojects {
     fun getVersionMeta(includeHash: Boolean): String {
         if (!snapshot) {
