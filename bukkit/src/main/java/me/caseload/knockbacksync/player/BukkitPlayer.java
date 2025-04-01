@@ -78,7 +78,6 @@ public class BukkitPlayer implements PlatformPlayer {
         Preconditions.checkArgument(player != null);
         this.bukkitPlayer = player;
         this.user = PacketEvents.getAPI().getPlayerManager().getUser(bukkitPlayer);
-        Preconditions.checkArgument(user != null);
     }
 
     @Override
@@ -220,7 +219,7 @@ public class BukkitPlayer implements PlatformPlayer {
     }
 
     @Override
-    public User getUser() {
+    public @Nullable User getUser() {
         return this.user;
     }
 

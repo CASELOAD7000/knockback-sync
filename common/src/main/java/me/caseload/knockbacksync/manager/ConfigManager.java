@@ -36,6 +36,7 @@ public class ConfigManager {
     private String playerEnableMessage;
     private String playerDisableMessage;
     private String playerIneligibleMessage;
+    private String playerDisconnectedWhileExecutingCommand;
 
     private AbstractTaskHandle pingTask;
 
@@ -122,6 +123,7 @@ public class ConfigManager {
         playerEnableMessage = configWrapper.getString("messages.toggle.player.enable", "&aSuccessfully enabled KnockbackSync for %player%.");
         playerDisableMessage = configWrapper.getString("messages.toggle.player.disable", "&aSuccessfully &cdisabled &aKnockbackSync for %player%.");
         playerIneligibleMessage = configWrapper.getString("messages.toggle.player.ineligible", "&c%player% is ineligible for KnockbackSync. If you believe this is in error, please contact your server administrators.");
+        playerDisconnectedWhileExecutingCommand = configWrapper.getString("messages.toggle.player.disconnected-while-executing-command", "&c%player% disconnected while executing command.");
     }
 
     public void updateConfig() {

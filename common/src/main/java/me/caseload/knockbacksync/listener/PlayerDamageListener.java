@@ -12,7 +12,7 @@ public abstract class PlayerDamageListener {
             return;
 
         User user = victim.getUser();
-        if (user == null) return; // Prevent errors with fake players
+        if (user == null) return; // Prevent errors with players disconnecting while this is running (or with fake player?)
 
         PlayerData playerData = PlayerDataManager.getPlayerData(user);
         if (playerData == null)

@@ -4,6 +4,7 @@ import com.github.retrooper.packetevents.PacketEvents;
 import com.github.retrooper.packetevents.protocol.player.User;
 import com.github.retrooper.packetevents.protocol.world.BoundingBox;
 import com.github.retrooper.packetevents.util.Vector3d;
+import com.google.common.base.Preconditions;
 import me.caseload.knockbacksync.world.FabricWorld;
 import me.caseload.knockbacksync.world.PlatformWorld;
 import net.minecraft.enchantment.Enchantment;
@@ -33,6 +34,7 @@ public class FabricPlayer implements PlatformPlayer {
     private String clientBrand = "vanilla";
 
     public FabricPlayer(ServerPlayerEntity player) {
+        Preconditions.checkArgument(player != null);
         this.fabricPlayer = player;
         this.user = PacketEvents.getAPI().getPlayerManager().getUser(fabricPlayer);
     }
@@ -156,7 +158,7 @@ public class FabricPlayer implements PlatformPlayer {
     }
 
     @Override
-    public User getUser() {
+    public @Nullable User getUser() {
         return user;
     }
 

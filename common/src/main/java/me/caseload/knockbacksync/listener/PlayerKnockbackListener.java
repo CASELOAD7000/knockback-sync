@@ -16,7 +16,7 @@ public abstract class PlayerKnockbackListener {
             return;
 
         User user = victim.getUser();
-        if (user == null) return; // Prevent errors with fake players
+        if (user == null) return; // Prevent errors with players disconnecting while this is running (or with fake player?)
 
         PlayerData victimPlayerData = PlayerDataManager.getPlayerData(user);
         if (victimPlayerData == null)

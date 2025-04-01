@@ -14,7 +14,6 @@ import me.caseload.knockbacksync.util.ChatUtil;
 import org.incendo.cloud.CommandManager;
 import org.incendo.cloud.permission.PredicatePermission;
 
-import java.util.UUID;
 import java.util.function.Predicate;
 
 public class StatusCommand implements BuilderCommand {
@@ -85,6 +84,13 @@ public class StatusCommand implements BuilderCommand {
     }
 
     private void showPlayerStatus(Sender sender, PlatformPlayer target) {
+        if (target.getUser() == null) {
+            String message = ChatUtil.translateAlternateColorCodes('&',
+                    configManager.getPlayerDisconnectedWhileExecutingCommand()
+            ).replace("%player%", target.getName());
+            sender.sendMessage(message);
+        }
+
         boolean globalStatus = configManager.isToggled();
         boolean playerStatus = PlayerDataManager.containsPlayerData(target.getUser());
 

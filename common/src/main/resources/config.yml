@@ -194,6 +194,7 @@ messages:
       enable: "&aSuccessfully enabled KnockbackSync for %player%."
       disable: "&aSuccessfully &cdisabled &aKnockbackSync for %player%."
       ineligible: "&c%player% is ineligible for KnockbackSync. If you believe this is in error, please contact your server administrators."
+      disconnected-while-executing-command: "&c%player% disconnected while executing command."
     permission:
       no_global: "&cYou don't have permission to toggle the global setting."
       no_self: "&cYou do not have permission to toggle your knockback."
