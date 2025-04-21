@@ -19,17 +19,20 @@ jobs:
       - name: Checkout main repository
         uses: actions/checkout@v2
 
+      # 2. Install JDK 21 – NO Gradle cache here
       - name: Set up JDK
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v4
         with:
-          java-version: '21'
-          distribution: 'adopt'
-          cache: gradle
+          distribution: temurin
+          java-version: 21
+          cache: ''                          # ← disable Maven/Gradle cache
 
-      - name: Setup Gradle 8.10
+      # 3. Set up Gradle + dependency cache
+      - name: Set up Gradle 8.13
         uses: gradle/actions/setup-gradle@v4
         with:
-          gradle-version: "8.13" # Quotes required to prevent YAML converting to number
+          gradle-version: "8.13"             # keep the quotes
+          # cache-enabled: true              # default, uploads ~/.gradle
 
       - name: Generate build number
         id: buildnumber
