@@ -3,7 +3,7 @@ import java.io.ByteArrayOutputStream
 plugins {
     id("java")
     id("com.gradleup.shadow") version "8.3.3" apply false
-    id("fabric-loom") version "1.10.4" apply false
+    id("fabric-loom") version "1.10.5" apply false
 }
 
 val fullVersion = "1.3.5"
