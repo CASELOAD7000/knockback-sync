@@ -7,6 +7,7 @@ import me.caseload.knockbacksync.player.PlayerData;
 import me.caseload.knockbacksync.util.FloodgateUtil;
 import me.caseload.knockbacksync.util.GeyserUtil;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 import java.util.UUID;
@@ -16,7 +17,7 @@ public class PlayerDataManager {
 
     private static final Map<User, PlayerData> playerDataMap = new ConcurrentHashMap<>();
 
-    public static PlayerData getPlayerData(@NotNull User user) {
+    public static @Nullable PlayerData getPlayerData(@NotNull User user) {
         return playerDataMap.get(user);
     }
 

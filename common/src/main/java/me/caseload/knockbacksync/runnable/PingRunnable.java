@@ -17,7 +17,8 @@ public class PingRunnable implements Runnable {
 
         for (User user : CombatManager.getPlayers()) {
             PlayerData playerData = PlayerDataManager.getPlayerData(user);
-            playerData.sendPing(true);
+            if (playerData != null)
+                playerData.sendPing(true);
         }
     }
 }
