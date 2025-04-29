@@ -4,6 +4,11 @@ import me.caseload.knockbacksync.Base;
 
 public class FabricStatsManager extends StatsManager {
     public FabricStatsManager() {
-        super(new MetricsFabric(23568));
+        super(null);
+    }
+
+    @Override
+    public void init() {
+        // no op remove bstats
     }
 }
