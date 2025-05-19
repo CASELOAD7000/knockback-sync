@@ -23,6 +23,7 @@ import me.caseload.knockbacksync.event.events.ToggleOnOffEvent;
 import me.caseload.knockbacksync.manager.CombatManager;
 import me.caseload.knockbacksync.manager.ConfigManager;
 import me.caseload.knockbacksync.scheduler.AbstractTaskHandle;
+import me.caseload.knockbacksync.scheduler.NettyTaskHandle;
 import me.caseload.knockbacksync.util.MathUtil;
 import me.caseload.knockbacksync.util.data.Pair;
 import me.caseload.knockbacksync.world.PlatformWorld;
@@ -32,8 +33,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Field;
+import io.netty.channel.Channel;
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.TimeUnit;
 
 @Getter
 public class PlayerData {
@@ -77,6 +80,7 @@ public class PlayerData {
     @Getter private final JitterCalculator jitterCalculator = new JitterCalculator();
     @Setter private double jitter;
     @Nullable private AbstractTaskHandle combatTask;
+    @NotNull private final Object combatTaskLock = new Object(); // Lock object for synchronization
     @Nullable @Setter private Double ping, previousPing;
     @Nullable @Setter private Double verticalVelocity;
     @Nullable @Setter private Integer lastDamageTicks;
@@ -84,25 +88,10 @@ public class PlayerData {
     @Setter private double knockbackResistanceAttribute = 0.0;
     public PingStrategy pingStrategy; // this is currently shared between all instances, but can be made per-player later
 
-    public PlayerData(PlatformPlayer platformPlayer) {
+    public PlayerData(User user, PlatformPlayer platformPlayer) {
         this.uuid = platformPlayer.getUUID();
+        this.user = user;
         this.platformPlayer = platformPlayer;
-
-        User tempUser = null;
-
-        PlayerManager playerManager = PacketEvents.getAPI().getPlayerManager();
-        Object player = null;
-        try {
-            player = playerField.get(platformPlayer);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
-
-        if (player != null) {
-            tempUser = playerManager.getUser(player);
-        }
-
-        this.user = tempUser;
         this.pingStrategy = loadPingStrategy(Base.INSTANCE.getConfigManager());
     }
 
@@ -292,28 +281,41 @@ public class PlayerData {
         return yAxis;
     }
 
-    public boolean isInCombat() {
-        return combatTask != null;
-    }
-
     public void updateCombat() {
-        if (isInCombat())
-            combatTask.cancel();
-
-        combatTask = newCombatTask();
-        CombatManager.addPlayer(uuid);
+        Channel channel = (Channel) user.getChannel();
+        channel.eventLoop().execute(() -> {
+            if (combatTask != null) {
+                combatTask.cancel();
+            }
+            combatTask = newCombatTask(channel);
+            CombatManager.addPlayer(user);
+        });
     }
 
-    public void quitCombat() {
-        combatTask.cancel(); // should do nothing
-        combatTask = null;
-        CombatManager.removePlayer(uuid);
+    /**
+     * Cancels the combatTask quit task. This prevents quitCombat() from being called later against a new combat task
+     * Or against a player that has disconnected already
+     * @param async Whether we are already in the players netty thread
+     */
+    public void quitCombat(boolean async) {
+        Channel channel = (Channel) user.getChannel();
+        Runnable runnable = () -> {
+            if (combatTask != null) {
+                combatTask.cancel();
+                combatTask = null;
+            }
+            CombatManager.removePlayer(user);
+        };
+        if (async) {
+            channel.eventLoop().execute(runnable);
+        } else {
+            runnable.run();
+        }
     }
 
     @NotNull
-    private AbstractTaskHandle newCombatTask() {
-        return Base.INSTANCE.getScheduler().runTaskLaterAsynchronously(
-                this::quitCombat, Base.INSTANCE.getConfigManager().getCombatTimer());
+    private AbstractTaskHandle newCombatTask(Channel channel) {
+        return new NettyTaskHandle(channel.eventLoop().schedule(() -> quitCombat(false), convertTicksToMilliseconds(Base.INSTANCE.getConfigManager().getCombatTimer()), TimeUnit.MILLISECONDS));
     }
 
     public ClientVersion getClientVersion() {
@@ -337,7 +339,7 @@ public class PlayerData {
 
     @KBSyncEventHandler
     public void onToggledEvent(ToggleOnOffEvent event) {
-        if (event.getStatus() == false) {
+        if (!event.getStatus()) {
             transactionsSent.clear();
             keepaliveMap.clear();
         }
@@ -359,5 +361,9 @@ public class PlayerData {
             default:
                 throw new IllegalStateException("Unknown ping_strategy: " + pingStrategy);
         }
+    }
+
+    private long convertTicksToMilliseconds(long ticks) {
+        return ticks * 50;
     }
 }

@@ -2,18 +2,17 @@ package me.caseload.knockbacksync.sender;
 
 import me.caseload.knockbacksync.FabricBase;
 import me.caseload.knockbacksync.Base;
-import me.caseload.knockbacksync.mixin.CommandStackSourceAccessor;
 import me.caseload.knockbacksync.permission.FabricPermissionChecker;
-import net.minecraft.commands.CommandSource;
-import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.network.chat.Component;
-import net.minecraft.server.rcon.RconConsoleSource;
+import net.minecraft.server.command.CommandOutput;
+import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.server.rcon.RconCommandOutput;
+import net.minecraft.text.Text;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.incendo.cloud.SenderMapper;
 
 import java.util.UUID;
 
-public class FabricSenderFactory extends SenderFactory<FabricBase, CommandSourceStack> implements SenderMapper<CommandSourceStack, Sender> {
+public class FabricSenderFactory extends SenderFactory<FabricBase, ServerCommandSource> implements SenderMapper<ServerCommandSource, Sender> {
     private final FabricBase plugin;
 
     public FabricSenderFactory(FabricBase kbSyncFabricBase) {
@@ -27,16 +26,16 @@ public class FabricSenderFactory extends SenderFactory<FabricBase, CommandSource
     }
 
     @Override
-    protected UUID getUniqueId(CommandSourceStack commandSource) {
+    protected UUID getUniqueId(ServerCommandSource commandSource) {
         if (commandSource.getEntity() != null) {
-            return commandSource.getEntity().getUUID();
+            return commandSource.getEntity().getUuid();
         }
         return Sender.CONSOLE_UUID;
     }
 
     @Override
-    protected String getName(CommandSourceStack commandSource) {
-        String name = commandSource.getTextName();
+    protected String getName(ServerCommandSource commandSource) {
+        String name = commandSource.getName();
         if (commandSource.getEntity() != null && name.equals("Server")) {
             return Sender.CONSOLE_NAME;
         }
@@ -44,7 +43,7 @@ public class FabricSenderFactory extends SenderFactory<FabricBase, CommandSource
     }
 
     @Override
-    protected void sendMessage(CommandSourceStack sender, String message) {
+    protected void sendMessage(ServerCommandSource sender, String message) {
 //        final Locale locale;
 //        if (sender.getEntity() instanceof ServerPlayer) {
 //            String language = ((ServerPlayer) sender.getEntity()).clientInformation().language();
@@ -53,39 +52,39 @@ public class FabricSenderFactory extends SenderFactory<FabricBase, CommandSource
 //            locale = null;
 //        }
 //        sender.sendFeedback(() -> toNativeText(TranslationManager.render(message, locale)), false);
-        sender.sendSuccess(() -> Component.literal(message), false);
+        sender.sendFeedback(() -> Text.literal(message), false);
     }
 
     @Override
-    protected boolean hasPermission(CommandSourceStack commandSource, String node) {
+    protected boolean hasPermission(ServerCommandSource commandSource, String node) {
         return ((FabricPermissionChecker) Base.INSTANCE.getPermissionChecker()).hasPermission(commandSource, node);
     }
 
     @Override
-    protected boolean hasPermission(CommandSourceStack commandSource, String node, boolean defaultIfUnset) {
+    protected boolean hasPermission(ServerCommandSource commandSource, String node, boolean defaultIfUnset) {
         return ((FabricPermissionChecker) Base.INSTANCE.getPermissionChecker()).hasPermission(commandSource, node, defaultIfUnset);
     }
 
     @Override
-    protected void performCommand(CommandSourceStack sender, String command) {
+    protected void performCommand(ServerCommandSource sender, String command) {
 //        sender.getServer().getCommandManager().executeWithPrefix(sender, command);
     }
 
     @Override
-    protected boolean isConsole(CommandSourceStack sender) {
-        CommandSource output = ((CommandStackSourceAccessor) sender).getSource();
+    protected boolean isConsole(ServerCommandSource sender) {
+        CommandOutput output = sender.output;
         return output == sender.getServer() || // Console
-                output.getClass() == RconConsoleSource.class || // Rcon
-                (output == CommandSource.NULL && sender.getTextName().equals("")); // Functions
+                output.getClass() == RconCommandOutput.class || // Rcon
+                (output == CommandOutput.DUMMY && sender.getName().equals("")); // Functions
     }
 
     @Override
-    public @NonNull Sender map(@NonNull CommandSourceStack base) {
+    public @NonNull Sender map(@NonNull ServerCommandSource base) {
         return this.wrap(base);
     }
 
     @Override
-    public @NonNull CommandSourceStack reverse(@NonNull Sender mapped) {
+    public @NonNull ServerCommandSource reverse(@NonNull Sender mapped) {
         return this.unwrap(mapped);
     }
 

@@ -1,5 +1,5 @@
 package me.caseload.knockbacksync.command.subcommand;
-import com.github.retrooper.packetevents.protocol.player.Combat;
+import com.github.retrooper.packetevents.protocol.player.User;
 import me.caseload.knockbacksync.Base;
 import me.caseload.knockbacksync.ConfigWrapper;
 import me.caseload.knockbacksync.command.generic.BuilderCommand;
@@ -10,13 +10,11 @@ import me.caseload.knockbacksync.manager.ConfigManager;
 import me.caseload.knockbacksync.manager.PlayerDataManager;
 import me.caseload.knockbacksync.permission.PermissionChecker;
 import me.caseload.knockbacksync.player.PlatformPlayer;
-import me.caseload.knockbacksync.player.PlayerData;
 import me.caseload.knockbacksync.sender.Sender;
 import me.caseload.knockbacksync.util.ChatUtil;
 import org.incendo.cloud.CommandManager;
 import org.incendo.cloud.permission.PredicatePermission;
 
-import java.util.UUID;
 import java.util.function.Predicate;
 
 public class ToggleCommand implements BuilderCommand {
@@ -69,7 +67,7 @@ public class ToggleCommand implements BuilderCommand {
                     if (targetSelector == null) {
                         // Global toggle
                         if (permissionChecker.hasPermission(sender, TOGGLE_GLOBAL_PERMISSION, false)) {
-                            toggleGlobalKnockback(configManager, sender);
+                            toggleGlobalKnockback(sender);
                         } else {
                             sender.sendMessage(ChatUtil.translateAlternateColorCodes('&', noGlobalPermissionMessage));
                         }
@@ -87,7 +85,7 @@ public class ToggleCommand implements BuilderCommand {
                         if (!configManager.isToggled()) {
                             sender.sendMessage(ChatUtil.translateAlternateColorCodes('&', serverDisabledMessage));
                         } else {
-                            togglePlayerKnockback(target, configManager, sender);
+                            togglePlayerKnockback(target, sender);
                         }
                     }
                 })
@@ -95,7 +93,7 @@ public class ToggleCommand implements BuilderCommand {
     }
 
 
-    private static void toggleGlobalKnockback(ConfigManager configManager, Sender sender) {
+    private static void toggleGlobalKnockback(Sender sender) {
         boolean toggledState = !configManager.isToggled();
         ToggleOnOffEvent toggleOnOffEvent = new ToggleOnOffEvent(toggledState);
         toggleOnOffEvent.post();
@@ -105,8 +103,8 @@ public class ToggleCommand implements BuilderCommand {
         toggledState = toggleOnOffEvent.getStatus();
         configManager.setToggled(toggledState);
 
-        Base.INSTANCE.getConfigManager().getConfigWrapper().set("enabled", toggledState);
-        Base.INSTANCE.getConfigManager().saveConfig();
+        configManager.getConfigWrapper().set("enabled", toggledState);
+        configManager.saveConfig();
 
         String message = ChatUtil.translateAlternateColorCodes('&',
                 toggledState ? configManager.getEnableMessage() : configManager.getDisableMessage()
@@ -114,10 +112,16 @@ public class ToggleCommand implements BuilderCommand {
         sender.sendMessage(ChatUtil.translateAlternateColorCodes('&', message));
     }
 
-    private static void togglePlayerKnockback(PlatformPlayer target, ConfigManager configManager, Sender sender) {
-        UUID uuid = target.getUUID();
+    private static void togglePlayerKnockback(PlatformPlayer target, Sender sender) {
+        User user = target.getUser();
+        if (user == null) {
+            String message = ChatUtil.translateAlternateColorCodes('&',
+                    configManager.getPlayerDisconnectedWhileExecutingCommand()
+            ).replace("%player%", target.getName());
+            sender.sendMessage(message);
+        }
 
-        if (PlayerDataManager.shouldExempt(uuid)) {
+        if (PlayerDataManager.shouldExempt(target.getUUID())) {
             String message = ChatUtil.translateAlternateColorCodes('&',
                     configManager.getPlayerIneligibleMessage()
             ).replace("%player%", target.getName());
@@ -126,14 +130,14 @@ public class ToggleCommand implements BuilderCommand {
             return;
         }
 
-        boolean hasPlayerData = PlayerDataManager.containsPlayerData(uuid);
+        boolean hasPlayerData = PlayerDataManager.containsPlayerData(user);
         if (hasPlayerData) {
-            if (CombatManager.getPlayers().contains(uuid)) {
-                CombatManager.removePlayer(uuid);
+            if (CombatManager.getPlayers().contains(user)) {
+                CombatManager.removePlayer(user);
             }
-            PlayerDataManager.removePlayerData(uuid);
+            PlayerDataManager.removePlayerData(user);
         } else {
-            PlayerDataManager.addPlayerData(uuid, new PlayerData(Base.INSTANCE.getPlatformServer().getPlayer(uuid)));
+            PlayerDataManager.addPlayerData(user, target);
         }
 
         String message = ChatUtil.translateAlternateColorCodes('&',

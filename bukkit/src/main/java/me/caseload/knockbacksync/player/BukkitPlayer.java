@@ -5,6 +5,7 @@ import com.github.retrooper.packetevents.manager.server.ServerVersion;
 import com.github.retrooper.packetevents.protocol.player.User;
 import com.github.retrooper.packetevents.protocol.world.BoundingBox;
 import com.github.retrooper.packetevents.util.Vector3d;
+import com.google.common.base.Preconditions;
 import me.caseload.knockbacksync.BukkitBase;
 import me.caseload.knockbacksync.Platform;
 import me.caseload.knockbacksync.world.FoliaWorld;
@@ -25,13 +26,14 @@ import java.util.UUID;
 
 public class BukkitPlayer implements PlatformPlayer {
     public final Player bukkitPlayer;
+    public final User user;
     private String clientBrand = "vanilla";
 
     // Reflection variables
     private static Class<?> craftPlayerClass;
     private static Method getHandleMethod;
     private static Method getAttackStrengthScaleMethod;
-    private static ServerVersion currentVersion = PacketEvents.getAPI().getServerManager().getVersion();
+    private static final ServerVersion currentVersion = PacketEvents.getAPI().getServerManager().getVersion();
 
     // 1.12.2 support
     static {
@@ -73,7 +75,9 @@ public class BukkitPlayer implements PlatformPlayer {
     }
 
     public BukkitPlayer(Player player) {
+        Preconditions.checkArgument(player != null);
         this.bukkitPlayer = player;
+        this.user = PacketEvents.getAPI().getPlayerManager().getUser(bukkitPlayer);
     }
 
     @Override
@@ -215,8 +219,8 @@ public class BukkitPlayer implements PlatformPlayer {
     }
 
     @Override
-    public User getUser() {
-        return PacketEvents.getAPI().getPlayerManager().getUser(bukkitPlayer);
+    public @Nullable User getUser() {
+        return this.user;
     }
 
     @Override

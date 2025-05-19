@@ -1,5 +1,6 @@
 package me.caseload.knockbacksync.listener;
 
+import com.github.retrooper.packetevents.protocol.player.User;
 import me.caseload.knockbacksync.Base;
 import me.caseload.knockbacksync.manager.PlayerDataManager;
 import me.caseload.knockbacksync.player.PlatformPlayer;
@@ -10,7 +11,10 @@ public abstract class PlayerDamageListener {
         if (!Base.INSTANCE.getConfigManager().isToggled())
             return;
 
-        PlayerData playerData = PlayerDataManager.getPlayerData(victim.getUUID());
+        User user = victim.getUser();
+        if (user == null) return; // Prevent errors with players disconnecting while this is running (or with fake player?)
+
+        PlayerData playerData = PlayerDataManager.getPlayerData(user);
         if (playerData == null)
             return;
 

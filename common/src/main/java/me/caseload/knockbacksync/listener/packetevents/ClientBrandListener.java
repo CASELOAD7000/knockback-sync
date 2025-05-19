@@ -5,6 +5,8 @@ import com.github.retrooper.packetevents.event.PacketReceiveEvent;
 import com.github.retrooper.packetevents.protocol.packettype.PacketType;
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPluginMessage;
 import me.caseload.knockbacksync.Base;
+import me.caseload.knockbacksync.manager.PlayerDataManager;
+import me.caseload.knockbacksync.player.PlayerData;
 
 public class ClientBrandListener extends PacketListenerAbstract {
     String brand = "vanilla";
@@ -16,7 +18,9 @@ public class ClientBrandListener extends PacketListenerAbstract {
             WrapperPlayClientPluginMessage packet = new WrapperPlayClientPluginMessage(event);
             String channelName = packet.getChannelName();
             handle(channelName, packet.getData());
-            Base.INSTANCE.getPlatformServer().getPlayer(event.getUser().getUUID()).setClientBrand(brand);
+            PlayerData playerData = PlayerDataManager.getPlayerData(event.getUser());
+            if (playerData == null) return;
+            playerData.getPlatformPlayer().setClientBrand(brand);
         }
     }
 

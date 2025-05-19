@@ -1,6 +1,6 @@
 accessWidener v2 named
 
-# We don't actually need this right now, but it's useful to keep an access widener around for when we do need one
-accessible field net/minecraft/server/level/ChunkMap entityMap Lit/unimi/dsi/fastutil/ints/Int2ObjectMap;
-accessible class net/minecraft/server/level/ChunkMap$TrackedEntity
-accessible method net/minecraft/server/level/ChunkMap$TrackedEntity updatePlayers (Ljava/util/List;)V
+accessible field net/minecraft/server/command/ServerCommandSource output Lnet/minecraft/server/command/CommandOutput;
+accessible field net/minecraft/server/world/ServerChunkLoadingManager entityTrackers Lit/unimi/dsi/fastutil/ints/Int2ObjectMap;
+accessible class net/minecraft/server/world/ServerChunkLoadingManager$EntityTracker
+#accessible method net/minecraft/server/level/ChunkMap$TrackedEntity updatePlayers (Ljava/util/List;)V

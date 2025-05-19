@@ -5,6 +5,7 @@ api-version: '1.13' # We actually support 1.12.2, api-version was added later th
 authors: [ Caseload, Axionize ]
 description: Synchronizes player knockback for smoother gameplay.
 folia-supported: true
+depends: ${depends}
 permissions:
   knockbacksync.update:
     default: op

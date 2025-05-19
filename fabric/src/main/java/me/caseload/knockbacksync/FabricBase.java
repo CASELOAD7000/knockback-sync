@@ -5,7 +5,6 @@ import io.github.retrooper.packetevents.factory.fabric.FabricPacketEventsAPI;
 import lombok.Getter;
 import me.caseload.knockbacksync.entity.EntityTickManager;
 import me.caseload.knockbacksync.listener.fabric.FabricPlayerDamageListener;
-import me.caseload.knockbacksync.listener.fabric.FabricPlayerJoinQuitListener;
 import me.caseload.knockbacksync.listener.fabric.FabricPlayerKnockbackListener;
 import me.caseload.knockbacksync.listener.fabric.FabricTickRateChangeListener;
 import me.caseload.knockbacksync.manager.ConfigManager;
@@ -69,8 +68,8 @@ public class FabricBase extends Base {
 
     @Override
     public void load() {
-        PacketEvents.setAPI(new FabricPacketEventsAPI("knockbacksync", EnvType.SERVER));
-        PacketEvents.getAPI().load();
+        // Since we JiJ PacketEvents and depend on it on Fabric, we can always just get the API instance since it loads firsts
+        // No need to make an API instance and load it
     }
 
     @Override
@@ -85,7 +84,6 @@ public class FabricBase extends Base {
 
     @Override
     protected void registerPlatformListeners() {
-        new FabricPlayerJoinQuitListener().register();
         new FabricPlayerDamageListener().register();
         new FabricPlayerKnockbackListener().register();
         new FabricTickRateChangeListener().register();

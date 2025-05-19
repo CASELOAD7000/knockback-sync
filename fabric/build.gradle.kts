@@ -11,11 +11,6 @@ base {
     archivesName.set("${rootProject.property("archives_base_name")}-fabric")
 }
 
-val shadeThisThing: Configuration by configurations.creating {
-    isCanBeConsumed = true
-    isTransitive = true
-}
-
 // TODO migrate to only including sourceset for compile, test and javadoc tasks
 // Currently must build with gradle build -x test to skip test
 tasks.withType<JavaCompile>().configureEach {
@@ -30,21 +25,24 @@ tasks.named<JavaCompile>("compileTestJava") {
     exclude("**/*")
 }
 
+repositories {
+    maven("https://jitpack.io") // Conditional Mixin
+}
+
 dependencies {
     implementation(project(":common"))
 
     minecraft("com.mojang:minecraft:${rootProject.property("minecraft_version")}")
-    mappings(loom.layered {
-        officialMojangMappings()
-        parchment("org.parchmentmc.data:parchment-1.21:${rootProject.property("parchment_mappings")}")
-    })
+    mappings("net.fabricmc:yarn:${rootProject.property("yarn_mappings")}")
     modImplementation("net.fabricmc:fabric-loader:${rootProject.property("loader_version")}")
-    modImplementation("net.fabricmc.fabric-api:fabric-api:${rootProject.property("fabric_version")}")
+    modImplementation(fabricApi.module("fabric-lifecycle-events-v1", "${rootProject.property("fabric_version")}"))
+    modImplementation(fabricApi.module("fabric-events-interaction-v0", "${rootProject.property("fabric_version")}"))
 
     include(modImplementation("me.lucko:fabric-permissions-api:0.3.1")!!)
-    include(modImplementation("com.github.retrooper:packetevents-fabric:2.7.0-SNAPSHOT")!!)
-    include(modImplementation("org.incendo:cloud-fabric:2.0.0-beta.9")!!)
+    include(modImplementation("com.github.retrooper:packetevents-fabric:2.8.0-SNAPSHOT")!!)
+    include(modImplementation("org.incendo:cloud-fabric:2.0.0-beta.10")!!)
 
+    include(implementation("org.incendo:cloud-minecraft-extras:2.0.0-beta.10")!!)
     include(implementation("org.yaml:snakeyaml:2.0")!!)
     include(implementation("org.kohsuke:github-api:1.326")!!)
     // Required for org.kohsuke.github
@@ -57,20 +55,8 @@ dependencies {
 
     compileOnly("org.geysermc.floodgate:api:2.0-SNAPSHOT")
     compileOnly("org.projectlombok:lombok:1.18.34")
+    compileOnly("io.netty:netty-all:4.1.72.Final")
     annotationProcessor("org.projectlombok:lombok:1.18.34")
-}
-
-tasks.shadowJar {
-    archiveClassifier.set("dev")
-    configurations = listOf(shadeThisThing)
-    isEnableRelocation = true
-    relocationPrefix = "${project.property("maven_group")}.${project.property("archives_base_name")}.shaded"
-    finalizedBy(tasks.remapJar)
-}
-tasks.remapJar {
-    archiveClassifier.set(null as String?)
-    dependsOn(tasks.shadowJar)
-    inputFile = tasks.shadowJar.get().archiveFile
 }
 
 tasks.processResources {

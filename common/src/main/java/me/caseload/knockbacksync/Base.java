@@ -13,10 +13,7 @@ import me.caseload.knockbacksync.command.subcommand.ToggleOffGroundSubcommand;
 import me.caseload.knockbacksync.event.Event;
 import me.caseload.knockbacksync.event.EventBus;
 import me.caseload.knockbacksync.event.OptimizedEventBus;
-import me.caseload.knockbacksync.listener.packetevents.AttributeChangeListener;
-import me.caseload.knockbacksync.listener.packetevents.ClientBrandListener;
-import me.caseload.knockbacksync.listener.packetevents.PingReceiveListener;
-import me.caseload.knockbacksync.listener.packetevents.PingSendListener;
+import me.caseload.knockbacksync.listener.packetevents.*;
 import me.caseload.knockbacksync.manager.ConfigManager;
 import me.caseload.knockbacksync.permission.PermissionChecker;
 import me.caseload.knockbacksync.scheduler.SchedulerAdapter;
@@ -28,6 +25,7 @@ import me.caseload.knockbacksync.world.PlatformServer;
 import org.incendo.cloud.CommandManager;
 import org.kohsuke.github.GitHub;
 
+import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
@@ -119,6 +117,7 @@ public abstract class Base {
                 new AttributeChangeListener(),
                 new PingSendListener(),
                 new PingReceiveListener(),
+                new PacketPlayerJoinQuit(),
                 new ClientBrandListener()
         );
         Event.setEventBus(eventBus);
@@ -206,7 +205,11 @@ public abstract class Base {
                     .findFirst()
                     .map(asset -> {
                         try (InputStream inputStream = new URL(asset.getBrowserDownloadUrl()).openStream()) {
-                            return inputStream.readAllBytes();
+                            inputStream.reset();
+                            byte[] bytes = new byte[inputStream.available()];
+                            DataInputStream dataInputStream = new DataInputStream(inputStream);
+                            dataInputStream.readFully(bytes);
+                            return bytes;
                         } catch (Exception e) {
                             LOGGER.severe("Failed to download latest release: " + e.getMessage());
                             return null;

@@ -19,10 +19,10 @@ public class FabricSchedulerAdapter implements SchedulerAdapter {
         Iterator<ScheduledTask> iterator = taskMap.keySet().iterator();
         while (iterator.hasNext()) {
             ScheduledTask task = iterator.next();
-            if (server.getTickCount() >= task.nextRunTick) {
+            if (server.getTicks() >= task.nextRunTick) {
                 task.task.run();
                 if (task.isPeriodic) {
-                    task.nextRunTick = server.getTickCount() + task.period;
+                    task.nextRunTick = server.getTicks() + task.period;
                 } else {
                     iterator.remove();
                 }
@@ -32,7 +32,7 @@ public class FabricSchedulerAdapter implements SchedulerAdapter {
 
     @Override
     public AbstractTaskHandle runTask(Runnable task) {
-        ScheduledTask scheduledTask = new ScheduledTask(task, FabricLoaderMod.getServer().getTickCount(), 0, false);
+        ScheduledTask scheduledTask = new ScheduledTask(task, FabricLoaderMod.getServer().getTicks(), 0, false);
         Runnable cancellationTask = () -> taskMap.remove(scheduledTask);
         taskMap.put(scheduledTask, cancellationTask);
         return new FabricTaskHandle(cancellationTask);
@@ -52,7 +52,7 @@ public class FabricSchedulerAdapter implements SchedulerAdapter {
 
     @Override
     public AbstractTaskHandle runTaskLater(Runnable task, long delayTicks) {
-        ScheduledTask scheduledTask = new ScheduledTask(task, FabricLoaderMod.getServer().getTickCount() + delayTicks, 0, false);
+        ScheduledTask scheduledTask = new ScheduledTask(task, FabricLoaderMod.getServer().getTicks() + delayTicks, 0, false);
         Runnable cancellationTask = () -> taskMap.remove(scheduledTask);
         taskMap.put(scheduledTask, cancellationTask);
         return new FabricTaskHandle(cancellationTask);
@@ -60,7 +60,7 @@ public class FabricSchedulerAdapter implements SchedulerAdapter {
 
     @Override
     public AbstractTaskHandle runTaskTimer(Runnable task, long delayTicks, long periodTicks) {
-        ScheduledTask scheduledTask = new ScheduledTask(task, FabricLoaderMod.getServer().getTickCount() + delayTicks, periodTicks, true);
+        ScheduledTask scheduledTask = new ScheduledTask(task, FabricLoaderMod.getServer().getTicks() + delayTicks, periodTicks, true);
         Runnable cancellationTask = () -> taskMap.remove(scheduledTask);
         taskMap.put(scheduledTask, cancellationTask);
         return new FabricTaskHandle(cancellationTask);

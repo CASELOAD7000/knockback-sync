@@ -52,7 +52,12 @@ public interface PlatformPlayer {
 
     BoundingBox getBoundingBox();
 
-    User getUser();
+    /**
+     * If a player disconnects while we are running the constructor of a PlatformPlayer
+     * PacketEvents.getAPI().getPlayerManager().getUser(bukkitPlayer) may return null
+     * This will make the internal field null and thus this function may return null.
+     */
+    @Nullable User getUser();
 
     void setClientBrand(String brand);
 
