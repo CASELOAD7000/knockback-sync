@@ -21,7 +21,11 @@ public class PlayerDataManager {
         return playerDataMap.get(user);
     }
 
-    public static void addPlayerData(@NotNull User user, @NotNull PlatformPlayer platformPlayer) {
+    public static void addPlayerData(@Nullable User user, @Nullable PlatformPlayer platformPlayer) {
+        if (user == null || platformPlayer == null) {
+            return;
+        }
+
         if (!shouldExempt(platformPlayer.getUUID())) {
             PlayerData playerData = new PlayerData(user, platformPlayer);
             playerDataMap.put(user, playerData);
