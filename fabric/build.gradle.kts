@@ -39,8 +39,8 @@ dependencies {
     modImplementation(fabricApi.module("fabric-events-interaction-v0", "${rootProject.property("fabric_version")}"))
 
     include(modImplementation("me.lucko:fabric-permissions-api:0.3.1")!!)
-    include(modImplementation("com.github.retrooper:packetevents-fabric:2.9.5-SNAPSHOT")!!)
-    include(modImplementation("org.incendo:cloud-fabric:2.0.0-beta.10")!!)
+    include(modImplementation("com.github.retrooper:packetevents-fabric:2.10.1-SNAPSHOT")!!)
+    include(modImplementation("org.incendo:cloud-fabric:2.0.0-beta.13")!!)
 
     include(implementation("org.incendo:cloud-minecraft-extras:2.0.0-beta.10")!!)
     include(implementation("org.yaml:snakeyaml:2.0")!!)
@@ -70,8 +70,8 @@ tasks.processResources {
     filesMatching("fabric.mod.json") {
         expand(
             "version" to project.version,
-            "minecraft_version" to rootProject.property("minecraft_version"),
-            "loader_version" to rootProject.property("loader_version")
+            "minecraft_version" to rootProject.property("minecraft_version")!!,
+            "loader_version" to rootProject.property("loader_version")!!
         )
     }
 }

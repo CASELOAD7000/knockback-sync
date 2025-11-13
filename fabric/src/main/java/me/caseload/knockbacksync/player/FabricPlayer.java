@@ -91,7 +91,7 @@ public class FabricPlayer implements PlatformPlayer {
 
     @Override
     public PlatformWorld getWorld() {
-        return new FabricWorld(fabricPlayer.getWorld());
+        return new FabricWorld(fabricPlayer.getEntityWorld());
     }
 
     @Override
@@ -117,7 +117,7 @@ public class FabricPlayer implements PlatformPlayer {
 
     @Override
     public int getMainHandKnockbackLevel() {
-        RegistryEntry<Enchantment> knockbackEntry = fabricPlayer.getWorld().getRegistryManager().getOrThrow(RegistryKeys.ENCHANTMENT).getOrThrow(Enchantments.KNOCKBACK);
+        RegistryEntry<Enchantment> knockbackEntry = fabricPlayer.getEntityWorld().getRegistryManager().getOrThrow(RegistryKeys.ENCHANTMENT).getOrThrow(Enchantments.KNOCKBACK);
         return EnchantmentHelper.getLevel(knockbackEntry, fabricPlayer.getMainHandStack());
     }
 
