@@ -2,7 +2,7 @@ import java.io.ByteArrayOutputStream
 
 plugins {
     id("java")
-    id("com.gradleup.shadow") version "8.3.3" apply false
+    id("com.gradleup.shadow") version "9.2.2" apply false
     id("fabric-loom") version "1.11.8" apply false
 }
 
@@ -60,7 +60,8 @@ allprojects {
     ext["githubRepo"] = githubRepo
 
     repositories {
-        mavenLocal()
+//        mavenLocal()
+        maven("https://repo.grim.ac/snapshots")
         mavenCentral()
         maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
         maven("https://repo.codemc.io/repository/maven-releases/")
@@ -71,7 +72,6 @@ allprojects {
         }
         maven("https://libraries.minecraft.net/")
         maven("https://maven.neoforged.net/releases")
-        maven("https://repo.codemc.io/repository/maven-snapshots/")
     }
 }
 
