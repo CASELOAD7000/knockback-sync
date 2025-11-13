@@ -28,11 +28,8 @@ jobs:
           cache: ''                          # ← disable Maven/Gradle cache
 
       # 3. Set up Gradle + dependency cache
-      - name: Set up Gradle 8.13
-        uses: gradle/actions/setup-gradle@v4
-        with:
-          gradle-version: "8.13"             # keep the quotes
-          # cache-enabled: true              # default, uploads ~/.gradle
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v5
 
       - name: Generate build number
         id: buildnumber
@@ -57,12 +54,12 @@ jobs:
           sed -i "s/val snapshot = .*/val snapshot = false/" build.gradle.kts
 
       - name: Build without PE shaded
-        run: gradle build -PshadePE=false -x test
+        run: ./gradlew build -PshadePE=false -x test
         env:
           GITHUB_REPOSITORY: ${{ github.repository }}
 
       - name: Build with PE shaded Gradle
-        run: gradle build -PshadePE=true -x test
+        run: ./gradlew build -PshadePE=true -x test
         env:
           GITHUB_REPOSITORY: ${{ github.repository }}
 
