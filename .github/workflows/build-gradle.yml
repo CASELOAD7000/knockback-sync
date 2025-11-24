@@ -205,6 +205,9 @@ jobs:
             1.21.9
             1.21.10
 
+          dependencies: |
+            fabric-api
+
           retry-attempts: 2
           retry-delay: 10000
           fail-mode: fail
