@@ -23,13 +23,13 @@ public class ServerEntityMixin {
     // Velocity event
     @Inject(method = "tick", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/Entity;velocityModified:Z", ordinal = 1), cancellable = true)
     private void onSendChanges(CallbackInfo ci) {
-        if (this.entity.velocityModified && this.entity instanceof ServerPlayerEntity player) {
+        if (this.entity.velocityDirty && this.entity instanceof ServerPlayerEntity player) {
             Vec3d velocity = player.getVelocity();
 
             ActionResult result = PlayerVelocityEvent.EVENT.invoker().onVelocityChange(player, velocity);
 
             if (result == ActionResult.FAIL) {
-                this.entity.velocityModified = false;
+                this.entity.velocityDirty = false;
                 ci.cancel();
             } else if (result == ActionResult.SUCCESS) {
                 // Currently unnecessary since we do this in the handler, will move later

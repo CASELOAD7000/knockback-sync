@@ -13,9 +13,9 @@ dependencies {
 
     // Shaded in or bundled by platform-specific code
     if (shadePE) {
-        implementation("com.github.retrooper:packetevents-api:2.10.2+3684f01-SNAPSHOT")
+        implementation("com.github.retrooper:packetevents-api:2.11.1+60a2c34-SNAPSHOT")
     } else {
-        compileOnly("com.github.retrooper:packetevents-api:2.10.2+3684f01-SNAPSHOT")
+        compileOnly("com.github.retrooper:packetevents-api:2.11.1+60a2c34-SNAPSHOT")
     }
 
     implementation("org.yaml:snakeyaml:2.0")

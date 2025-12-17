@@ -131,7 +131,7 @@ public class FabricPlayer implements PlatformPlayer {
         fabricPlayer.setVelocity(adjustedVelocity.x, adjustedVelocity.y, adjustedVelocity.z);
         // TODO
         // fix paper-ism? for some reason setVelocity() in paper marks the entity as hurt marked every time its called?
-        fabricPlayer.velocityModified = true;
+        fabricPlayer.velocityDirty = true;
     }
 
     @Override
