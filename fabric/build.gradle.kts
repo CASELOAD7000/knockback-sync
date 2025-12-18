@@ -37,7 +37,7 @@ dependencies {
     modImplementation(fabricApi.module("fabric-lifecycle-events-v1", "${rootProject.property("fabric_version")}"))
     modImplementation(fabricApi.module("fabric-events-interaction-v0", "${rootProject.property("fabric_version")}"))
 
-    include(modImplementation("me.lucko:fabric-permissions-api:0.3.1")!!)
+    include(modImplementation("me.lucko:fabric-permissions-api:0.6.1")!!)
     include(modImplementation("com.github.retrooper:packetevents-fabric:2.11.1+60a2c34-SNAPSHOT")!!)
     include(modImplementation("org.incendo:cloud-fabric:2.0.0-beta.15")!!)
 
