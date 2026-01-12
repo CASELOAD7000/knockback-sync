@@ -52,7 +52,7 @@ public class ToggleOffGroundSubcommand implements BuilderCommand {
 
     private void loadConfigSettings() {
         ConfigWrapper configWrapper = Base.INSTANCE.getConfigManager().getConfigWrapper();
-        offGroundSyncEnabled = configWrapper.getBoolean("settings.offground.enabled", true);
+        offGroundSyncEnabled = configWrapper.getBoolean("enable_offground_synchronization", true);
         this.offGroundSyncEnableMessage = configWrapper.getString("messages.offground.enable",
                 "&aSuccessfully enabled offground synchronization.");
         this.offGroundSyncDisableMessage = configWrapper.getString("messages.offground.disable",
