@@ -88,11 +88,14 @@ public class PlayerData {
     @Setter private double knockbackResistanceAttribute = 0.0;
     public PingStrategy pingStrategy; // this is currently shared between all instances, but can be made per-player later
 
+    @Getter private final SimulatedPlayer simulatedPlayer;
+
     public PlayerData(User user, PlatformPlayer platformPlayer) {
         this.uuid = platformPlayer.getUUID();
         this.user = user;
         this.platformPlayer = platformPlayer;
         this.pingStrategy = loadPingStrategy(Base.INSTANCE.getConfigManager());
+        this.simulatedPlayer = new SimulatedPlayer(this);
     }
 
     public double getNotNullPing() {

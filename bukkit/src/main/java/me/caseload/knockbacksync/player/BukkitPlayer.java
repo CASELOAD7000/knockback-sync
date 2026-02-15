@@ -232,4 +232,9 @@ public class BukkitPlayer implements PlatformPlayer {
     public String getClientBrand() {
         return this.clientBrand;
     }
+
+    @Override
+    public boolean isFlying() {
+        return bukkitPlayer.isFlying();
+    }
 }

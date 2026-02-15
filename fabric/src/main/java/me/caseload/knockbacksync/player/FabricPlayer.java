@@ -171,4 +171,9 @@ public class FabricPlayer implements PlatformPlayer {
     public String getClientBrand() {
         return this.clientBrand;
     }
+
+    @Override
+    public boolean isFlying() {
+        return this.fabricPlayer.getAbilities().flying;
+    }
 }

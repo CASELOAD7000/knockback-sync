@@ -7,6 +7,7 @@ import me.caseload.knockbacksync.Base;
 import me.caseload.knockbacksync.Platform;
 import me.caseload.knockbacksync.config.YamlConfiguration;
 import me.caseload.knockbacksync.runnable.PingRunnable;
+import me.caseload.knockbacksync.runnable.TickRunnable;
 import me.caseload.knockbacksync.scheduler.AbstractTaskHandle;
 
 import java.io.File;
@@ -39,6 +40,7 @@ public class ConfigManager {
     private String playerDisconnectedWhileExecutingCommand;
 
     private AbstractTaskHandle pingTask;
+    private AbstractTaskHandle tickTask;
 
     private Map<String, Object> config;
     private File configFile;
@@ -113,6 +115,8 @@ public class ConfigManager {
             }
             pingTask = Base.INSTANCE.getScheduler().runTaskTimerAsynchronously(new PingRunnable(), initialDelay, pingTaskRunnableInterval);
         }
+
+        tickTask = Base.INSTANCE.getScheduler().runTaskTimer(new TickRunnable(), 0L, 1L);
 
         notifyUpdate = configWrapper.getBoolean("notify_updates", true);
         autoUpdate = configWrapper.getBoolean("auto_update", true);

@@ -63,4 +63,6 @@ public interface PlatformPlayer {
 
     String getClientBrand();
     // Add more methods as needed
+
+    boolean isFlying();
 }
