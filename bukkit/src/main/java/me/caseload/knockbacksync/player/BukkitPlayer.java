@@ -237,4 +237,14 @@ public class BukkitPlayer implements PlatformPlayer {
     public boolean isFlying() {
         return bukkitPlayer.isFlying();
     }
+
+    @Override
+    public float getSpeed() {
+        return bukkitPlayer.getWalkSpeed();
+    }
+
+    @Override
+    public float getFlyingSpeed() {
+        return bukkitPlayer.getFlySpeed();
+    }
 }

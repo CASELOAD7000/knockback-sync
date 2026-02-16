@@ -176,4 +176,14 @@ public class FabricPlayer implements PlatformPlayer {
     public boolean isFlying() {
         return this.fabricPlayer.getAbilities().flying;
     }
+
+    @Override
+    public float getSpeed() {
+        return this.fabricPlayer.getAbilities().getWalkSpeed();
+    }
+
+    @Override
+    public float getFlyingSpeed() {
+        return this.fabricPlayer.getAbilities().getFlySpeed();
+    }
 }

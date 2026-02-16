@@ -65,4 +65,8 @@ public interface PlatformPlayer {
     // Add more methods as needed
 
     boolean isFlying();
+
+    float getSpeed();
+
+    float getFlyingSpeed();
 }

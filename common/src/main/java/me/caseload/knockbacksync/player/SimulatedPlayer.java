@@ -1,22 +1,24 @@
 package me.caseload.knockbacksync.player;
 
+import com.github.retrooper.packetevents.protocol.potion.PotionEffect;
 import com.github.retrooper.packetevents.protocol.world.BoundingBox;
 import com.github.retrooper.packetevents.util.Vector3d;
+import com.github.retrooper.packetevents.util.Vector3i;
+import lombok.Getter;
 import me.caseload.knockbacksync.Base;
 import me.caseload.knockbacksync.util.data.Vec2d;
-import me.caseload.knockbacksync.world.PlatformWorld;
-import me.caseload.knockbacksync.world.raytrace.FluidHandling;
-import me.caseload.knockbacksync.world.raytrace.RayTraceResult;
 
-public class SimulatedPlayer {
+import java.util.function.Consumer;
+
+public final class SimulatedPlayer {
 
     private final PlayerData playerData;
     private final PlatformPlayer platformPlayer;
     private Vec2d position;
-    private double yCoordinate;
-    private double verticalVelocity;
-    private BoundingBox boundingBox;
-    private boolean isOnGround;
+    @Getter private double yCoordinate;
+    @Getter private double verticalVelocity;
+    @Getter private BoundingBox boundingBox;
+    @Getter private boolean isOnGround;
 
     public SimulatedPlayer(PlayerData playerData) {
         this.playerData = playerData;
@@ -41,20 +43,20 @@ public class SimulatedPlayer {
 
         if (platformPlayer.isFlying() || platformPlayer.isGliding()) {
             double newY = platformPlayer.getY();
-            double dy = newY - yCoordinate;
-            boundingBox.shift(0, dy, 0);
+            double shiftY = newY - yCoordinate;
+            boundingBox.shift(0, shiftY, 0);
             yCoordinate = newY;
+            verticalVelocity = platformPlayer.getVelocity().getY();
             return;
         }
 
-        Base.LOGGER.info(String.valueOf(yCoordinate));
-    }
+        verticalVelocity += playerData.getGravityAttribute();
+        verticalVelocity = Math.min(verticalVelocity, 3.92);
+        verticalVelocity *= 0.98;
 
-    private double getVerticalVelocity() {
-        return verticalVelocity;
-    }
-
-    private double getYCoordinate() {
-        return yCoordinate;
+        double newY = yCoordinate -= verticalVelocity;
+        double shiftY = newY - yCoordinate;
+        boundingBox.shift(0, shiftY, 0);
+        yCoordinate = newY;
     }
 }
