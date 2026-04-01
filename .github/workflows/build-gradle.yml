@@ -19,7 +19,7 @@ jobs:
       - name: Checkout main repository
         uses: actions/checkout@v2
 
-      # 2. Install JDK 21 – NO Gradle cache here
+      # 2. Install JDK 21 – NO Gradle cache here 32
       - name: Set up JDK
         uses: actions/setup-java@v4
         with:
