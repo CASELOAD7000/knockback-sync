@@ -2,8 +2,31 @@ import java.io.ByteArrayOutputStream
 
 plugins {
     id("java")
-    id("com.gradleup.shadow") version "8.3.3" apply false
-    id("fabric-loom") version "1.10.5" apply false
+    id("com.gradleup.shadow") version "9.2.2" apply false
+    id("fabric-loom") version "1.14.6" apply false
+}
+
+fun getGitCommitHash(project: Project): String? {
+    // Only try to get the hash if the .git directory exists
+    if (!project.file(".git").isDirectory) {
+        return null
+    }
+    return try {
+        val process = ProcessBuilder("git", "rev-parse", "--short", "HEAD")
+            .redirectOutput(ProcessBuilder.Redirect.PIPE)
+            .redirectError(ProcessBuilder.Redirect.PIPE)
+            .start()
+
+        process.waitFor(5, TimeUnit.SECONDS)
+
+        if (process.exitValue() == 0) {
+            process.inputStream.bufferedReader().readText().trim().takeIf { it.isNotEmpty() }
+        } else {
+            null
+        }
+    } catch (e: Exception) {
+        null
+    }
 }
 
 val fullVersion = "1.3.5"
@@ -23,14 +46,10 @@ allprojects {
         if (!snapshot) {
             return ""
         }
-        var commitHash = ""
-        if (includeHash && file(".git").isDirectory) {
-            val stdout = ByteArrayOutputStream()
-            exec {
-                commandLine("git", "rev-parse", "--short", "HEAD")
-                standardOutput = stdout
-            }
-            commitHash = "+${stdout.toString().trim()}"
+        val commitHash = if (includeHash) {
+            getGitCommitHash(project)?.let { "+$it" } ?: ""
+        } else {
+            ""
         }
         return "$commitHash-SNAPSHOT"
     }
@@ -41,7 +60,8 @@ allprojects {
     ext["githubRepo"] = githubRepo
 
     repositories {
-        mavenLocal()
+//        mavenLocal()
+        maven("https://repo.grim.ac/snapshots")
         mavenCentral()
         maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
         maven("https://repo.codemc.io/repository/maven-releases/")
@@ -52,7 +72,6 @@ allprojects {
         }
         maven("https://libraries.minecraft.net/")
         maven("https://maven.neoforged.net/releases")
-        maven("https://repo.codemc.io/repository/maven-snapshots/")
     }
 }
 

@@ -91,7 +91,7 @@ public class FabricPlayer implements PlatformPlayer {
 
     @Override
     public PlatformWorld getWorld() {
-        return new FabricWorld(fabricPlayer.getWorld());
+        return new FabricWorld(fabricPlayer.getEntityWorld());
     }
 
     @Override
@@ -117,7 +117,7 @@ public class FabricPlayer implements PlatformPlayer {
 
     @Override
     public int getMainHandKnockbackLevel() {
-        RegistryEntry<Enchantment> knockbackEntry = fabricPlayer.getWorld().getRegistryManager().getOrThrow(RegistryKeys.ENCHANTMENT).getOrThrow(Enchantments.KNOCKBACK);
+        RegistryEntry<Enchantment> knockbackEntry = fabricPlayer.getEntityWorld().getRegistryManager().getOrThrow(RegistryKeys.ENCHANTMENT).getOrThrow(Enchantments.KNOCKBACK);
         return EnchantmentHelper.getLevel(knockbackEntry, fabricPlayer.getMainHandStack());
     }
 
@@ -131,7 +131,7 @@ public class FabricPlayer implements PlatformPlayer {
         fabricPlayer.setVelocity(adjustedVelocity.x, adjustedVelocity.y, adjustedVelocity.z);
         // TODO
         // fix paper-ism? for some reason setVelocity() in paper marks the entity as hurt marked every time its called?
-        fabricPlayer.velocityModified = true;
+        fabricPlayer.velocityDirty = true;
     }
 
     @Override

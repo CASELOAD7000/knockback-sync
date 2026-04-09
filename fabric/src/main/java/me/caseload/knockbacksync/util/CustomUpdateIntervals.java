@@ -29,7 +29,7 @@ public class CustomUpdateIntervals {
         for (Entity entity : level.iterateEntities()) {
             String entityType = entity.getType().getRegistryEntry().getIdAsString();
             if (entityIntervals.containsKey(entityType)) {
-                ServerChunkLoadingManager.EntityTracker serverEntity = ((ServerChunkManager) entity.getWorld().getChunkManager()).chunkLoadingManager.entityTrackers.get(entity.getId());
+                ServerChunkLoadingManager.EntityTracker serverEntity = ((ServerChunkManager) entity.getEntityWorld().getChunkManager()).chunkLoadingManager.entityTrackers.get(entity.getId());
                 if (serverEntity != null) {
                     ((UpdateIntervalAccessor) serverEntity).setUpdateInterval(entityIntervals.get(entityType));
                 }
