@@ -28,30 +28,14 @@ jobs:
           cache: ''                          # ← disable Maven/Gradle cache
 
       # 3. Set up Gradle + dependency cache
-      - name: Set up Gradle 8.13
-        uses: gradle/actions/setup-gradle@v4
-        with:
-          gradle-version: "8.13"             # keep the quotes
-          # cache-enabled: true              # default, uploads ~/.gradle
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v5
 
       - name: Generate build number
         id: buildnumber
         uses: einaregilsson/build-number@v3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-
-      # Temporary tasks so built jar works because PacketEvents won't merge my fixes for their broken fabric support
-      - name: Clone Axionize's PacketEvents Repository
-        run: |
-          git clone -b fix/fabric-events https://github.com/Axionize/packetevents.git packetevents
-          cd packetevents
-          echo "Cloned PacketEvents repository"
-
-      - name: Build and Publish PacketEvents to Maven Local
-        uses: gradle/actions/setup-gradle@v3
-        with:
-          build-root-directory: packetevents
-          arguments: publishToMavenLocal
 
       - name: Update version in build.gradle.kts
         id: update_version
@@ -70,12 +54,12 @@ jobs:
           sed -i "s/val snapshot = .*/val snapshot = false/" build.gradle.kts
 
       - name: Build without PE shaded
-        run: gradle build -PshadePE=false -x test
+        run: ./gradlew build -PshadePE=false -x test
         env:
           GITHUB_REPOSITORY: ${{ github.repository }}
 
       - name: Build with PE shaded Gradle
-        run: gradle build -PshadePE=true -x test
+        run: ./gradlew build -PshadePE=true -x test
         env:
           GITHUB_REPOSITORY: ${{ github.repository }}
 
@@ -214,8 +198,10 @@ jobs:
             fabric
 
           game-versions: |
-            1.21.4
-            1.21.5
+            1.21.11
+
+          dependencies: |
+            fabric-api
 
           retry-attempts: 2
           retry-delay: 10000
