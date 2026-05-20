@@ -40,11 +40,11 @@ dependencies {
 
     shadeThisThing(implementation("org.kohsuke:github-api:1.326")!!)
     if (shadePE) {
-        shadeThisThing(implementation("com.github.retrooper:packetevents-spigot:2.11.2")!!)
+        shadeThisThing(implementation("com.github.retrooper:packetevents-spigot:2.12.1")!!)
     } else {
-        compileOnly("com.github.retrooper:packetevents-spigot:2.11.2")
+        compileOnly("com.github.retrooper:packetevents-spigot:2.12.1")
     }
-    shadeThisThing(implementation("org.incendo:cloud-paper:2.0.0-beta.14")!!)
+    shadeThisThing(implementation("org.incendo:cloud-paper:2.0.0-beta.15")!!)
     shadeThisThing(implementation("org.incendo:cloud-core:2.0.0")!!)
 
     // Required for 1.14.4 support because gson is too old to have JosnParser.parseString()
