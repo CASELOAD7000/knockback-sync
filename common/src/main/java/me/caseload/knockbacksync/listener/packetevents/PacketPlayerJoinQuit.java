@@ -31,6 +31,9 @@ public class PacketPlayerJoinQuit extends PacketListenerAbstract {
     }
 
     public void onPlayerJoin(User user, PlatformPlayer player) {
+        if (user == null || player == null)
+            return;
+
         PlayerDataManager.addPlayerData(user, player);
 
         if (Base.INSTANCE.getConfigManager().isUpdateAvailable() && Base.INSTANCE.getConfigManager().isNotifyUpdate() && Base.INSTANCE.getPermissionChecker().hasPermission(player, "knockbacksync.update"))

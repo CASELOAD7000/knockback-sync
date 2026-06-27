@@ -1,5 +1,6 @@
 package me.caseload.knockbacksync.listener.bukkit;
 
+import me.caseload.knockbacksync.compat.PaperLegacyProfileBridge;
 import me.caseload.knockbacksync.listener.PlayerDamageListener;
 import me.caseload.knockbacksync.player.BukkitPlayer;
 import me.caseload.knockbacksync.util.MultiLibUtil;
@@ -19,6 +20,11 @@ public class BukkitPlayerDamageListener extends PlayerDamageListener implements 
             return;
 
         if (MultiLibUtil.isExternalPlayer((Player) victim))
+            return;
+
+        // Paper combat-profile fork: don't bookkeep damage state for legacy-profile victims since
+        // we're going to skip the matching PlayerVelocityEvent handler anyway.
+        if (PaperLegacyProfileBridge.isLegacy((Player) victim))
             return;
 
         onPlayerDamage(new BukkitPlayer((Player) victim), new BukkitPlayer((Player) attacker));

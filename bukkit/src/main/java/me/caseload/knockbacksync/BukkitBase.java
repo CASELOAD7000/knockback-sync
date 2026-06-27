@@ -28,6 +28,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.Vector;
+import com.github.retrooper.packetevents.protocol.player.User;
+import me.caseload.knockbacksync.player.PlayerData;
+import me.caseload.knockbacksync.manager.PlayerDataManager;
 import org.incendo.cloud.bukkit.CloudBukkitCapabilities;
 import org.incendo.cloud.execution.ExecutionCoordinator;
 import org.incendo.cloud.paper.LegacyPaperCommandManager;
@@ -134,6 +137,45 @@ public class BukkitBase extends Base {
                 new BukkitPlayerDamageListener(),
                 new BukkitPlayerKnockbackListener()
         );
+        try {
+            @SuppressWarnings("unchecked")
+            final Class<? extends org.bukkit.event.Event> eventClass = (Class<? extends org.bukkit.event.Event>)
+                    Class.forName("com.destroystokyo.paper.event.player.PlayerAttackEntityCooldownResetEvent");
+            final java.lang.reflect.Method getPlayerMethod = eventClass.getMethod("getPlayer");
+            final java.lang.reflect.Method getCooledAttackStrengthMethod = eventClass.getMethod("getCooledAttackStrength");
+
+            org.bukkit.plugin.EventExecutor executor = new org.bukkit.plugin.EventExecutor() {
+                @Override
+                public void execute(org.bukkit.event.Listener listener, org.bukkit.event.Event event) throws org.bukkit.event.EventException {
+                    if (!eventClass.isInstance(event)) return;
+                    try {
+                        Player player = (Player) getPlayerMethod.invoke(event);
+                        if (player == null) return;
+                        float cooledAttackStrength = (float) getCooledAttackStrengthMethod.invoke(event);
+                        User user = PacketEvents.getAPI().getPlayerManager().getUser(player);
+                        if (user == null) return;
+                        PlayerData playerData = PlayerDataManager.getPlayerData(user);
+                        if (playerData != null) {
+                            playerData.setLastAttackCooldown(cooledAttackStrength);
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            };
+
+            Bukkit.getServer().getPluginManager().registerEvent(
+                    eventClass,
+                    new org.bukkit.event.Listener() {},
+                    org.bukkit.event.EventPriority.MONITOR,
+                    executor,
+                    this.plugin,
+                    true
+            );
+        } catch (ClassNotFoundException ignored) {
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

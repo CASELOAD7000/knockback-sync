@@ -22,6 +22,7 @@ import me.caseload.knockbacksync.event.events.ConfigReloadEvent;
 import me.caseload.knockbacksync.event.events.ToggleOnOffEvent;
 import me.caseload.knockbacksync.manager.CombatManager;
 import me.caseload.knockbacksync.manager.ConfigManager;
+import me.caseload.knockbacksync.manager.PlayerDataManager;
 import me.caseload.knockbacksync.scheduler.AbstractTaskHandle;
 import me.caseload.knockbacksync.scheduler.NettyTaskHandle;
 import me.caseload.knockbacksync.util.MathUtil;
@@ -83,7 +84,9 @@ public class PlayerData {
     @NotNull private final Object combatTaskLock = new Object(); // Lock object for synchronization
     @Nullable @Setter private Double ping, previousPing;
     @Nullable @Setter private Double verticalVelocity;
+    @Nullable @Setter private Vector3d horizontalKnockback;
     @Nullable @Setter private Integer lastDamageTicks;
+    @Setter private double lastAttackCooldown = 1.0;
     @Setter private double gravityAttribute = 0.08;
     @Setter private double knockbackResistanceAttribute = 0.0;
     public PingStrategy pingStrategy; // this is currently shared between all instances, but can be made per-player later
@@ -266,7 +269,20 @@ public class PlayerData {
      * @return The calculated positive vertical velocity, consistent with vanilla behavior.
      */
     public double calculateVerticalVelocity(PlatformPlayer attacker) {
-        double yAxis = attacker.getAttackCooldown() > 0.848 ? 0.4 : 0.36080000519752503;
+        double cooldown = 1.0;
+        User attackerUser = attacker.getUser();
+        if (attackerUser != null) {
+            PlayerData attackerData = PlayerDataManager.getPlayerData(attackerUser);
+            if (attackerData != null) {
+                cooldown = attackerData.getLastAttackCooldown();
+            } else {
+                cooldown = attacker.getAttackCooldown();
+            }
+        } else {
+            cooldown = attacker.getAttackCooldown();
+        }
+
+        double yAxis = cooldown > 0.848 ? 0.4 : 0.36080000519752503;
 
         if (!attacker.isSprinting()) {
             yAxis = 0.36080000519752503;
@@ -279,6 +295,74 @@ public class PlayerData {
             yAxis = 0.4;
 
         return yAxis;
+    }
+
+    /**
+     * Calculates the intended horizontal (X/Z) knockback velocity for a player-vs-player hit,
+     * independent of the victim's pre-existing motion and the attacker's stale previous-tick yaw.
+     * <p>
+     * Magnitude follows the vanilla call sequence:
+     * <ul>
+     *   <li>Base hit: 0.4</li>
+     *   <li>Sprint bonus: +0.5 when {@code attacker.isSprinting() && cooldown > 0.848}</li>
+     *   <li>Knockback enchant: +0.5 per level</li>
+     * </ul>
+     * Then scaled by {@code (1 - knockbackResistanceAttribute)}.
+     * <p>
+     * Direction is the attacker -> victim position delta when
+     * {@link me.caseload.knockbacksync.manager.ConfigManager#isHorizontalKbDirectionFix()} is
+     * true (fixes vanilla's stale-yaw direction bug); otherwise falls back to vanilla's yaw.
+     */
+    public Vector3d calculateHorizontalVelocity(PlatformPlayer attacker) {
+        double cooldown = 1.0;
+        User attackerUser = attacker.getUser();
+        if (attackerUser != null) {
+            PlayerData attackerData = PlayerDataManager.getPlayerData(attackerUser);
+            if (attackerData != null) {
+                cooldown = attackerData.getLastAttackCooldown();
+                attackerData.setLastAttackCooldown(1.0); // Reset after consumption
+            } else {
+                cooldown = attacker.getAttackCooldown();
+            }
+        } else {
+            cooldown = attacker.getAttackCooldown();
+        }
+
+        boolean sprintAttack = attacker.isSprinting() && cooldown > 0.848;
+        int kbLevel = attacker.getMainHandKnockbackLevel();
+
+        double strength;
+        if (sprintAttack || kbLevel > 0) {
+            // Second knockback call occurs. The first call (0.4) is halved to 0.2.
+            strength = 0.2;
+            if (sprintAttack) strength += 0.5;
+            strength += kbLevel * 0.5;
+        } else {
+            // Only the first knockback call occurs.
+            strength = 0.4;
+        }
+        strength *= Math.max(0.0, 1.0 - knockbackResistanceAttribute);
+
+        double dx;
+        double dz;
+        if (Base.INSTANCE.getConfigManager().isHorizontalKbDirectionFix()) {
+            double rx = platformPlayer.getX() - attacker.getX();
+            double rz = platformPlayer.getZ() - attacker.getZ();
+            double mag = Math.sqrt(rx * rx + rz * rz);
+            if (mag < 1.0E-4) {
+                double yawRad = Math.toRadians(attacker.getYaw());
+                dx = -Math.sin(yawRad);
+                dz = Math.cos(yawRad);
+            } else {
+                dx = rx / mag;
+                dz = rz / mag;
+            }
+        } else {
+            double yawRad = Math.toRadians(attacker.getYaw());
+            dx = -Math.sin(yawRad);
+            dz = Math.cos(yawRad);
+        }
+        return new Vector3d(dx * strength, 0.0, dz * strength);
     }
 
     public void updateCombat() {

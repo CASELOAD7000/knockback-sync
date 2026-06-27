@@ -3,7 +3,7 @@
 #########################################
 
 # Do not modify!
-config_version: 7
+config_version: 8
 
 # Plugin enabled state
 # Toggleable using /knockbacksync toggle
@@ -44,6 +44,38 @@ ping_strategy: "KEEPALIVE"
 
 # Whether to try to detect when player is offground and apply less kb
 enable_offground_synchronization: true
+
+# ---- Horizontal knockback fixes ----
+# Vanilla has two horizontal-knockback bugs that make PvP feel inconsistent.
+# Each fix can be toggled independently.
+
+# (1) MAGNITUDE FIX
+# Vanilla blends the victim's pre-existing motion into knockback
+# (vec.x / 2 - kbVec.x), which combined with the attacker's sprint-reset
+# packet multiplying their XZ by 0.6 produces near-zero knockback outliers.
+#
+# OPTIONS:
+#   SMOOTH         - (default) Replace X/Z velocity with deterministic
+#                    vanilla-intended knockback every hit. Eliminates ALL
+#                    low-KB outliers. Side effect: W-tap / sprint-reset /
+#                    V-clutch no longer reduce incoming KB.
+#   VANILLA_FIXED  - Keep vanilla XZ blending, but clamp outliers up to 70%
+#                    of intended magnitude. Preserves W-tap reduction within
+#                    a sane range; eliminates near-zero hits.
+#   DISABLED       - No magnitude fix at all (original plugin behavior).
+horizontal_kb_mode: SMOOTH
+
+# (2) DIRECTION FIX
+# Vanilla's sprint-bonus and Knockback-enchant impulses use the attacker's
+# look direction FROM THE PREVIOUS TICK, which at any ping is stale by the
+# time the impulse is applied - the victim gets pushed along the wrong
+# vector. The same staleness is what "Knockback Displacement" exploits.
+#
+# When true, knockback direction is taken from the most-recent attacker -->
+# victim position delta instead of the stale yaw, so the victim is always
+# pushed directly away from the attacker. Affects both SMOOTH and
+# VANILLA_FIXED magnitude modes.
+horizontal_kb_direction_fix: true
 
 # This is the rate the server will use for (amongst other things) sending packets about entities to players
 # In other words it defines how often clients get updated velocity for other entities in the world

@@ -1,6 +1,7 @@
 package me.caseload.knockbacksync.listener.bukkit;
 
 import com.github.retrooper.packetevents.util.Vector3d;
+import me.caseload.knockbacksync.compat.PaperLegacyProfileBridge;
 import me.caseload.knockbacksync.listener.PlayerKnockbackListener;
 import me.caseload.knockbacksync.player.BukkitPlayer;
 import me.caseload.knockbacksync.util.MultiLibUtil;
@@ -19,6 +20,11 @@ public class BukkitPlayerKnockbackListener extends PlayerKnockbackListener imple
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onPlayerVelocity(PlayerVelocityEvent event) {
         Player victim = event.getPlayer();
+        // Paper combat-profile fork: skip KnockbackSync entirely when the victim is on a LEGACY
+        // profile. Carbon's DETAILED engine has already computed the authoritative velocity and
+        // KbSync's clientside re-projection would smooth out the carefully tuned 1.8-style motion.
+        if (PaperLegacyProfileBridge.isLegacy(victim))
+            return;
         EntityDamageEvent entityDamageEvent = victim.getLastDamageCause();
         if (entityDamageEvent == null)
             return;
